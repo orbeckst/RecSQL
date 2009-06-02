@@ -9,6 +9,7 @@ numpy arrays can be stored in sql columns.
 A number of additional SQL functions are defined.
 """
 
+import re
 from pysqlite2 import dbapi2 as sqlite
 import numpy
 from sqlutil import adapt_numpyarray, convert_numpyarray,\
@@ -169,7 +170,7 @@ class SQLarray(object):
     def recarray():
         doc = """Return underlying SQL table as a read-only record array."""
         def fget(self):
-            return self.select('*')
+            return self.SELECT('*')
         return locals()
     recarray = property(**recarray())
 
@@ -254,7 +255,7 @@ class SQLarray(object):
 
         :Example:
 
-        result = T.select("surname, subject, year, avg(grade) AS avg_grade",
+        result = T.SELECT("surname, subject, year, avg(grade) AS avg_grade",
                           "WHERE avg_grade < 3", "GROUP BY surname,subject",
                           "ORDER BY avg_grade,surname")
 
@@ -274,7 +275,7 @@ class SQLarray(object):
         """
         SQL = "SELECT "+str(fields)+" FROM __self__ "+ " ".join(args)
         return self.sql(SQL,**kwargs)
-    select = sql_select
+    SELECT = sql_select
 
     def sql(self,SQL,asrecarray=True):
         """Execute sql statement (NO SANITY CHECKS). If possible, the
@@ -319,9 +320,35 @@ class SQLarray(object):
 
     def limits(self,variable):
         """Return minimum and maximum of variable across all rows of data."""
-        (vmin,vmax), = self.select('min(%(variable)s), max(%(variable)s)' % vars())
+        (vmin,vmax), = self.SELECT('min(%(variable)s), max(%(variable)s)' % vars())
         return vmin,vmax
 
+    def selection(self,SQL,**kwargs):
+        """Return a new SQLarray from a SELECT selection."""
+        # TODO: under development
+        # - could use VIEW
+        # - names might clash (because all in the same db); use md5 of
+        #   selection or similar (see AdK code)
+
+        import md5
+        # pretty unsafe... I hope the user knows what they are doing
+        # - only read data to first semicolon
+        # - here should be input scrubbing...
+        safe_sql = re.match(r'(?P<SQL>[^;]*)',SQL).group('SQL')
+
+        if re.match(r'\s*SELECT.*FROM',safe_sql,flags=re.IGNORECASE):
+            _sql = safe_sql
+        else:
+            # WHERE clause only        
+            _sql = """SELECT * FROM __self__ WHERE """+str(safe_sql)
+        # (note: MUST replace __self__ and __data__ before md5!)
+        _sql = _sql.replace('__self__', self.name)
+        # unique name for table
+        newname = kwargs.pop('name', 'selection_'+md5.new(_sql).hexdigest())
+        kwargs['asrecarray'] = True
+        rec_tmp = self.sql(_sql,**kwargs)
+        return SQLarray(newname, rec_tmp, connection=self.connection)
+        
     def _init_sqlite_functions(self):
         """additional SQL functions to the database"""
         import sqlfunctions
@@ -342,7 +369,7 @@ class SQLarray(object):
 
     def __len__(self):
         """Number of rows in the table."""
-        return self.select('COUNT() AS length').length[0]
+        return self.SELECT('COUNT() AS length').length[0]
 
     def __del__(self):
         """Delete the underlying SQL table from the database."""

@@ -9,10 +9,10 @@ use_setuptools()
 from setuptools import setup, find_packages
 
 setup(name="RecSQL",
-      version="0.1rc1",
+      version="0.2",
       description="Treat SQLlite tables as recarrays",
       long_description="""\
-A simple implementation of nump.recarray-like tables that can
+A simple implementation of numpy.recarray-like tables that can
 be operated on via SQL. The underlying tables are SQLlite tables
 that are built from a numpy.recarray.
 """,
