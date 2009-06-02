@@ -23,7 +23,7 @@ that are built from a numpy.recarray.
       keywords="utilities",
       packages=find_packages(exclude=['tests','extras','doc/examples']),
       install_requires=['numpy>=1.0',
-                        'pysqlite2',
+                        'pysqlite',
                         ],
 )
 
