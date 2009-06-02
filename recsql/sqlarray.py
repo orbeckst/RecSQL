@@ -59,14 +59,15 @@ class SQLarray(object):
     :Aggregate SQL functions: 
 
     Aggregate functions combine data from a query; they are typically used with
-    a 'GROUP BY col' clause. They can be thought of as simply numpy ufuncs.
+    a 'GROUP BY col' clause. They can be thought of as numpy ufuncs.
 
       y = f(x1,x2,...xN)     SELECT f(x) AS y ... GROUP BY x
 
     avg(x)                   mean [sqlite builtin]
     std(x)                   standard deviation (using N-1 variance)
     median(x)                median of the data (see numpy.median)
-
+    min(x)                   minimum [sqlite builtin]
+    max(x)                   maximum [sqlite builtin]
 
     :PyAggregate SQL functions:
     
@@ -85,9 +86,9 @@ class SQLarray(object):
     syntax (note the quotes). (See more details in the pysqlite2 documentation
     under 'adaptors' and 'converters'.)
 
-    ------------------------------------------------------------
+    --------------- -------------- --------------------------------------------
     PyAggregate       type           signature, description
-    ------------------------------------------------------------
+    --------------- -------------- --------------------------------------------
     array             NumpyArray     array(x)
                                      a standard numpy array
     histogram         Object         histogram(x,nbins,xmin,xmax) 
@@ -121,7 +122,7 @@ class SQLarray(object):
     # although one can also do
     >>>  (my_array,) = q.sql('SELECT a AS "a [NumpyArray]" FROM __self__')
     # but when using a PyAggregate the type must be declared
-    >>>   a.sql('SELECT histogram(x) as "hist [Object]" FROM __self__')
+    >>>   a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
 
     """
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
