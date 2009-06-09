@@ -7,6 +7,11 @@ feature is that SELECT queries return numpy.recarrays. In addition,
 numpy arrays can be stored in sql columns.
 
 A number of additional SQL functions are defined.
+
+:TODO:
+* Make object saveable (i.e. store the database on disk instead of
+  memory or dump the memory db and provide a load() method
+* Use hooks for the pickling protocol to make this transparent. 
 """
 
 import re
@@ -278,13 +283,13 @@ class SQLarray(object):
         return self.sql(SQL,**kwargs)
     SELECT = sql_select
 
-    def sql(self,SQL,asrecarray=True):
+    def sql(self,SQL,asrecarray=True,cache=True):
         """Execute sql statement (NO SANITY CHECKS). If possible, the
         returned list of tuples is turned into a numpy record array,
         otherwise the original list of tuples is returned.
 
-        The last cachesize queries are cached and are returned
-        directly unless the table has been modified.
+        The last cachesize queries are cached (for cache=True) and are
+        returned directly unless the table has been modified.
 
         Note: __self__ is substituted with the table name. See the doc
         string of the select() method for more details.
@@ -292,9 +297,10 @@ class SQLarray(object):
         SQL = SQL.replace('__self__',self.name)
 
         # cache the last N (query,result) tuples using a 'FIFO-dict'
-        # of length N, where key = SQL; if query in dict AND cache
-        # valid just return cache result.
-        if SQL in self.__cache:
+        # of length N, where key = SQL; if we can use the cache
+        # (cache=True) and if query in dict (AND cache
+        # valid, ie it hasn't been emptied (??)) just return cache result.
+        if cache and SQL in self.__cache:
             return self.__cache[SQL]
 
         c = self.cursor
@@ -316,7 +322,8 @@ class SQLarray(object):
                 pass  # keep as tuples if we cannot convert
         else:
             pass      # keep as tuples/data structure as requested
-        self.__cache.append(SQL,result)
+        if cache:
+            self.__cache.append(SQL,result)
         return result
 
     def limits(self,variable):
