@@ -15,7 +15,10 @@ A number of additional SQL functions are defined.
 """
 
 import re
-from pysqlite2 import dbapi2 as sqlite
+try:
+    from pysqlite2 import dbapi2 as sqlite     # ... all development was with pysqlite2
+except ImportError:
+    from sqlite3 import dbapi2 as sqlite       # I hope we are compatible qith sqlite3
 import numpy
 from sqlutil import adapt_numpyarray, convert_numpyarray,\
     adapt_object, convert_object
@@ -146,6 +149,11 @@ class SQLarray(object):
                     database, which allows more complicated queries with cross-joins. The 
                     table's connection is available as the attribute T.connection. 
         is_tmp      False: default, True: create a tmp table
+
+        :Bugs:        
+         * InterfaceError: Error binding parameter 0 - probably unsupported type
+           In this case the recarray contained types such as numpy.int64 that are not
+           understood by sqlite.
         """
         self.name = str(name)
         if self.name == self.tmp_table_name and not is_tmp:
@@ -170,7 +178,12 @@ class SQLarray(object):
         self.cursor.execute(SQL)
         SQL = "INSERT INTO "+self.name+" ("+ ",".join(self.columns)+") "\
             +"VALUES "+"("+",".join(self.ncol*['?'])+")"
+        # The next can fail with 'InterfaceError: Error binding parameter 0 - probably unsupported type.'
+        # This means that the numpy array should be set up so that there are no data types
+        # such as numpy.int64 which are not compatible with sqlite (no idea why).
         self.cursor.executemany(SQL,recarray)
+
+        # initialize query cache
         self.__cache = KRingbuffer(cachesize)
 
     def recarray():
@@ -319,6 +332,10 @@ class SQLarray(object):
                 names = [x[0] for x in c.description]   # first elements are column names
                 result = numpy.rec.fromrecords(result,names=names)
             except:
+                # XXX: potential BUG: if there are memory issues then it can happen that 
+                # XXX: we just silently fall back to a tuple but calling code expects a
+                # XXX: recarray; because we swallowed ANY exception the caller will never know
+                # XXX: ... should probably change this and not have the try ... except in the first place
                 pass  # keep as tuples if we cannot convert
         else:
             pass      # keep as tuples/data structure as requested
@@ -337,6 +354,7 @@ class SQLarray(object):
         # - could use VIEW
         # - names might clash (because all in the same db); use md5 of
         #   selection or similar (see AdK code)
+        # - might be a good idea to use cache=False
 
         import md5
         # pretty unsafe... I hope the user knows what they are doing
@@ -349,12 +367,12 @@ class SQLarray(object):
         else:
             # WHERE clause only        
             _sql = """SELECT * FROM __self__ WHERE """+str(safe_sql)
-        # (note: MUST replace __self__ and __data__ before md5!)
+        # (note: MUST replace __self__  before md5!)
         _sql = _sql.replace('__self__', self.name)
         # unique name for table
         newname = kwargs.pop('name', 'selection_'+md5.new(_sql).hexdigest())
         kwargs['asrecarray'] = True
-        rec_tmp = self.sql(_sql,**kwargs)
+        rec_tmp = self.sql(_sql,**kwargs)    # XXX: argh, waste of memory!
         return SQLarray(newname, rec_tmp, connection=self.connection)
         
     def _init_sqlite_functions(self):

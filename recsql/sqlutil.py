@@ -25,3 +25,25 @@ def convert_object(s):
 # or as column types
 #   cur.execute('SELECT a as "a [NumpyArray]" from test')
 
+
+# Use FakeRecArray to load the db from an iterable
+
+class FakeDtype(object):
+    def __init__(self,**kwargs):
+        self.__dict__.update(kwargs)
+
+class FakeRecArray(object):
+    """Pseudo recarray that is used to feed SQLarray:
+
+    Must only implement:
+
+      recarray.dtype.names         sequence of column names
+      iteration                    yield records
+    """
+    def __init__(self, iterable, columns):
+        self.dtype = FakeDtype(names=columns)
+        self.iterable = iterable
+
+    def __iter__(self):
+        for rec in self.iterable:
+            yield rec
