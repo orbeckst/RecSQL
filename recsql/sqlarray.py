@@ -135,15 +135,18 @@ class SQLarray(object):
     """
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
 
-    def __init__(self,name,recarray,cachesize=5,connection=None,is_tmp=False):
+    def __init__(self,name,iterable=None,columns=None,cachesize=5,connection=None,is_tmp=False):
         """Build the SQL table from a numpy record array.
 
         T = SQLarray(<name>,<recarray>,cachesize=5,connection=None)
 
         :Arguments:
         name        table name (can be referred to as __self__ in SQL queries)
-        recarray    numpy record array that describes the layout and initializes the
-                    table
+        iterable    numpy record array that describes the layout and initializes the
+                    table OR any iterable (and then columns must be set, too)
+                    If None then simply associate with existing table name.
+        columns     sequence of column names ##XXXor string such as 'col_1,col_2,...'
+                    (only used if iterable does not have attribute dtype.names)
         cachesize   number of (query, result) pairs that are chached
         connection  if not None, reuse this connection; this adds a new table to the same 
                     database, which allows more complicated queries with cross-joins. The 
@@ -164,24 +167,45 @@ class SQLarray(object):
         else:
             self.connection = connection    # use existing connection
         self.cursor = self.connection.cursor()
-        self.columns = recarray.dtype.names
-        self.ncol = len(self.columns)
 
-        # initialize table
-        # * input is NOT sanitized and is NOT safe, don't use as CGI...
-        # * this can overwrite an existing table (name is not checked)
-        if not is_tmp:
-            SQL = "CREATE TABLE "+self.name+" ("+",".join(self.columns)+")"
+        if iterable is None:
+            # associate with existing table
+            # SECURITY risk: interpolating name...
+            SQL = "SELECT * FROM %(name)s WHERE 0" % vars(self)
+            c = self.cursor
+            try:
+                c.execute(SQL)
+            except sqlite.OperationalError,err:
+                if str(err).find('no such table') > -1:
+                    raise ValueError("Provide 'name' of an existing table.")
+                else:
+                    raise
+            self.columns = tuple([x[0] for x in c.description])
+            self.ncol = len(self.columns)
         else:
-            # temporary table
-            SQL = "CREATE TEMPORARY TABLE "+self.name+" ("+",".join(self.columns)+")"
-        self.cursor.execute(SQL)
-        SQL = "INSERT INTO "+self.name+" ("+ ",".join(self.columns)+") "\
-            +"VALUES "+"("+",".join(self.ncol*['?'])+")"
-        # The next can fail with 'InterfaceError: Error binding parameter 0 - probably unsupported type.'
-        # This means that the numpy array should be set up so that there are no data types
-        # such as numpy.int64 which are not compatible with sqlite (no idea why).
-        self.cursor.executemany(SQL,recarray)
+           try:
+               self.columns = iterable.dtype.names
+           except AttributeError:
+               if columns is None:
+                   raise TypeError('iterable must be a recarray or columns should be supplied')
+               self.columns = columns  # XXX: no sanity check
+           self.ncol = len(self.columns)
+
+           # initialize table
+           # * input is NOT sanitized and is NOT safe, don't use as CGI...
+           # * this can overwrite an existing table (name is not checked)
+           if not is_tmp:
+               SQL = "CREATE TABLE "+self.name+" ("+",".join(self.columns)+")"
+           else:
+               # temporary table
+               SQL = "CREATE TEMPORARY TABLE "+self.name+" ("+",".join(self.columns)+")"
+           self.cursor.execute(SQL)
+           SQL = "INSERT INTO "+self.name+" ("+ ",".join(self.columns)+") "\
+               +"VALUES "+"("+",".join(self.ncol*['?'])+")"
+           # The next can fail with 'InterfaceError: Error binding parameter 0 - probably unsupported type.'
+           # This means that the numpy array should be set up so that there are no data types
+           # such as numpy.int64 which are not compatible with sqlite (no idea why).
+           self.cursor.executemany(SQL,iterable)
 
         # initialize query cache
         self.__cache = KRingbuffer(cachesize)
@@ -193,7 +217,7 @@ class SQLarray(object):
         return locals()
     recarray = property(**recarray())
 
-    def merge(self,recarray):
+    def merge(self,recarray,columns=None):
         """Merge another recarray with the same columns into this table.
         
         n = a.merge(<recarray>)
@@ -210,7 +234,7 @@ class SQLarray(object):
         """
         len_before = len(self)
         #  CREATE TEMP TABLE in database
-        tmparray = SQLarray(self.tmp_table_name, recarray, 
+        tmparray = SQLarray(self.tmp_table_name, iterable=recarray, columns=columns,
                             connection=self.connection, is_tmp=True)
         len_tmp = len(tmparray)
         # insert into main table
@@ -294,6 +318,7 @@ class SQLarray(object):
         """
         SQL = "SELECT "+str(fields)+" FROM __self__ "+ " ".join(args)
         return self.sql(SQL,**kwargs)
+
     SELECT = sql_select
 
     def sql(self,SQL,asrecarray=True,cache=True):
@@ -348,12 +373,15 @@ class SQLarray(object):
         (vmin,vmax), = self.SELECT('min(%(variable)s), max(%(variable)s)' % vars())
         return vmin,vmax
 
-    def selection(self,SQL,**kwargs):
-        """Return a new SQLarray from a SELECT selection."""
+    def selection(self,SQL,parameters=None,**kwargs):
+        """Return a new SQLarray from a SELECT selection.
+
+        s = selection('a > 3')
+        s = selection('a > ?', (3,))
+        s = selection('SELECT * FROM __self__ WHERE a > ? AND b < ?', (3, 10))
+        """
         # TODO: under development
         # - could use VIEW
-        # - names might clash (because all in the same db); use md5 of
-        #   selection or similar (see AdK code)
         # - might be a good idea to use cache=False
 
         import md5
@@ -368,12 +396,22 @@ class SQLarray(object):
             # WHERE clause only        
             _sql = """SELECT * FROM __self__ WHERE """+str(safe_sql)
         # (note: MUST replace __self__  before md5!)
-        _sql = _sql.replace('__self__', self.name)
-        # unique name for table
+        _sql = _sql.replace('__self__', self.name)        
+        # unique name for table (unless user supplied... which could be 'x;DROP TABLE...')
         newname = kwargs.pop('name', 'selection_'+md5.new(_sql).hexdigest())
-        kwargs['asrecarray'] = True
-        rec_tmp = self.sql(_sql,**kwargs)    # XXX: argh, waste of memory!
-        return SQLarray(newname, rec_tmp, connection=self.connection)
+
+        # create table directly
+        # SECURITY: unsafe tablename !!!! (but cannot interpolate?)
+        _sql = "CREATE TABLE %(newname)s AS " % vars() + _sql
+        
+        c = self.cursor
+        if parameters is None:
+            c.execute(_sql)              # no sanity checks!
+        else:
+            c.execute(_sql, parameters)  # no sanity checks; params should be tuple
+
+        # associate with new table in db
+        return SQLarray(newname, None, connection=self.connection)
         
     def _init_sqlite_functions(self):
         """additional SQL functions to the database"""
