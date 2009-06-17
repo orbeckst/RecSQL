@@ -1,0 +1,13 @@
+=========
+ INSTALL
+=========
+
+RecSQL uses python's setuptools, and specifically, ``easy_install``
+http://peak.telecommunity.com/DevCenter/EasyInstall
+
+Typicall you can install from the unpacked source with
+
+	 python setup.py install
+
+See the easy_install documentation for details.
+

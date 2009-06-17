@@ -1,7 +1,7 @@
 # $Id: setup.py 3489 2009-05-26 21:55:54Z root $
 # setuptools installation of RecSQL
 # Copyright (c) 2007-2009 Oliver Beckstein <orbeckst@gmail.com>
-# Released under the GNU Public License 2 (or higher, your choice)
+# Released under the GNU Public License 3 (or higher, your choice)
 
 
 from ez_setup import use_setuptools
@@ -13,7 +13,7 @@ setup(name="RecSQL",
       description="Treat SQLlite tables as recarrays",
       long_description="""\
 A simple implementation of numpy.recarray-like tables that can
-be operated on via SQL. The underlying tables are SQLlite tables
+be operated on via SQL. The underlying tables are SQLite tables
 that are built from a numpy.recarray or a general iterator.
 """,
       author="Oliver Beckstein",
