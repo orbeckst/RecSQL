@@ -14,13 +14,13 @@ setup(name="RecSQL",
       long_description="""\
 A simple implementation of numpy.recarray-like tables that can
 be operated on via SQL. The underlying tables are SQLlite tables
-that are built from a numpy.recarray.
+that are built from a numpy.recarray or a general iterator.
 """,
       author="Oliver Beckstein",
       author_email="orbeckst@gmail.com",
       license="GPLv3",
-      url="http://sbcb.bioch.ox.ac.uk/oliver/software", # not set up yet
-      keywords="utilities",
+      url="http://sbcb.bioch.ox.ac.uk/oliver/download/Python/RecSQL",
+      keywords="utilities numpy SQLite SQL",
       packages=find_packages(exclude=['tests','extras','doc/examples']),
       install_requires=['numpy>=1.0',
                         'pysqlite',
