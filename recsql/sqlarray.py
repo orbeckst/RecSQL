@@ -147,7 +147,7 @@ class SQLarray(object):
                     If None then simply associate with existing table name.
         columns     sequence of column names ##XXXor string such as 'col_1,col_2,...'
                     (only used if iterable does not have attribute dtype.names)
-        cachesize   number of (query, result) pairs that are chached
+        cachesize   number of (query, result) pairs that are cached
         connection  if not None, reuse this connection; this adds a new table to the same 
                     database, which allows more complicated queries with cross-joins. The 
                     table's connection is available as the attribute T.connection. 
