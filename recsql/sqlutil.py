@@ -26,6 +26,7 @@ def convert_object(s):
 #   cur.execute('SELECT a as "a [NumpyArray]" from test')
 
 
+# Fake* not needed anymore since SQLarray takes an iterable + columns descriptors
 # Use FakeRecArray to load the db from an iterable
 
 class FakeDtype(object):
