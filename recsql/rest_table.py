@@ -33,6 +33,7 @@ with
 
   >>> import recsql.rest_table as T
   >>> P = T.Table2array(T.__doc__)
+  >>> P.recarray()
   rec.array([(u'A. Einstein', 42, 1921), (u'P. Dirac', 31, 1933),
        (u'R. P. Feynman', 47, 1965)], 
       dtype=[('name', '<U52'), ('age', '<i4'), ('year', '<i4')])
