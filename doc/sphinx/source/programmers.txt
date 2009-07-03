@@ -1,0 +1,19 @@
+.. $Id$
+
+======================
+ Notes for developers
+======================
+
+.. automodule:: recsql.sqlarray
+   :members:
+
+
+SQL support
+===========
+ 
+.. automodule:: recsql.sqlfunctions
+   :members:
+   :exclude-members: histogram1d
+
+.. automodule:: recsql.sqlutil
+   :members:

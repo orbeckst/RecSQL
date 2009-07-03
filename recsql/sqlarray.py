@@ -2,26 +2,34 @@
 # Copyright (C) 2009 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License, version 3 or higher (your choice)
 
-"""sqlarray is a thin wrapper around pysqlite SQL tables. The main
-feature is that SELECT queries return numpy.recarrays. In addition,
-numpy arrays can be stored in sql columns.
+"""
+:mod:`sqlarray` --- Implementation of :class:`SQLarray`
+=======================================================
+
+:class:`SQLarray` is a thin wrapper around pysqlite SQL tables. The main
+features ares that ``SELECT`` queries can return ``numpy.recarrays`` and the
+:meth:`SQLarray.selection` method returns a new :class:`SQLarray` instance.  
+
+numpy arrays can be stored in sql fields which allows advanced table
+aggregate functions such as ``histogram``.
 
 A number of additional SQL functions are defined.
 
 :TODO:
-* Make object saveable (i.e. store the database on disk instead of
-  memory or dump the memory db and provide a load() method
-* Use hooks for the pickling protocol to make this transparent. 
+   * Make object saveable (i.e. store the database on disk instead of
+     memory or dump the memory db and provide a load() method
+   * Use hooks for the pickling protocol to make this transparent. 
 """
 
 import re
 try:
     from pysqlite2 import dbapi2 as sqlite     # ... all development was with pysqlite2
 except ImportError:
-    from sqlite3 import dbapi2 as sqlite       # I hope we are compatible qith sqlite3
+    from sqlite3 import dbapi2 as sqlite       # I hope we are compatible with sqlite3
 import numpy
 from sqlutil import adapt_numpyarray, convert_numpyarray,\
     adapt_object, convert_object
+from rest_table import Table2array
 
 sqlite.register_adapter(numpy.ndarray,adapt_numpyarray)
 sqlite.register_adapter(numpy.recarray,adapt_numpyarray)
@@ -35,144 +43,39 @@ sqlite.register_converter("Object", convert_object)
 class SQLarray(object):
     """A SQL table that returns (mostly) rec arrays.
 
-    The SQLarray object populates a SQL table from a numpy record array or an
-    iterable that supplies table records. The SQL table is held in memory and
-    functions are provided to run SQL queries and commands on the underlying
-    database. Queries return record arrays if possible (although a flag can
-    explicitly change this).
+    .. method:: SQLarray(name,iterable[,columns[,cachesize=5,connection=None])
 
-    Query results are cached to improve performance. This can be disabled
-    (which is recommened for large data sets).
+    :Arguments:
+       name        
+          table name (can be referred to as '__self__' in SQL queries)
+       iterable    
+          numpy record array that describes the layout and initializes the
+          table OR any iterable (and then columns must be set, too) OR a string
+          that contains a single, *simple reStructured text table*.
+          If None then simply associate with existing table name.
+       columns
+          sequence of column names (only used if iterable does not have 
+          attribute dtype.names) [``None``]
+       cachesize   
+          number of (query, result) pairs that are cached [5]
+       connection  
+          If not ``None``, reuse this connection; this adds a new table to the same 
+          database, which allows more complicated queries with cross-joins. The 
+          table's connection is available as the attribute T.connection. [``None``]
+       is_tmp
+          ``True``: create a tmp table; ``False``: regular table in db [``False``] 
 
-    The SQL table is named on initialization. Later one can refer to this table
-    by the name or the magic name '__self__' in SQL statements. Additional
-    tables can be added to the same database (by using the connection keyword
-    of the constructor)
+    :Bugs:        
+       * :exc:`InterfaceError`: *Error binding parameter 0 - probably unsupported type*
 
-
-    Additional SQL functions
-    ========================
-    
-    Note that this SQL database has a few additional functions defined in
-    addition to the SQL standard. These can be used in SELECT statements and
-    often avoid post-processing of record arrays in python. It is relatively
-    straightforward to add new functions (see the source code and in particular
-    the _init_sql_functions(); the functions themselves are defined in the
-    module sqlfunctions).
-
-
-    Simple SQL functions
-    --------------------
-    
-    Simple functions transform a single input value into a single output value:
-
-      y = f(x)               SELECT f(x) AS y 
-
-    sqrt(x)                  squareroot math.sqrt(x)
-    fformat(format,x)        string formatting of a single value format % x
-
-
-    Aggregate SQL functions
-    -----------------------
-
-    Aggregate functions combine data from a query; they are typically used with
-    a 'GROUP BY col' clause. They can be thought of as numpy ufuncs.
-
-      y = f(x1,x2,...xN)     SELECT f(x) AS y ... GROUP BY x
-
-    avg(x)                   mean [sqlite builtin]
-    std(x)                   standard deviation (using N-1 variance)
-    median(x)                median of the data (see numpy.median)
-    min(x)                   minimum [sqlite builtin]
-    max(x)                   maximum [sqlite builtin]
-
-
-    PyAggregate SQL functions
-    -------------------------
-    
-    PyAggregate functions act on a list of data points in the same way as
-    ordinary aggregate functions but they return python objects such as numpy
-    arrays, or tuples of numpy arrays (eg bin edges and histogram). In order to
-    make this work, specific types have to be declared when returning the
-    results:
-
-    For instance, the histogram() function returns a python Object, the tuple
-    (histogram, edges):
-
-       a.sql('SELECT histogram(x) AS "x [Object]" FROM __self__', asrecarray=False)
-
-    The return type ('Object') needs to be declared with the 'AS "x [Object]"'
-    syntax (note the quotes). (See more details in the pysqlite2 documentation
-    under 'adaptors' and 'converters'.)
-
-    ===============  ==============  ============================================
-    PyAggregate      type            signature; description
-    ===============  ==============  ============================================
-    array             NumpyArray     array(x);
-                                     a standard numpy array
-    histogram         Object         histogram(x,nbins,xmin,xmax); 
-                                     histogram x in nbins evenly spaced bins between xmin and xmax
-    distribution      Object         distribution(x,nbins,xmin,xmax);
-                                     normalized histogram whose integral gives 1
-    meanhistogram     Object         meanhistogram(x,y,nbins,xmin,xmax); 
-                                     histogram data points y along x and average all y in each bin
-    stdhistogram      Object         stdhistogram(x,y,nbins,xmin,xmax); 
-                                     give the standard deviation (from N-1 variance)
-                                     std(y) = sqrt(Var(y)) with Var(y) = <(y-<y>)^2>
-    medianhistogram   Object         medianhistogram((x,y,nbins,xmin,xmax);
-                                     median(y)
-    minhistogram      Object         minhistogram((x,y,nbins,xmin,xmax);
-                                     min(y)
-    maxhistogram      Object         maxhistogram((x,y,nbins,xmin,xmax);
-                                     max(y)
-    zscorehistogram   Object         zscorehistogram((x,y,nbins,xmin,xmax);
-                                     <abs(y-<y>)>/std(y)
-    ================  =============  ============================================
-
-
-    Examples of using types in tables
-    =================================
-
-    The following show how to use the special types.
-
-    Declare types as 'NumpyArray'::
-       a.sql("CREATE TABLE __self__(a NumpyArray)")
-
-    Then you can simply insert python objects (type(my_array) == numpy.ndarray)::
-       a.sql("INSERT INTO __self__(a) values (?)", (my_array,))
-
-    When returning results of declared columns one does not have to do anything::
-       (my_array,) = a.sql("SELECT a FROM __self__")
-    although one can also do::
-       (my_array,) = q.sql('SELECT a AS "a [NumpyArray]" FROM __self__')
-    but when using a PyAggregate the type *must* be declared::
-       a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
-
+         In this case the recarray contained types such as ``numpy.int64`` that are not
+         understood by sqlite. You need to convert the data manually first.
     """
+
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
 
     def __init__(self,name,iterable=None,columns=None,cachesize=5,connection=None,is_tmp=False):
         """Build the SQL table from a numpy record array.
-
-        T = SQLarray(<name>,<recarray>,cachesize=5,connection=None)
-
-        :Arguments:
-        name        table name (can be referred to as __self__ in SQL queries)
-        iterable    numpy record array that describes the layout and initializes the
-                    table OR any iterable (and then columns must be set, too)
-                    If None then simply associate with existing table name.
-        columns     sequence of column names ##XXXor string such as 'col_1,col_2,...'
-                    (only used if iterable does not have attribute dtype.names)
-        cachesize   number of (query, result) pairs that are cached
-        connection  if not None, reuse this connection; this adds a new table to the same 
-                    database, which allows more complicated queries with cross-joins. The 
-                    table's connection is available as the attribute T.connection. 
-        is_tmp      False: default, True: create a tmp table
-
-        :Bugs:        
-         * InterfaceError: Error binding parameter 0 - probably unsupported type
-           In this case the recarray contained types such as numpy.int64 that are not
-           understood by sqlite.
         """
         self.name = str(name)
         if self.name == self.tmp_table_name and not is_tmp:
@@ -199,29 +102,34 @@ class SQLarray(object):
             self.columns = tuple([x[0] for x in c.description])
             self.ncol = len(self.columns)
         else:
-           try:
-               self.columns = iterable.dtype.names
-           except AttributeError:
-               if columns is None:
-                   raise TypeError('iterable must be a recarray or columns should be supplied')
-               self.columns = columns  # XXX: no sanity check
-           self.ncol = len(self.columns)
+            if type(iterable) is str:
+                # maybe this is a reST table
+                P = Table2array(iterable)
+                iterable = P.recarray()
+                
+            try:
+                self.columns = iterable.dtype.names
+            except AttributeError:
+                if columns is None:
+                    raise TypeError('iterable must be a recarray or columns should be supplied')
+                self.columns = columns  # XXX: no sanity check
+            self.ncol = len(self.columns)
 
-           # initialize table
-           # * input is NOT sanitized and is NOT safe, don't use as CGI...
-           # * this can overwrite an existing table (name is not checked)
-           if not is_tmp:
-               SQL = "CREATE TABLE "+self.name+" ("+",".join(self.columns)+")"
-           else:
-               # temporary table
-               SQL = "CREATE TEMPORARY TABLE "+self.name+" ("+",".join(self.columns)+")"
-           self.cursor.execute(SQL)
-           SQL = "INSERT INTO "+self.name+" ("+ ",".join(self.columns)+") "\
-               +"VALUES "+"("+",".join(self.ncol*['?'])+")"
-           # The next can fail with 'InterfaceError: Error binding parameter 0 - probably unsupported type.'
-           # This means that the numpy array should be set up so that there are no data types
-           # such as numpy.int64 which are not compatible with sqlite (no idea why).
-           self.cursor.executemany(SQL,iterable)
+            # initialize table
+            # * input is NOT sanitized and is NOT safe, don't use as CGI...
+            # * this can overwrite an existing table (name is not checked)
+            if not is_tmp:
+                SQL = "CREATE TABLE "+self.name+" ("+",".join(self.columns)+")"
+            else:
+                # temporary table
+                SQL = "CREATE TEMPORARY TABLE "+self.name+" ("+",".join(self.columns)+")"
+            self.cursor.execute(SQL)
+            SQL = "INSERT INTO "+self.name+" ("+ ",".join(self.columns)+") "\
+                +"VALUES "+"("+",".join(self.ncol*['?'])+")"
+            # The next can fail with 'InterfaceError: Error binding parameter 0 - probably unsupported type.'
+            # This means that the numpy array should be set up so that there are no data types
+            # such as numpy.int64 which are not compatible with sqlite (no idea why).
+            self.cursor.executemany(SQL,iterable)
 
         # initialize query cache
         self.__cache = KRingbuffer(cachesize)
@@ -236,17 +144,17 @@ class SQLarray(object):
     def merge(self,recarray,columns=None):
         """Merge another recarray with the same columns into this table.
         
-        n = a.merge(<recarray>)
-
         :Arguments:
-        recarray    numpy record array that describes the layout and initializes the
-                    table
+           recarray    
+              numpy record array that describes the layout and initializes the
+              table
 
         :Returns:
-        n           number of inserted rows
-
-        Raises an exception if duplicate and incompatible data exist
-        in the main table and the new one.
+           n           number of inserted rows
+           
+        :Raises:
+           Raises an exception if duplicate and incompatible data exist
+           in the main table and the new one.
         """
         len_before = len(self)
         #  CREATE TEMP TABLE in database
@@ -265,16 +173,14 @@ class SQLarray(object):
     def merge_table(self,name):
         """Merge an existing table in the database with the __self__ table.
 
-        n = a.merge_table(<name>)
-
-        Executes as 'INSERT INTO __self__ SELECT * FROM <name>'.
-        However, this method is probably used less often than the simpler merge(recarray).
+        Executes as ``'INSERT INTO __self__ SELECT * FROM <name>'``.
+        However, this method is probably used less often than the simpler :meth:`merge`.
 
         :Arguments:
-        name         name of the table in the database (must be compatible with __self__)
+           name         name of the table in the database (must be compatible with __self__)
         
         :Returns:
-        n            number of inserted rows
+           n            number of inserted rows
         """
         l_before = len(self)
         SQL = """INSERT OR ABORT INTO __self__ SELECT * FROM %s""" % name
@@ -302,33 +208,35 @@ class SQLarray(object):
         self.sql(SQL)
 
     def sql_select(self,fields,*args,**kwargs):
-        """Execute a simple SQL SELECT statement and return values as new numpy rec array.
+        """Execute a simple SQL ``SELECT`` statement and returns values as new numpy rec array.
 
-        The arguments <fields> and the additional optional arguments
+        The arguments *fields* and the additional optional arguments
         are simply concatenated with additional SQL statements
-        according to the template
+        according to the template::
 
            SELECT <fields> FROM __self__ [args]
 
-        The simplest fields argument is "*".
+        The simplest fields argument is ``"*"``.
 
-        :Example:
+        Example:
+           Create a recarray in which students with average grade less than
+           3 are listed::
 
-        result = T.SELECT("surname, subject, year, avg(grade) AS avg_grade",
-                          "WHERE avg_grade < 3", "GROUP BY surname,subject",
-                          "ORDER BY avg_grade,surname")
+             result = T.SELECT("surname, subject, year, avg(grade) AS avg_grade",
+                            "WHERE avg_grade < 3", "GROUP BY surname,subject",
+                            "ORDER BY avg_grade,surname")
 
-        The resulting SQL would be
+           The resulting SQL would be::
 
-          SELECT surname, subject, year, avg(grade) AS avg_grade FROM __self__
-               WHERE avg_grade < 3
-            GROUP BY surname,subject
-            ORDER BY avg_grade,surname
+             SELECT surname, subject, year, avg(grade) AS avg_grade FROM __self__
+                  WHERE avg_grade < 3
+                  GROUP BY surname,subject
+                  ORDER BY avg_grade,surname
 
-        Note how one can use aggregate functions such avg().
+           Note how one can use aggregate functions such avg().
 
-        The string '__self__' is automatically replaced with the table
-        name (T.name); this can be used for cartesian products such as
+           The string *'__self__'* is automatically replaced with the table
+           name (``T.name``); this can be used for cartesian products such as ::
 
               LEFT JOIN __self__ WHERE ...
         """
@@ -338,15 +246,26 @@ class SQLarray(object):
     SELECT = sql_select
 
     def sql(self,SQL,asrecarray=True,cache=True):
-        """Execute sql statement (NO SANITY CHECKS). If possible, the
-        returned list of tuples is turned into a numpy record array,
-        otherwise the original list of tuples is returned.
+        """Execute sql statement. 
+
+        .. warning::
+           There are **no sanity checks** applied to the SQL. 
+
+        If  possible, the  returned list  of tuples  is turned  into a
+        numpy record  array, otherwise the original list  of tuples is
+        returned.
+
+        .. warning::
+           Potential BUG: if there are memory issues then it can
+           happen that we just silently fall back to a tuple even
+           though calling code expects a recarray; because we
+           swallowed ANY exception the caller will never know
 
         The last cachesize queries are cached (for cache=True) and are
         returned directly unless the table has been modified.
 
-        Note: __self__ is substituted with the table name. See the doc
-        string of the select() method for more details.
+        .. Note:: '__self__' is substituted with the table name. See the doc
+                  string of the :meth:`SELECT` method for more details.
         """
         SQL = SQL.replace('__self__',self.name)
 
@@ -392,9 +311,14 @@ class SQLarray(object):
     def selection(self,SQL,parameters=None,**kwargs):
         """Return a new SQLarray from a SELECT selection.
 
-        s = selection('a > 3')
-        s = selection('a > ?', (3,))
-        s = selection('SELECT * FROM __self__ WHERE a > ? AND b < ?', (3, 10))
+        This is a very useful method because it allows one to build complicated
+        selections and essentially new tables from existing data.
+
+        Examples::
+
+                s = selection('a > 3')
+                s = selection('a > ?', (3,))
+                s = selection('SELECT * FROM __self__ WHERE a > ? AND b < ?', (3, 10))
         """
         # TODO: under development
         # - could use VIEW
@@ -463,8 +387,7 @@ try:
         pop = collections.deque.popleft
 
     class Ringbuffer(Fifo):
-        """Ring buffer of size capacity; 'pushes' data from left and discards
-        on the right.
+        """Ring buffer of size capacity; 'pushes' data from left and discards on the right.
         """
         #  See http://mail.python.org/pipermail/tutor/2005-March/037149.html.
         def __init__(self,capacity,iterable=None):
@@ -482,8 +405,10 @@ try:
             return "Ringbuffer(capacity="+str(self.capacity)+", "+str(list(self))+")"
 except ImportError:
     class Ringbuffer(list):
-        """Ringbuffer that can be treated as a list. Note that the real queuing
-        order is only obtained with the tolist() method.
+        """Ringbuffer that can be treated as a list. 
+
+        Note that the real queuing order is only obtained with the
+        :meth:`tolist` method.
 
         Based on
         http://www.onlamp.com/pub/a/python/excerpt/pythonckbk_chap1/index1.html

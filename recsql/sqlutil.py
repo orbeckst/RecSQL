@@ -2,28 +2,41 @@
 # Copyright (C) 2009 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License, version 3 or higher (your choice)
 
-"""Helper functions that are used throughout the SQLarray package."""
+"""
+:mod:`sqlutils` -- Helper functions
+===================================
+
+Helper functions that are used throughout the :mod:`recsql` package.
+
+How to use the sql converters and adapters:
+   Declare types as 'NumpyArray'::
+
+      cur.execute("CREATE TABLE test(a NumpyArray)")
+      cur.execute("INSERT INTO test(a) values (?)", (my_array,))
+
+   or as column types::
+
+      cur.execute('SELECT a as "a [NumpyArray]" from test')
+"""
 
 import cPickle
 
 # storing numpy arrays in the db as pickles
 def adapt_numpyarray(a):
+    """adapter: store numpy arrays in the db as ascii pickles"""
     return cPickle.dumps(a,protocol=0)  # must use text protocol for use with sqlite
 
 def convert_numpyarray(s):
+    """converter: retrieve numpy arrays from the db as ascii pickles"""
     return cPickle.loads(s)
 
 def adapt_object(a):
+    """adapter: store python objects in the db as ascii pickles"""
     return cPickle.dumps(a,protocol=0)  # must use text protocol for use with sqlite
 
 def convert_object(s):
+    """convertor: retrieve python objects from the db as ascii pickles"""
     return cPickle.loads(s)
-
-# declare types as 'NumpyArray':
-#   cur.execute("CREATE TABLE test(a NumpyArray)")
-#   cur.execute("INSERT INTO test(a) values (?)", (my_array,))
-# or as column types
-#   cur.execute('SELECT a as "a [NumpyArray]" from test')
 
 
 # Fake* not needed anymore since SQLarray takes an iterable + columns descriptors

@@ -2,24 +2,32 @@
 # Copyright (C) 2009 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License, version 3 or higher (your choice)
 
-"""SQL functions to be added to a SQLite database
+"""
+:mod:`recsql.sqlfunctions` --- Functions that enhance a SQLite db
+=================================================================
+
+This module contains new SQL functions to be added to a SQLite database that
+can be used in the same way as the builtin functions.
 
 Example:
 
-  from sqlfunctions import *
-  self.connection.create_function("sqrt", 1, _sqrt)
-  self.connection.create_function("fformat",2,_fformat)
-  self.connection.create_aggregate("std",1,_Stdev)
-  self.connection.create_aggregate("median",1,_Median)
-  self.connection.create_aggregate("array",1,_NumpyArray)
-  self.connection.create_aggregate("histogram",4,_NumpyHistogram)
-  self.connection.create_aggregate("distribution",4,_NormedNumpyHistogram)
-  self.connection.create_aggregate("meanhistogram",5,_MeanHistogram)
-  self.connection.create_aggregate("stdhistogram",5,_StdHistogram)
-  self.connection.create_aggregate("minhistogram",5,_MinHistogram)
-  self.connection.create_aggregate("maxhistogram",5,_MaxHistogram)
-  self.connection.create_aggregate("medianhistogram",5,_MedianHistogram)
-  self.connection.create_aggregate("zscorehistogram",5,_ZscoreHistogram)
+  Add the functions to an existing connection in the following way (assuming
+  that the db connection is available in ``self.connection``)::
+
+     from sqlfunctions import *
+     self.connection.create_function("sqrt", 1, _sqrt)
+     self.connection.create_function("fformat",2,_fformat)
+     self.connection.create_aggregate("std",1,_Stdev)
+     self.connection.create_aggregate("median",1,_Median)
+     self.connection.create_aggregate("array",1,_NumpyArray)
+     self.connection.create_aggregate("histogram",4,_NumpyHistogram)
+     self.connection.create_aggregate("distribution",4,_NormedNumpyHistogram)
+     self.connection.create_aggregate("meanhistogram",5,_MeanHistogram)
+     self.connection.create_aggregate("stdhistogram",5,_StdHistogram)
+     self.connection.create_aggregate("minhistogram",5,_MinHistogram)
+     self.connection.create_aggregate("maxhistogram",5,_MaxHistogram)
+     self.connection.create_aggregate("medianhistogram",5,_MedianHistogram)
+     self.connection.create_aggregate("zscorehistogram",5,_ZscoreHistogram)
 
 """
 import numpy
@@ -214,14 +222,20 @@ def regularized_function(x,y,func,bins=None,range=None):
     all data points Y' that have been collected in the bin.
 
     :Arguments:
-    x              abscissa values (for binning)
-    y              ordinate values (func is applied)
-    func           a numpy ufunc that takes one argument, func(Y')
-    bins           number or array
-    range          limits (used with number of bins)
+       x  
+          abscissa values (for binning)
+       y
+          ordinate values (func is applied)
+       func
+          a numpy ufunc that takes one argument, func(Y')
+       bins
+          number or array
+       range
+          limits (used with number of bins)
 
     :Returns:
-    F,edges        function and edges (midpoints = 0.5*(edges[:-1]+edges[1:]))
+       F,edges        
+          function and edges (midpoints = 0.5*(edges[:-1]+edges[1:]))
     """
     _x = numpy.asarray(x)
     _y = numpy.asarray(y)

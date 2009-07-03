@@ -1,10 +1,164 @@
 # $Id$
 # Copyright (C) 2009 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License, version 3 or higher (your choice)
-"""RecSQL is a simple module that provides a nump.record array
+"""
+================
+ RecSQL package
+================
+
+RecSQL is a simple module that provides a numpy.record array
 frontend to an underlying SQLite table. 
 
-See the documentation for the SQLArray object.
+The :class:`SQLarray` object populates a SQL table from a numpy record array, a
+iterable that supplies table records, or a string that contains an
+especially simple reStructured text table. The SQL table is held in memory
+and functions are provided to run SQL queries and commands on the
+underlying database. Queries return record arrays if possible (although a
+flag can explicitly change this).
+
+Query results are cached to improve performance. This can be disabled
+(which is recommened for large data sets).
+
+The SQL table is named on initialization. Later one can refer to this table
+by the name or the magic name *__self__* in SQL statements. Additional
+tables can be added to the same database (by using the connection keyword
+of the constructor)
+
+
+Additional SQL functions
+========================
+
+Note that this SQL database has a few additional functions defined in
+addition to the SQL standard. These can be used in ``SELECT`` statements and
+often avoid post-processing of record arrays in python. It is relatively
+straightforward to add new functions (see the source code and in particular
+the ``_init_sql_functions()``; the functions themselves are defined in the
+module :mod:`sqlfunctions`).
+
+
+Simple SQL functions
+--------------------
+
+Simple functions transform a single input value into a single output value:
+
+  y = f(x)               SELECT f(x) AS y 
+
+=====================   =============================================
+Simple SQL f()           description
+=====================   =============================================
+sqrt(x)                  square root math.sqrt(x)
+fformat(format,x)        string formatting of a single value format % x
+=====================   =============================================
+
+
+Aggregate SQL functions
+-----------------------
+
+Aggregate functions combine data from a query; they are typically used with
+a 'GROUP BY col' clause. They can be thought of as numpy ufuncs:
+
+  y = f(x1,x2,...xN)     SELECT f(x) AS y ... GROUP BY x
+
+=====================   =============================================
+Simple aggregate f()     description
+=====================   =============================================
+avg(x)                   mean [sqlite builtin]
+std(x)                   standard deviation (using N-1 variance)
+median(x)                median of the data (see numpy.median)
+min(x)                   minimum [sqlite builtin]
+max(x)                   maximum [sqlite builtin]
+=====================   =============================================
+
+
+PyAggregate SQL functions
+-------------------------
+
+PyAggregate functions act on a list of data points in the same way as
+ordinary aggregate functions but they return python objects such as numpy
+arrays, or tuples of numpy arrays (eg bin edges and histogram). In order to
+make this work, specific types have to be declared when returning the
+results:
+
+For instance, the histogram() function returns a python Object, the tuple
+(histogram, edges)::
+
+   a.sql('SELECT histogram(x) AS "x [Object]" FROM __self__', asrecarray=False)
+
+The return type ('Object') needs to be declared with the ``'AS "x [Object]"'``
+syntax (note the quotes). (See more details in the `sqlite documentation`_
+under `adapters and converters`_.) The following table lists all *PyAggregate*
+functions that have been defined:
+
+.. _sqlite documentation: http://docs.python.org/library/sqlite3.html
+.. _adapters and converters: 
+   http://docs.python.org/library/sqlite3.html#using-adapters-to-store-additional-python-types-in-sqlite-databases
+
+===============  ==============  ==============================================================
+PyAggregate      type            signature; description
+===============  ==============  ==============================================================
+array             NumpyArray     array(x);
+                                 a standard numpy array
+
+histogram         Object         histogram(x,nbins,xmin,xmax); 
+                                 histogram x in nbins evenly spaced bins between xmin and xmax
+
+distribution      Object         distribution(x,nbins,xmin,xmax);
+                                 normalized histogram whose integral gives 1
+
+meanhistogram     Object         meanhistogram(x,y,nbins,xmin,xmax); 
+                                 histogram data points y along x and average all y in each bin
+
+stdhistogram      Object         stdhistogram(x,y,nbins,xmin,xmax); 
+                                 give the standard deviation (from N-1 variance)
+                                 std(y) = sqrt(Var(y)) with Var(y) = <(y-<y>)^2>
+
+medianhistogram   Object         medianhistogram((x,y,nbins,xmin,xmax);
+                                 median(y)
+
+minhistogram      Object         minhistogram((x,y,nbins,xmin,xmax);
+                                 min(y)
+
+maxhistogram      Object         maxhistogram((x,y,nbins,xmin,xmax);
+                                 max(y)
+
+zscorehistogram   Object         zscorehistogram((x,y,nbins,xmin,xmax);
+                                 <abs(y-<y>)>/std(y)
+===============  ==============  ==============================================================
+
+
+
+Examples of using types in tables
+=================================
+
+The following show how to use the special types.
+
+Declare types as 'NumpyArray'::
+
+   a.sql("CREATE TABLE __self__(a NumpyArray)")
+
+Then you can simply insert python objects (type(my_array) == numpy.ndarray)::
+
+   a.sql("INSERT INTO __self__(a) values (?)", (my_array,))
+
+When returning results of declared columns one does not have to do anything ::
+
+   (my_array,) = a.sql("SELECT a FROM __self__")
+
+although one can also do ::
+
+   (my_array,) = q.sql('SELECT a AS "a [NumpyArray]" FROM __self__')
+
+but when using a PyAggregate the type *must* be declared::
+
+   a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
+
+
+Classes
+=======
+
+.. autoclass:: SQLarray
+   :members:
+
 """
 
 __all__ = ['sqlarray']

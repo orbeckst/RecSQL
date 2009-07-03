@@ -31,12 +31,21 @@ Example
   >>> Q.SELECT('*', 'WHERE a < 10 AND b > 5')
   rec.array([(8, 9, 10, 11)], 
       dtype=[('a', '<i4'), ('b', '<i4'), ('c', '<i4'), ('d', '<i4')])
-
   # creating new SQLarrays:  
   >>> R = Q.selection('a < 20 AND b > 5')
   >>> print R
   <recsql.sqlarray.SQLarray object at 0x...>
 
+
+
+Availability
+------------
+
+The latest version of the package is being made available via the
+internet-thingy at
+http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/ or from
+the direct download URI (for ``easy_install``)
+http://sbcb.bioch.ox.ac.uk/oliver/download/Python/ . 
 
 
 Contact
