@@ -6,7 +6,8 @@
 
 .. automodule:: recsql.sqlarray
    :members:
-
+.. automodule:: recsql.rest_table
+   :members:
 
 SQL support
 ===========

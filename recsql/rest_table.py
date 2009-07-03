@@ -102,7 +102,7 @@ class Table2array(object):
             <NAME> of the table.
     .. attribute:: caption
             <CAPTION> of the table.
-    ..attribute:: records
+    .. attribute:: records
             parsed table as records
     """
     def __init__(self, string):
