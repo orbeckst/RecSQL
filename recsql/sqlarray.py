@@ -43,7 +43,7 @@ sqlite.register_converter("Object", convert_object)
 class SQLarray(object):
     """A SQL table that returns (mostly) rec arrays.
 
-    .. method:: SQLarray(name,iterable[,columns[,cachesize=5,connection=None])
+    .. method:: SQLarray(name,iterable[,columns[,cachesize=5,connection=None]])
 
     :Arguments:
        name        

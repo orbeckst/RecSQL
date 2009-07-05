@@ -41,7 +41,13 @@ Simple SQL functions
 
 Simple functions transform a single input value into a single output value:
 
-  y = f(x)               SELECT f(x) AS y 
+=====================   =============================================
+Expression              SQL equivalent
+=====================   =============================================
+  y = f(x)               SELECT f(x) AS y
+=====================   =============================================
+
+Two additional simple functions have been defined:
 
 =====================   =============================================
 Simple SQL f()           description
@@ -57,14 +63,21 @@ Aggregate SQL functions
 Aggregate functions combine data from a query; they are typically used with
 a 'GROUP BY col' clause. They can be thought of as numpy ufuncs:
 
+=====================   =============================================
+Expression              SQL equivalent
+=====================   =============================================
   y = f(x1,x2,...xN)     SELECT f(x) AS y ... GROUP BY x
+=====================   =============================================
+
+For completeness, the tablke also lists sqlite built-in aggregate
+functions:
 
 =====================   =============================================
 Simple aggregate f()     description
 =====================   =============================================
 avg(x)                   mean [sqlite builtin]
 std(x)                   standard deviation (using N-1 variance)
-median(x)                median of the data (see numpy.median)
+median(x)                median of the data (see ``numpy.median``)
 min(x)                   minimum [sqlite builtin]
 max(x)                   maximum [sqlite builtin]
 =====================   =============================================

@@ -4,14 +4,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-======================
- RecSQL documentation
-======================
+=================================================
+ RecSQL -- simple SQL analysis of python records
+=================================================
 
 RecSQL is a hack that allows one to load table-like data records into
 an in-memory sqlite_ database for quick and dirty analysis via
-SQL_. Additional SQL functions such as sqrt or histograms are
-defined. SQL tables can always be returned as numpy record arrays.
+SQL_. The :class:`~recsql.SQLarray` class has additional SQL functions
+such as ``sqrt`` or ``histogram`` defined. SQL tables can always be
+returned as `numpy record arrays`_ so that data can be easily handled in
+other packages such as numpy_ or plotted via matplotlib_. Selections
+produce new :class:`~recsql.SQLarray` objects.
 
 Most of the Documentation_ is generated from the python doc
 strings. Auto-generated `online source code documentation`_ is also
@@ -23,11 +26,19 @@ package :doc:`README` for contact details.
 
 
 .. _Documentation: 
-   http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/html/index.html
+    http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/html/index.html
 .. _online source code documentation:
-   http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/epydoc/index.html
-.. _sqlite: http://www.sqlite.org/
-.. _SQL: http://www.sqlite.org/lang.html
+    http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/epydoc/index.html
+.. _sqlite: 
+    http://www.sqlite.org/
+.. _SQL: 
+    http://www.sqlite.org/lang.html
+.. _numpy: 
+    http://numpy.scipy.org
+.. _numpy record arrays: 
+    http://www.scipy.org/RecordArrays
+.. _matplotlib: 
+    http://matplotlib.sourceforge.net
 
 
 License
