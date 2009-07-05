@@ -22,7 +22,7 @@ make_sphinx   documentation, copy to $DOCS/html
 Options
 
 -h           help
--n           do dot copy
+-n           do not copy
 -s DIR       server dir [${SERVERDIR}]
 "
 
