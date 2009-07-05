@@ -95,7 +95,7 @@ class ParseError(Exception):
     """Signifies a failure to parse."""
 
 class Table2array(object):
-    """Primitive parser that converts a simple reST table into numpy.rearray.
+    """Primitive parser that converts a simple reST table into ``numpy.recarray``.
 
     The table must be the only table in the text. It must look similar to the
     example below (variable parts in angle brackets, optional in double
