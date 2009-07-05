@@ -116,26 +116,24 @@ class Table2array(object):
 
     Field values are converted to one of the following python types: *int*,
     *float*, or *str*.
-
-    .. method:: Table2array(string) --> parser
-    .. attribute:: tablename
-            <NAME> of the table.
-    .. attribute:: caption
-            <CAPTION> of the table.
-    .. attribute:: records
-            parsed table as records
     """
+    
     def __init__(self, string):
+        """Table2array(string) --> parser"""
         self.string = string
-        m = TABLE.search(string)
+        m = TABLE.search(string)  # extract table from string with regular expression
         if m is None:
             raise ParseError('Table cannot be parsed.')
         self.t = m.groupdict()
+        #: <NAME> of the table
         self.tablename = self.t['name']
+        #: <CAPTION> of the table.
         self.caption = self.t['title']
+        #: parsed table as records (populate with :meth:`Table2array.parse`)
+        self.records = None
 
     def parse(self):
-        """Parse the string into records."""
+        """Parse the table data string into records."""
 
         self.parse_fields()
         records = []
@@ -148,18 +146,21 @@ class Table2array(object):
     def recarray(self):
         """Return a recarray from the (parsed) string."""
 
-        if not hasattr(self, 'records'):
+        if self.records is None:
             self.parse()
         return numpy.rec.fromrecords(self.records, names=self.names)
 
     def parse_fields(self):
         """Determine the start and end columns and names of the fields."""
 
-        rule = self.t['toprule']    # hope that they are all the same...
+        rule = self.t['toprule']
+        if not (rule == self.t['midrule'] and rule == self.t['botrule']):
+            raise ParseError("Table rules differ from each other.")
         names = self.t['fields'].split()
         nfields = len(rule.split())
         if nfields != len(names):
-            raise ParseError('number of field names does not match number of fields')
+            raise ParseError("number of field names (%d) does not match number of fields (%d)"
+                             % (nfields, len(names)))
         fields = []     #  list of tuples (first,last) column of the field
         ifield = 0
         is_field = rule.startswith('=')  # state
@@ -168,10 +169,10 @@ class Table2array(object):
         end_field = 0
         for c in xrange(len_rule):
             char = rule[c]
-            if char == '=' and not is_field:
+            if not is_field and char == '=':
                 start_field = c
                 is_field = True
-            if (char == ' ' or c == len_rule-1) and is_field:
+            if is_field and (char == ' ' or c == len_rule-1):
                 # finished field
                 fields.append((start_field, c))
                 ifield += 1
