@@ -6,11 +6,12 @@ SERVERDIR=/sansom/public_html/sbcb/oliver
 PACKAGES=$SERVERDIR/download/Python
 DOCS=$SERVERDIR/software/$PACKAGE
 
-usage="usage: $0 [-h] [cmd1 cmd2 ...]
+usage="usage: $0 [OPTIONS] [cmd1 cmd2 ...]
 
-Distribute $PACKAGE. 
+Build distribution and python packages for $PACKAGE 
+and copy files to the server directory (must be nfs mounted). 
 
-default: 'distribution docs'
+default commands: 'distribution docs'
 
 cmd           description
 -----         -----------------
@@ -18,6 +19,7 @@ distribution  make sdist and egg, copy to $PACKAGES
 docs          'make_epydoc make_sphinx'
 make_epydoc   source code docs, copy to $DOCS/epydoc
 make_sphinx   documentation, copy to $DOCS/html
+
 
 Options
 
