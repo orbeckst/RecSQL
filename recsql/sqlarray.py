@@ -251,15 +251,33 @@ class SQLarray(object):
            name (``T.name``); this can be used for cartesian products such as ::
 
               LEFT JOIN __self__ WHERE ...
+
+        .. Note:: See the documentation for :meth:`~SQLarray.sql` for more details on
+                  the available keyword arguments and the use of ``?`` parameter
+                  interpolation.
         """
         SQL = "SELECT "+str(fields)+" FROM __self__ "+ " ".join(args)
         return self.sql(SQL,**kwargs)
 
     SELECT = sql_select
 
-    def sql(self,SQL,asrecarray=True,cache=True):
+    def sql(self,SQL,parameters=None,asrecarray=True,cache=True):
         """Execute sql statement. 
 
+        :Arguments:
+           SQL : string
+              Full SQL command; can contain the ``?`` place holder so that values
+              supplied with the ``parameters`` keyword can be interpolated using
+              the ``pysqlite`` interface.
+           parameters : tuple
+              Parameters for ``?`` interpolation.
+           asrecarray : boolean
+              ``True``: return a ``numpy.recarray`` if possible;
+              ``False``: return records as a list of tuples. [``True``]
+           cache : boolean
+              Should the results be cached? Set to ``False`` for large queries to
+              avoid memory issues [``True``]
+              
         .. warning::
            There are **no sanity checks** applied to the SQL. 
 
@@ -289,7 +307,12 @@ class SQLarray(object):
             return self.__cache[SQL]
 
         c = self.cursor
-        c.execute(SQL)  # no sanity checks!
+
+        if parameters is None:
+            c.execute(SQL)              # no sanity checks!
+        else:
+            c.execute(SQL, parameters)  # no sanity checks; params should be tuple
+
         if c.rowcount > 0 or SQL.upper().find('DELETE') > -1:
             # table was (potentially) modified
             # rowcount does not change for DELETE, see 
