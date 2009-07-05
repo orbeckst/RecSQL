@@ -100,7 +100,7 @@ class Table2array(object):
     The table must be the only table in the text. It must look similar to the
     example below (variable parts in angle brackets, optional in double
     brackets, everything else must be there, matching is case sensitive, '....'
-    signfies repetition in kind)::
+    signifies repetition in kind)::
 
       Table[<NAME>]: <<CAPTION>>
       ============  ===========  ======================  ....
