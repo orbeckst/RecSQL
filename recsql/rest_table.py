@@ -3,17 +3,32 @@
 :mod:`recsql.rest_table` --- Parse a simple reST table
 ======================================================
 
-Turn a restructured text simple table into a numpy array.
+Turn a `restructured text simple table`_ into a numpy array. See the
+Example_ below for how the table must look like.
+
+.. _restructured text simple table:
+    http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html#simple-tables
 
 Limitations
 -----------
 
-* All data on a single line.
-* Headings must be single words as they are used as column names.
-* The delimiters are used to extract the fields. Only data within the range of 
-  the '=====' markers is used.
-* Markers must be separated by at least two spaces.
-* The keyword 'Table' must precede the first marker line.
+Note that not the full specifications of the original `restructured
+text simple table`_ are supported. In order to keep the parser simple,
+the following additional restriction apply:
+
+* All row data must be on a single line.
+* Column spans are not supported.
+* Neither additional '----' separators nor blank lines are supported.
+* Headings must be single legal SQL and python words as they are used
+  as column names.
+* The delimiters are used to extract the fields. Only data within the
+  range of the '=====' markers is used. Thus, each column marker
+  *must* span the whole range of input. Otherwise, data will be lost.  
+* The keyword 'Table' must precede the first marker line and the table
+  name must be provided in square brackets; the table name should be a
+  valid SQL identifier.
+* Currently, only a *single* table can be present in the string.
+
 
 Example
 -------

@@ -43,18 +43,19 @@ sqlite.register_converter("Object", convert_object)
 class SQLarray(object):
     """A SQL table that returns (mostly) rec arrays.
 
-    .. method:: SQLarray(name,iterable[,columns[,cachesize=5,connection=None]])
+    .. method:: SQLarray([name[,records[,columns[,cachesize=5,connection=None]]]])
 
     :Arguments:
        name        
           table name (can be referred to as '__self__' in SQL queries)
-       iterable    
+       records    
           numpy record array that describes the layout and initializes the
           table OR any iterable (and then columns must be set, too) OR a string
-          that contains a single, *simple reStructured text table*.
-          If None then simply associate with existing table name.
+          that contains a single, *simple reStructured text table* (and the table name is
+          set from the table name in the reST table.)
+          If ``None`` then simply associate with existing table name.
        columns
-          sequence of column names (only used if iterable does not have 
+          sequence of column names (only used if records does not have 
           attribute dtype.names) [``None``]
        cachesize   
           number of (query, result) pairs that are cached [5]
@@ -74,20 +75,24 @@ class SQLarray(object):
 
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
 
-    def __init__(self,name,iterable=None,columns=None,cachesize=5,connection=None,is_tmp=False):
+    def __init__(self,name=None ,records=None, columns=None,
+                 cachesize=5, connection=None, is_tmp=False):
         """Build the SQL table from a numpy record array.
         """
         self.name = str(name)
         if self.name == self.tmp_table_name and not is_tmp:
             raise ValueError('name = %s is reserved, choose another one' % name)
         if connection is None:
-            self.connection = sqlite.connect(':memory:', detect_types=sqlite.PARSE_DECLTYPES | sqlite.PARSE_COLNAMES)
+            self.connection = sqlite.connect(':memory:',
+                                             detect_types=sqlite.PARSE_DECLTYPES | sqlite.PARSE_COLNAMES)
             self._init_sqlite_functions()   # add additional functions to database
         else:
             self.connection = connection    # use existing connection
         self.cursor = self.connection.cursor()
 
-        if iterable is None:
+        if records is None:
+            if name is None:
+                raise ValueError("Provide either an existing table name or a source of records.")
             # associate with existing table
             # SECURITY risk: interpolating name...
             SQL = "SELECT * FROM %(name)s WHERE 0" % vars(self)
@@ -95,23 +100,25 @@ class SQLarray(object):
             try:
                 c.execute(SQL)
             except sqlite.OperationalError,err:
-                if str(err).find('no such table') > -1:
-                    raise ValueError("Provide 'name' of an existing table.")
+                if str(err).find('no such table') > -1 or \
+                       str(err).find('syntax error') > -1:
+                    raise ValueError("Provide existing legal 'name' of an existing table not %r"
+                                     % self.name)
                 else:
                     raise
             self.columns = tuple([x[0] for x in c.description])
             self.ncol = len(self.columns)
         else:
-            if type(iterable) is str:
+            if type(records) is str:
                 # maybe this is a reST table
-                P = Table2array(iterable)
-                iterable = P.recarray()
-                
+                P = Table2array(records)
+                records = P.recarray()
+                self.name = P.tablename    # name provided as 'Table[<tablename>]: ...'
             try:
-                self.columns = iterable.dtype.names
+                self.columns = records.dtype.names
             except AttributeError:
                 if columns is None:
-                    raise TypeError('iterable must be a recarray or columns should be supplied')
+                    raise TypeError('records must be a recarray or columns should be supplied')
                 self.columns = columns  # XXX: no sanity check
             self.ncol = len(self.columns)
 
@@ -129,7 +136,7 @@ class SQLarray(object):
             # The next can fail with 'InterfaceError: Error binding parameter 0 - probably unsupported type.'
             # This means that the numpy array should be set up so that there are no data types
             # such as numpy.int64 which are not compatible with sqlite (no idea why).
-            self.cursor.executemany(SQL,iterable)
+            self.cursor.executemany(SQL,records)
 
         # initialize query cache
         self.__cache = KRingbuffer(cachesize)
@@ -158,7 +165,7 @@ class SQLarray(object):
         """
         len_before = len(self)
         #  CREATE TEMP TABLE in database
-        tmparray = SQLarray(self.tmp_table_name, iterable=recarray, columns=columns,
+        tmparray = SQLarray(self.tmp_table_name, records=recarray, columns=columns,
                             connection=self.connection, is_tmp=True)
         len_tmp = len(tmparray)
         # insert into main table
