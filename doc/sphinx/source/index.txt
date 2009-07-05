@@ -33,7 +33,7 @@ package :doc:`README` for contact details.
 License
 -------
 
-This packaged is Copyright 2009, Oliver Beckstein.
+This package is Copyright 2009, Oliver Beckstein.
 
 The **RecSQL** package is made available under the terms of the
 `GNU Public License v3`_ (or any higher version at your choice). See
