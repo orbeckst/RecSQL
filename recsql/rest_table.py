@@ -63,9 +63,10 @@ Module content
 import re
 import numpy
 
-# search expression
-re_FLAGS = re.VERBOSE | re.DOTALL | re.MULTILINE
-#: find a single table in the string
+# search expressions
+# ------------------
+
+#: Python regular expression that finds a *single* table in a multi-line string.
 TABLE = re.compile("""
                    ^[ \t]*Table(\[(?P<name>\w*)\])?:\s*(?P<title>[^\n]*)[ \t]*$     # 'Table[name]:' is required
                    [\n]+
@@ -78,8 +79,9 @@ TABLE = re.compile("""
                    (?P<data>.*?)                          # all data across multiple lines
                    [\n]+
                    ^(?P<botrule>[ \t]*==+[ \t=]+)[ \t]*$  # bottom rule
-                   """,  re_FLAGS)
-
+                   """,  re.VERBOSE | re.DOTALL | re.MULTILINE)
+#: Python regular expression that detects a empty (non-data) line in a reST table. It acts
+#: on a single input line and not a multi-line string.
 EMPTY_ROW = re.compile("""
                    ^[-\s]*$       # white-space lines or '----' dividers are ignored (or '-- - ---')
                    """, re.VERBOSE)
