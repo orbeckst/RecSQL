@@ -18,7 +18,6 @@ the following additional restriction apply:
 
 * All row data must be on a single line.
 * Column spans are not supported.
-* Neither additional '----' separators nor blank lines are supported.
 * Headings must be single legal SQL and python words as they are used
   as column names.
 * The delimiters are used to extract the fields. Only data within the
@@ -80,6 +79,10 @@ TABLE = re.compile("""
                    ^(?P<botrule>[ \t]*==+[ \t=]+)[ \t]*$     # bottom rule
                    """,  re_FLAGS)
 
+EMPTY_ROW = re.compile("""
+                   ^[-\s]*$       # white-space lines or '----' dividers are ignored (or '-- - ---')
+                   """, re.VERBOSE)
+
 # HEADER = re.compile("""
 #                    ^[ \t]*Table(\[(?P<name>\w*)\])?:\s*(?P<title>[^\n]*)[ \t]*$     # title line required
 #                    [\n]+
@@ -138,6 +141,8 @@ class Table2array(object):
         self.parse_fields()
         records = []
         for line in self.t['data'].split('\n'):
+            if EMPTY_ROW.match(line):
+                continue
             row = [besttype(line[start_field:end_field+1])
                    for start_field, end_field in self.fields]
             records.append(tuple(row))
