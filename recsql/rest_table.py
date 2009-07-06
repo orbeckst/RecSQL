@@ -3,11 +3,16 @@
 :mod:`recsql.rest_table` --- Parse a simple reST table
 ======================================================
 
-Turn a `restructured text simple table`_ into a numpy array. See the
-Example_ below for how the table must look like.
+Turn a `restructured text simple table`_ into a numpy array. See the Example_
+below for how the table must look like. The module allows inclusion of
+parameters and data in the documentation itself in a natural way. Thus the
+parameters are automatically documented and only exist in a single place. The
+idea is inspired by `literate programming`_.
 
 .. _restructured text simple table:
     http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html#simple-tables
+.. _literate programming:
+    http://en.wikipedia.org/wiki/Literate_programming
 
 Limitations
 -----------
