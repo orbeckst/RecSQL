@@ -65,33 +65,24 @@ import numpy
 
 # search expression
 re_FLAGS = re.VERBOSE | re.DOTALL | re.MULTILINE
+#: find a single table in the string
 TABLE = re.compile("""
-                   ^[ \t]*Table(\[(?P<name>\w*)\])?:\s*(?P<title>[^\n]*)[ \t]*$     # title line required
+                   ^[ \t]*Table(\[(?P<name>\w*)\])?:\s*(?P<title>[^\n]*)[ \t]*$     # 'Table[name]:' is required
                    [\n]+
-                   ^(?P<toprule>[ \t]*==+[ \t=]+)[ \t]*$     # top rule
+                   ^(?P<toprule>[ \t]*==+[ \t=]+)[ \t]*$  # top rule
                    [\n]+
                    ^(?P<fields>[\w\t ]+?)$                # field names (columns), must only contain A-z0-9_
                    [\n]+
-                   ^(?P<midrule>[ \t]*==+[ \t=]+)[ \t]*$     # mid rule
+                   ^(?P<midrule>[ \t]*==+[ \t=]+)[ \t]*$  # mid rule
                    [\n]+
-                   (?P<data>.*?)                    # all data across multiple lines
+                   (?P<data>.*?)                          # all data across multiple lines
                    [\n]+
-                   ^(?P<botrule>[ \t]*==+[ \t=]+)[ \t]*$     # bottom rule
+                   ^(?P<botrule>[ \t]*==+[ \t=]+)[ \t]*$  # bottom rule
                    """,  re_FLAGS)
 
 EMPTY_ROW = re.compile("""
                    ^[-\s]*$       # white-space lines or '----' dividers are ignored (or '-- - ---')
                    """, re.VERBOSE)
-
-# HEADER = re.compile("""
-#                    ^[ \t]*Table(\[(?P<name>\w*)\])?:\s*(?P<title>[^\n]*)[ \t]*$     # title line required
-#                    [\n]+
-#                    ^(?P<rest>[^\n]+)$
-#                     """, re_FLAGS)
-
-# RULE = re.compile("""
-#                    ^(?P<botrule>[ \t]*==+[ \t=]+)[ \t]*$     # bottom rule
-#                    """,  re_FLAGS)
 
 
 class ParseError(Exception):
