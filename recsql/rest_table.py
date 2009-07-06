@@ -7,12 +7,15 @@ Turn a `restructured text simple table`_ into a numpy array. See the Example_
 below for how the table must look like. The module allows inclusion of
 parameters and data in the documentation itself in a natural way. Thus the
 parameters are automatically documented and only exist in a single place. The
-idea is inspired by `literate programming`_.
+idea is inspired by `literate programming`_ and is embodied by the DRY_ ("Don't
+repeat yourself") principle.
 
 .. _restructured text simple table:
     http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html#simple-tables
 .. _literate programming:
     http://en.wikipedia.org/wiki/Literate_programming
+.. _DRY:
+    http://c2.com/cgi/wiki?DontRepeatYourself
 
 Limitations
 -----------
