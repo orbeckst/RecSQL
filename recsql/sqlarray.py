@@ -276,7 +276,8 @@ class SQLarray(object):
               ``False``: return records as a list of tuples. [``True``]
            cache : boolean
               Should the results be cached? Set to ``False`` for large queries to
-              avoid memory issues [``True``]
+              avoid memory issues. Queries with ``?`` place holders are never cached.
+              [``True``]
               
         .. warning::
            There are **no sanity checks** applied to the SQL. 
@@ -299,11 +300,14 @@ class SQLarray(object):
         """
         SQL = SQL.replace('__self__',self.name)
 
-        # cache the last N (query,result) tuples using a 'FIFO-dict'
+        # Cache the last N (query,result) tuples using a 'FIFO-dict'
         # of length N, where key = SQL; if we can use the cache
         # (cache=True) and if query in dict (AND cache
         # valid, ie it hasn't been emptied (??)) just return cache result.
-        if cache and SQL in self.__cache:
+        #
+        # Never use the cache if place holders are used because then we 
+        # would return the same result for differing input!
+        if not '?' in SQL and cache and SQL in self.__cache:
             return self.__cache[SQL]
 
         c = self.cursor
