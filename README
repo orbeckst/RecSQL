@@ -47,6 +47,8 @@ http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/ or from
 the direct download URI (for ``easy_install``)
 http://sbcb.bioch.ox.ac.uk/oliver/download/Python/ . 
 
+See :doc:`INSTALL` for installation instructions.
+
 
 Contact
 -------
