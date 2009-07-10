@@ -205,6 +205,6 @@ def besttype(x):
                 pass
     else:
         # quoted string
-        x = m.groupdict('value')
+        x = str(m.groupdict('value'))
     return x
     
