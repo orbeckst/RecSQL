@@ -117,7 +117,9 @@ class SQLarray(object):
             if type(records) is str:
                 # maybe this is a reST table
                 P = Table2array(records)
-                records = P.recarray()
+                P.parse()
+                records = P.records        # get the records and colnames instead of the numpy.recarray 
+                columns = P.names          # ... in order to avoid the dreaded 'InterfaceError'
                 self.name = P.tablename    # name provided as 'Table[<tablename>]: ...'
             try:
                 self.columns = records.dtype.names
