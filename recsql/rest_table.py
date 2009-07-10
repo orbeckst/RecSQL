@@ -49,7 +49,7 @@ The following table is converted::
   A. Einstein    42          1921
   P. Dirac       31          1933
   R. P. Feynman  47          1965
-  =============  ==========  =========  
+  =============  ==========  =========
 
 with
 
@@ -159,8 +159,8 @@ class Table2array(object):
     def parse_fields(self):
         """Determine the start and end columns and names of the fields."""
 
-        rule = self.t['toprule']
-        if not (rule == self.t['midrule'] and rule == self.t['botrule']):
+        rule = self.t['toprule'].rstrip()  # keep leading space for correct columns!!
+        if not (rule == self.t['midrule'].rstrip() and rule == self.t['botrule'].rstrip()):
             raise ParseError("Table rules differ from each other (check white space).")
         names = self.t['fields'].split()
         nfields = len(rule.split())
