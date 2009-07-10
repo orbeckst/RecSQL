@@ -7,7 +7,7 @@ Turn a `restructured text simple table`_ into a numpy array. See the Example_
 below for how the table must look like. The module allows inclusion of
 parameters and data in the documentation itself in a natural way. Thus the
 parameters are automatically documented and only exist in a single place. The
-idea is inspired by `literate programming`_ and is embodied by the DRY_ ("Don't
+idea is inspired by `literate programming`_ and is embodied by the DRY_ ("Do not
 repeat yourself") principle.
 
 .. _restructured text simple table:
@@ -161,7 +161,7 @@ class Table2array(object):
 
         rule = self.t['toprule']
         if not (rule == self.t['midrule'] and rule == self.t['botrule']):
-            raise ParseError("Table rules differ from each other.")
+            raise ParseError("Table rules differ from each other (check white space).")
         names = self.t['fields'].split()
         nfields = len(rule.split())
         if nfields != len(names):
@@ -187,15 +187,24 @@ class Table2array(object):
         self.fields = fields
 
 def besttype(x):
-    """Convert string x to the most useful type, i.e. int, float or str."""
+    """Convert string x to the most useful type, i.e. int, float or   str.
+
+    If x is a quoted string (single or double quotes) then the quotes
+    are stripped and the enclosed string returned.
+    """
     try:
         x = x.strip()
     except AttributeError:
         pass
-    for converter in int, float, str:   # try them in increasing order of lenience
-        try:
-            return converter(x)
-        except ValueError:
-            pass
+    m = re.match(r"""['"](?P<value>.*)['"]$""", str(x))
+    if m is None:
+        for converter in int, float, str:   # try them in increasing order of lenience
+            try:
+                return converter(x)
+            except ValueError:
+                pass
+    else:
+        # quoted string
+        x = m.groupdict('value')
     return x
     
