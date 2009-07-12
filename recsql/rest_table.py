@@ -120,6 +120,12 @@ class Table2array(object):
 
     Field values are converted to one of the following python types: *int*,
     *float*, or *str*.
+
+    If a value is quote with single or double quotation marks then the
+    outermost quotation marks are stripped and the enclosed value treated as a string.
+
+    .. Note:: Values such as 001 must be quoted as '001' or they will be
+              interpreted as integers (1 in this case).
     """
     
     def __init__(self, string):
@@ -196,8 +202,9 @@ def besttype(x):
         x = x.strip()
     except AttributeError:
         pass
-    m = re.match(r"""['"](?P<value>.*)['"]$""", str(x))
+    m = re.match(r"""['"](?P<value>.*)["']$""", str(x))
     if m is None:
+        # not a quoted string, try different types
         for converter in int, float, str:   # try them in increasing order of lenience
             try:
                 return converter(x)
@@ -205,6 +212,6 @@ def besttype(x):
                 pass
     else:
         # quoted string
-        x = str(m.groupdict('value'))
+        x = str(m.group('value'))
     return x
     
