@@ -69,8 +69,16 @@ The only class that the user really needs to know anything about is
 
 .. autoclass:: Table2array
    :members: __init__, recarray
+
 .. autoclass:: Autoconverter
-   :members: __init__, active, convert
+   :members: __init__
+.. function:: Autoconverter.convert(x)
+ 
+              Convert *x* (if in the active state)
+.. attribute:: Autoconverter.active
+
+               If set  to ``True`` then conversion takes place; ``False`` just returns the input values.
+
 .. autofunction:: besttype
 
 .. autoexception:: ParseError
@@ -139,7 +147,7 @@ class Table2array(object):
               interpreted as integers (1 in this case).
     """
     
-    def __init__(self, string, autoconvert=False):
+    def __init__(self, string, autoconvert=False, automapping=None):
         """Table2array(string) --> parser
 
         :Arguments:
@@ -162,7 +170,7 @@ class Table2array(object):
         #: parsed table as records (populate with :meth:`Table2array.parse`)
         self.records = None
 
-        self.autoconvert = Autoconverter(active=autoconvert).convert
+        self.autoconvert = Autoconverter(active=autoconvert,mapping=automapping).convert
 
     def parse(self):
         """Parse the table data string into records."""
@@ -218,15 +226,10 @@ class Autoconverter(object):
     """Automatically convert an input value to a special python object.
 
     The :meth:`Autoconverter.convert` method turns the value into a special
-    python value, for instance 
+    python value, for instance::
         '---'   --->  ``None``
         'x'     --->  ``True``
 
-    .. function:: Autoconverter.convert(x)
-                  Convert *x* (if in the active state)
-    .. attribute:: active
-                  If set  to ``True`` then conversion takes place;
-                  ``False`` just returns the input values.
     """
 
     def __init__(self, mapping=None, active=True):
