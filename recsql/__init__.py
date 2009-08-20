@@ -24,6 +24,11 @@ by the name or the magic name *__self__* in SQL statements. Additional
 tables can be added to the same database (by using the connection keyword
 of the constructor)
 
+The :mod:`recsql.rest_table` module uses the base functionality to
+parse a restructured text table from a string (such as a doc string)
+and returns a nicely structured table. This allows for use of
+parameters that are documented in the doc strings.
+
 
 Additional SQL functions
 ========================
