@@ -8,8 +8,16 @@ from ez_setup import use_setuptools
 use_setuptools()
 from setuptools import setup, find_packages
 
+import sys
+
+requirements = ['numpy>=1.0',]
+
+major, minor, patch = sys.version_info[:3]
+if major <= 2 and minor <= 5:
+    requirements.append("pysqlite")
+
 setup(name="RecSQL",
-      version="0.6",
+      version="0.6.1",
       description="Treat SQLlite tables as recarrays",
       long_description="""\
 A simple implementation of numpy.recarray-like tables that can
@@ -22,9 +30,7 @@ that are built from a numpy.recarray or a general iterator.
       url="http://sbcb.bioch.ox.ac.uk/oliver/download/Python/RecSQL",
       keywords="utilities numpy SQLite SQL",
       packages=find_packages(exclude=['tests','extras','doc/examples']),
-      install_requires=['numpy>=1.0',
-                        'pysqlite',
-                        ],
+      install_requires=requirements,
 )
 
       
