@@ -35,6 +35,7 @@ the following additional restriction apply:
   name must be provided in square brackets; the table name should be a
   valid SQL identifier.
 * Currently, only a *single* table can be present in the string.
+* Autoconversion of list fields might not always work...
 
 
 Example
@@ -77,7 +78,8 @@ The only class that the user really needs to know anything about is
               Convert *x* (if in the active state)
 .. attribute:: Autoconverter.active
 
-               If set  to ``True`` then conversion takes place; ``False`` just returns the input values.
+               If set  to ``True`` then conversion takes place; ``False`` 
+               just returns :func:`besttype` applid to the value.
 
 .. autofunction:: besttype
 
@@ -147,7 +149,7 @@ class Table2array(object):
               interpreted as integers (1 in this case).
     """
     
-    def __init__(self, string, autoconvert=False, automapping=None):
+    def __init__(self, string, autoconvert=False, automapping=None, sep=None):
         """Table2array(string) --> parser
 
         :Arguments:
@@ -155,8 +157,13 @@ class Table2array(object):
               string to be parsed
            *autoconvert*
               EXPERIMENTAL. ``True``: replace certain values
-              with special python values. ``False``: leave everything
-              as it is (numbers as numbers and strings as strings).
+              with special python values (see :class:`Autoconvert`) and possibly 
+              split values into lists (see *sep*).
+              ``False``: leave everything as it is (numbers as numbers and strings 
+              as strings).
+           *sep*
+              If set and *autoconvert* = ``True`` then split field values on the
+              separator (using :func:`split`) before possible autoconversion.
         """
         self.string = string
         m = TABLE.search(string)  # extract table from string with regular expression
@@ -170,7 +177,7 @@ class Table2array(object):
         #: parsed table as records (populate with :meth:`Table2array.parse`)
         self.records = None
 
-        self.autoconvert = Autoconverter(active=autoconvert,mapping=automapping).convert
+        self.autoconvert = Autoconverter(active=autoconvert, mapping=automapping, sep=sep).convert
 
     def parse(self):
         """Parse the table data string into records."""
@@ -180,7 +187,7 @@ class Table2array(object):
         for line in self.t['data'].split('\n'):
             if EMPTY_ROW.match(line):
                 continue
-            row = [self.autoconvert(besttype(line[start_field:end_field+1]))
+            row = [self.autoconvert(line[start_field:end_field+1])
                    for start_field, end_field in self.fields]
             records.append(tuple(row))
         self.records = records
@@ -190,7 +197,27 @@ class Table2array(object):
 
         if self.records is None:
             self.parse()
-        return numpy.rec.fromrecords(self.records, names=self.names)
+        try:
+            # simple
+            return numpy.rec.fromrecords(self.records, names=self.names)
+        except ValueError:
+            # complicated because fromrecords cannot deal with records of lists
+            # Quick hack: use objects for lists etc (instead of building the proper
+            # data types (see docs for numpy.dtype , eg dtype('coord', (float, 3)) )
+
+            D = numpy.empty(len(self.records[0]), dtype=object)    # number of fileds from first record
+            types = numpy.array([map(type, r) for r in self.records])  # types of all fields
+            for icol, isSame in enumerate([numpy.all(col) for col in types.T]):
+                if isSame:
+                    D[icol] = types[0][icol]
+                else:
+                    D[icol] = object
+            dtype = numpy.dtype(zip(self.names, D))
+            # from numpy.rec.records (for debugging...)
+            retval = numpy.array(self.records, dtype=dtype)
+            res = retval.view(numpy.recarray)
+            ## res.dtype = numpy.dtype((numpy.rec.record, res.dtype))  # fails -- but we don't need it
+            return res
 
     def parse_fields(self):
         """Determine the start and end columns and names of the fields."""
@@ -226,28 +253,62 @@ class Autoconverter(object):
     """Automatically convert an input value to a special python object.
 
     The :meth:`Autoconverter.convert` method turns the value into a special
-    python value, for instance::
-        '---'   --->  ``None``
-        'x'     --->  ``True``
+    python value and casts strings to the "best" type (see :func:`besttype`). 
 
+    The defaults for the conversion of a input field value to a
+    special python value are:
+
+      ===========  ===============
+      value        python
+      ===========  ===============
+        '---'       ``None``
+        'none'
+        'None'
+        ''
+
+        'True'      ``True``
+        'x'
+        'X'
+        'yes'
+
+        'False'     ``False``
+        '-'
+        'no'
+      ===========  ===============
+
+    If the *sep* keyword is set to a string instead of ``False`` then
+    values are split into tuples. Probably the most convenient way to
+    use this is to set *sep* = ``True`` (or ``None``) because this
+    splits on all white space whereas *sep* = ' ' would split multiple
+    spaces.
+
+    **Example**
+       - With *sep* = ``True``: 'foo bar 22  boing ---' --> ('foo', 'boing', 22, None)
+       - With *sep* = ',':       1,2,3,4 --> (1,2,3,4) 
+   
     """
 
-    def __init__(self, mapping=None, active=True):
+    def __init__(self, mapping=None, active=True, sep=False):
         """Initialize the converter.
 
         :Arguments:
         - *mapping*: any dict-like mapping that supports lookup. If
-          None then the hard-coded defaults (See source) are used.
+          ``None`` then the hard-coded defaults are used.
         - *active* = True. initial state of the
           :attr:`Autoconverter.active` toggle.
+        - *sep*: character to split on (produces lists);
+                 use ``True`` or ``None`` (!) to split on all white space.
         """
         if mapping is None:
-            mapping = {'---': None, 'none':None, '':None,
+            mapping = {'---': None, 'None':None, 'none':None, '':None,
                        'True':True, 'x': True, 'X':True, 'yes':True,
                        'False':False, 'no': False, '-':False}
         self.mapping = mapping
         self.__active = None
         self.active = active
+        if sep is True:
+            sep = None   # split on *all* white space, sep=' ' splits spaces!
+        self.sep = sep
 
     def active():
         doc = """Toggle the state of the Autoconverter."""
@@ -256,17 +317,30 @@ class Autoconverter(object):
         def fset(self, x):
             self.__active = x
             if self.__active:
-                self.convert = self._convert
+                self.convert = self._convert   # py types + bools + lists 
             else:
-                self.convert = lambda x: x        
+                self.convert = besttype        # always convert to int/float/str
         return locals()
     active = property(**active())
 
-    def _convert(self, x):
+    def _convert(self, field):
+        """Convert to a list (sep != None) and convert list elements."""
+        if self.sep is False:
+            return self._convert_singlet(field)
+        else:
+             x = tuple([self._convert_singlet(s) for s in field.split(self.sep)])
+             if len(x) == 0:
+                 x = ''
+             elif len(x) == 1:
+                 x = x[0]
+             return x
+
+    def _convert_singlet(self, s):
+        x = besttype(s)
         try:
-            return self.mapping[x]
+             return self.mapping[x]
         except KeyError:
-            return x
+             return x
 
 def besttype(x):
     """Convert string x to the most useful type, i.e. int, float or   str.

@@ -1,6 +1,5 @@
-# $Id: setup.py 3489 2009-05-26 21:55:54Z root $
 # setuptools installation of RecSQL
-# Copyright (c) 2007-2009 Oliver Beckstein <orbeckst@gmail.com>
+# Copyright (c) 2007-2010 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License 3 (or higher, your choice)
 
 
@@ -17,7 +16,7 @@ if major <= 2 and minor <= 5:
     requirements.append("pysqlite")
 
 setup(name="RecSQL",
-      version="0.6.1",
+      version="0.7",
       description="Treat SQLlite tables as recarrays",
       long_description="""\
 A simple implementation of numpy.recarray-like tables that can
