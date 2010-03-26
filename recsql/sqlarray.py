@@ -81,7 +81,7 @@ class SQLarray(object):
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
 
     def __init__(self,name=None ,records=None, columns=None,
-                 cachesize=5, connection=None, is_tmp=False):
+                 cachesize=5, connection=None, is_tmp=False, **kwargs):
         """Build the SQL table from a numpy record array.
         """
         self.name = str(name)
@@ -116,7 +116,7 @@ class SQLarray(object):
         else:
             if type(records) is str:
                 # maybe this is a reST table
-                P = Table2array(records)
+                P = Table2array(records, **kwargs)
                 P.parse()
                 records = P.records        # get the records and colnames instead of the numpy.recarray 
                 columns = P.names          # ... in order to avoid the dreaded 'InterfaceError'

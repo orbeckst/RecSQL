@@ -16,7 +16,7 @@ if major <= 2 and minor <= 5:
     requirements.append("pysqlite")
 
 setup(name="RecSQL",
-      version="0.7",
+      version="0.7.1",
       description="Treat SQLlite tables as recarrays",
       long_description="""\
 A simple implementation of numpy.recarray-like tables that can

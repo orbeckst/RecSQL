@@ -149,7 +149,7 @@ class Table2array(object):
               interpreted as integers (1 in this case).
     """
     
-    def __init__(self, string, autoconvert=False, automapping=None, sep=None):
+    def __init__(self, string, autoconvert=False, automapping=None, sep=False):
         """Table2array(string) --> parser
 
         :Arguments:
@@ -164,6 +164,7 @@ class Table2array(object):
            *sep*
               If set and *autoconvert* = ``True`` then split field values on the
               separator (using :func:`split`) before possible autoconversion.
+              (NOT WORKING PROPERLY YET)
         """
         self.string = string
         m = TABLE.search(string)  # extract table from string with regular expression
@@ -216,7 +217,7 @@ class Table2array(object):
             # from numpy.rec.records (for debugging...)
             retval = numpy.array(self.records, dtype=dtype)
             res = retval.view(numpy.recarray)
-            ## res.dtype = numpy.dtype((numpy.rec.record, res.dtype))  # fails -- but we don't need it
+            ## res.dtype = numpy.dtype((numpy.rec.record, res.dtype))  # fails -- ARGH, this makes it a recarray
             return res
 
     def parse_fields(self):
