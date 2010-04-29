@@ -16,7 +16,7 @@ if major <= 2 and minor <= 5:
     requirements.append("pysqlite")
 
 setup(name="RecSQL",
-      version="0.7.1",
+      version="0.7.2",
       description="Treat SQLlite tables as recarrays",
       long_description="""\
 A simple implementation of numpy.recarray-like tables that can
@@ -30,6 +30,7 @@ that are built from a numpy.recarray or a general iterator.
       keywords="utilities numpy SQLite SQL",
       packages=find_packages(exclude=['tests','extras','doc/examples']),
       install_requires=requirements,
+      zip_safe = True,
 )
 
       

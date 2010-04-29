@@ -59,6 +59,8 @@ class SQLarray(object):
           that contains a single, *simple reStructured text table* (and the table name is
           set from the table name in the reST table.)
           If ``None`` then simply associate with existing table name.
+       filename
+          Alternatively to *records*, read a reStructured table from *filename*.
        columns
           sequence of column names (only used if records does not have 
           attribute dtype.names) [``None``]
@@ -80,7 +82,7 @@ class SQLarray(object):
 
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
 
-    def __init__(self,name=None ,records=None, columns=None,
+    def __init__(self,name=None ,records=None, filename=None, columns=None,
                  cachesize=5, connection=None, is_tmp=False, **kwargs):
         """Build the SQL table from a numpy record array.
         """
@@ -95,7 +97,7 @@ class SQLarray(object):
             self.connection = connection    # use existing connection
         self.cursor = self.connection.cursor()
 
-        if records is None:
+        if records is None and filename is None:
             if name is None:
                 raise ValueError("Provide either an existing table name or a source of records.")
             # associate with existing table
@@ -113,7 +115,10 @@ class SQLarray(object):
                     raise
             self.columns = tuple([x[0] for x in c.description])
             self.ncol = len(self.columns)
-        else:
+        else:   # got records
+            if records is None and not filename is None:
+                records = ''.join(open(filename,'r').readlines())  # read file into records
+                
             if type(records) is str:
                 # maybe this is a reST table
                 P = Table2array(records, **kwargs)
@@ -520,4 +525,3 @@ class KRingbuffer(dict):
     def update(self,*args,**kwargs):
         raise NotImplementedError('Only append() is supported.')
         
-
