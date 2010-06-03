@@ -11,6 +11,12 @@ Uses :mod:`csv` (requires python 2.6 or better).
 .. autofunction:: make_python_name
 """
 
+# notes on csv (from http://farmdev.com/talks/unicode/)
+# encode temp. to utf-8 
+#   s_bytes = s_uni.encode('utf-8')
+#   do stuff 
+#   s_bytes.decode('utf-8')
+
 try:
     # needs python >= 2.6
     import csv
@@ -23,7 +29,41 @@ import re
 
 from convert import Autoconverter
 
-def make_python_name(s, default=None, number_prefix='N'):
+# from the csv examples: http://docs.python.org/library/csv.html#csv-examples
+import codecs
+
+class UTF8Recoder(object):
+    """
+    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    """
+    def __init__(self, f, encoding):
+        self.reader = codecs.getreader(encoding)(f)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self.reader.next().encode("utf-8")
+
+class UnicodeReader(object):
+    """
+    A CSV reader which will iterate over lines in the CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        f = UTF8Recoder(f, encoding)
+        self.reader = csv.reader(f, dialect=dialect, **kwds)
+
+    def next(self):
+        row = self.reader.next()
+        return [unicode(s, "utf-8") for s in row]
+
+    def __iter__(self):
+        return self
+
+
+def make_python_name(s, default=None, number_prefix='N',encoding="utf-8"):
     """Returns a unicode string that can be used as a legal python identifier.
 
     :Arguments:
@@ -40,14 +80,14 @@ def make_python_name(s, default=None, number_prefix='N'):
     s = re.sub("[^a-zA-Z0-9_]", "_", s)
     if not re.match('\d', s) is None:
         s = number_prefix+s
-    return unicode(s)
+    return unicode(s, encoding)
     
 class Table2array(object):
-    def __init__(self, filename, name="CSV", **kwargs):
+    def __init__(self, filename, name="CSV", encoding="utf-8", **kwargs):
         """
         :Arguments:
            *filename*
-              CSV file
+              CSV file (UTF-8 encoding)
            *name*
               name of the table
            *autoconvert*
@@ -61,10 +101,11 @@ class Table2array(object):
         """
         self.name = name
         self.autoconvert = Autoconverter(**kwargs).convert
-        csvtab = csv.reader(open(filename, "rb"))
-        self.names = [make_python_name(s,default=n) for n,s in enumerate(csvtab.next())]
+        csvtab = UnicodeReader(open(filename, "rb"), encoding=encoding)
+        self.names = [make_python_name(s,default=n,encoding=encoding) for n,s in enumerate(csvtab.next())]
         # read the rest after the column headers
-        self.records = [tuple(map(self.autoconvert, line)) for line in csvtab if len(line) > 0]
+        self.records = [tuple(map(self.autoconvert, line)) for line in csvtab \
+                            if len(line) > 0 and not numpy.all(numpy.array(line) == '')]
 
     def recarray(self):
         """Returns data as :class:`numpy.recarray`."""

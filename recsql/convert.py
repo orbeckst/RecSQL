@@ -13,9 +13,19 @@
                just returns :func:`besttype` applid to the value.
 
 .. autofunction:: besttype
-
+.. autofunction:: to_unicode
 """
+
 import re
+
+def to_unicode(obj, encoding='utf-8'):
+    """Convert obj to unicode (if it can be be converted)
+
+    from http://farmdev.com/talks/unicode/"""
+    if isinstance(obj, basestring):
+        if not isinstance(obj, unicode):
+            obj = unicode(obj, encoding)
+    return obj
 
 class Autoconverter(object):
     """Automatically convert an input value to a special python object.
@@ -63,26 +73,29 @@ class Autoconverter(object):
           *mode*
              defines what the converter does
 
-             "simple"
-                 convert entries with :func:`besttype`
-             "singlet"
-                 convert entries with :func:`besttype` and apply
-                 mappings
-             "fancy"
-                 first splits fields into lists, tries mappings,
-                 and does the stuff that "singlet does [TODO]
-             "unicode"
-                 convert all entries with :func:`unicode`             
+                "simple"
+                    convert entries with :func:`besttype`
+                "singlet"
+                    convert entries with :func:`besttype` and apply
+                    mappings
+                "fancy"
+                    first splits fields into lists, tries mappings,
+                    and does the stuff that "singlet" does
+                "unicode"
+                    convert all entries with :func:`to_unicode`             
 
-         *mapping*
+          *mapping*
               any dict-like mapping that supports lookup. If``None`` then the
-              hard-coded defaults are used.
-         *active* or *autoconvert*
+              hard-coded defaults are used
+          *active* or *autoconvert*
               initial state of the :attr:`Autoconverter.active` toggle.
-             ``False`` deactivates any conversion. [``True``]
-          *sep*
+              ``False`` deactivates any conversion. [``True``]
+           *sep*
               character to split on (produces lists); use ``True`` or ``None``
               (!) to split on all white space.
+           *encoding*
+              encoding of the input data [utf-8]
+
         """
         self._convertors = {'unicode': unicode,
                             'simple': besttype,
@@ -95,6 +108,7 @@ class Autoconverter(object):
                        'True':True, 'x': True, 'X':True, 'yes':True,
                        'False':False, 'no': False, '-':False}
         self.mapping = mapping
+        self.encoding = kwargs.pop('encoding', "utf-8")
         self.mode = mode
         self.__active = None
         self.active = kwargs.pop('autoconvert', active)   # 'autoconvert' is a "strong" alias or 'active'
@@ -116,7 +130,7 @@ class Autoconverter(object):
     active = property(**active())
 
     def _convert_singlet(self, s):
-        x = besttype(s)
+        x = besttype(s, self.encoding)
         try:
              return self.mapping[x]
         except KeyError:
@@ -134,29 +148,33 @@ class Autoconverter(object):
                  x = x[0]
              return x
 
-def besttype(x):
-    """Convert string x to the most useful type, i.e. int, float or   str.
+def besttype(x, encoding="utf-8"):
+    """Convert string x to the most useful type, i.e. int, float or unicode string.
 
     If x is a quoted string (single or double quotes) then the quotes
     are stripped and the enclosed string returned.
 
     .. Note:: Strings will be returned as Unicode strings (using
-              :func:`unicode`).
+              :func:`unicode`), based on the *encoding* argument, which is
+              utf-8 by default.
     """
+    def unicodify(x):
+        return to_unicode(x, encoding)
+    x = unicodify(x)  # make unicode as soon as possible
     try:
         x = x.strip()
     except AttributeError:
         pass
-    m = re.match(r"""['"](?P<value>.*)["']$""", str(x))
+    m = re.match(r"""['"](?P<value>.*)["']$""", x)
     if m is None:
         # not a quoted string, try different types
-        for converter in int, float, unicode:   # try them in increasing order of lenience
+        for converter in int, float, unicodify:   # try them in increasing order of lenience
             try:
                 return converter(x)
             except ValueError:
                 pass
     else:
         # quoted string
-        x = unicode(m.group('value'))
+        x = unicodify(m.group('value'))
     return x
     

@@ -8,6 +8,7 @@
    :members:
 .. automodule:: recsql.rest_table
 .. automodule:: recsql.csv_table
+.. automodule:: recsql.convert
 
 SQL support
 ===========
