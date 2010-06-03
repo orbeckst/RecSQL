@@ -541,7 +541,7 @@ def SQLarray_fromfile(filename, **kwargs):
       rst, txt
           restructure text (see :mod:`recsql.rest_table`
       csv
-          comma-separated (see :mod:`recsql.csv_table`
+          comma-separated (see :mod:`recsql.csv_table`)
 
     :Arguments:
       *filename*

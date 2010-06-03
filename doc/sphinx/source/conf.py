@@ -22,7 +22,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -38,7 +38,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'RecSQL'
-copyright = u'2009-2010, Oliver Beckstein'
+copyright = u'2007-2010, Oliver Beckstein'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -194,3 +194,13 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+
+# Options for ext.intersphinx
+# ---------------------------
+# intersphinx: reference standard lib and RecSQL
+# http://sphinx.pocoo.org/latest/ext/intersphinx.html
+intersphinx_mapping = {'http://docs.python.org/': None,
+                       'http://docs.scipy.org/doc/numpy/': None,
+                       # 'http://docs.scipy.org/doc/scipy/reference/': None,
+                       }

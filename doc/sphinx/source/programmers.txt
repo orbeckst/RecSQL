@@ -1,4 +1,4 @@
-.. $Id$
+.. developer notes
 
 ======================
  Notes for developers
@@ -7,7 +7,7 @@
 .. automodule:: recsql.sqlarray
    :members:
 .. automodule:: recsql.rest_table
-
+.. automodule:: recsql.csv_table
 
 SQL support
 ===========
