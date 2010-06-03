@@ -4,11 +4,20 @@
 
 Turn a CSV table into a numpy array. 
 
-Uses :mod"`csv`.
+Uses :mod:`csv` (requires python 2.6 or better).
 
+.. autoclass:: Table2array
+   :members:
+.. autofunction:: make_python_name
 """
 
-import csv
+try:
+    # needs python >= 2.6
+    import csv
+except ImportError:
+    import warnings
+    warnings.warn("csv module not available (needs python >=2.6)", category=ImportWarning)
+    # ... just go ahead and fail later miserably ...
 import numpy
 import re
 
