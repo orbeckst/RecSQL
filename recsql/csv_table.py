@@ -7,7 +7,7 @@ Turn a CSV table into a numpy array.
 Uses :mod:`csv` (requires python 2.6 or better).
 
 .. autoclass:: Table2array
-   :members:
+   :members: __init__, recarray
 .. autofunction:: make_python_name
 """
 
@@ -67,4 +67,5 @@ class Table2array(object):
         self.records = [tuple(map(self.autoconvert, line)) for line in csvtab if len(line) > 0]
 
     def recarray(self):
+        """Returns data as :class:`numpy.recarray`."""
         return numpy.rec.fromrecords(self.records, names=self.names)
