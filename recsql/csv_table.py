@@ -83,11 +83,20 @@ def make_python_name(s, default=None, number_prefix='N',encoding="utf-8"):
     return unicode(s, encoding)
     
 class Table2array(object):
-    def __init__(self, filename, name="CSV", encoding="utf-8", **kwargs):
+    """Read a csv file and provide conversion to a :class:`numpy.recarray`.
+
+    * Depending on the arguments, autoconversion of values can take
+      place. See :class:`recsql.convert.Autoconverter` for details.
+
+    * Table column headers are always read from the first row of the file.
+
+    * Empty rows are discarded.     
+    """
+    def __init__(self, filename=None, tablename="CSV", encoding="utf-8", **kwargs):
         """
         :Arguments:
            *filename*
-              CSV file (UTF-8 encoding)
+              CSV file (encoded with *encoding*)
            *name*
               name of the table
            *autoconvert*
@@ -99,7 +108,9 @@ class Table2array(object):
            *mode*
               mode of the :class:`~convert.Autoconverter`
         """
-        self.name = name
+        if filename is None:
+            raise TypeError("filename is actually required")
+        self.tablename = tablename
         self.autoconvert = Autoconverter(**kwargs).convert
         csvtab = UnicodeReader(open(filename, "rb"), encoding=encoding)
         self.names = [make_python_name(s,default=n,encoding=encoding) for n,s in enumerate(csvtab.next())]

@@ -82,7 +82,14 @@ class SQLarray(object):
        * :exc:`InterfaceError`: *Error binding parameter 0 - probably unsupported type*
 
          In this case the recarray contained types such as ``numpy.int64`` that are not
-         understood by sqlite. You need to convert the data manually first.
+         understood by sqlite. Either convert the data manually (by setting the numpy 
+         dtypes yourself on the recarray, or better: feed a simple list of tuples ("records")
+         to this class in *records*. Make sure that these tuples only contain standard python types.
+         Together with *records* you will also have to supply the names of the data columns
+         in the keyword argument *columns*.
+
+         If you are reading from a file then it might be simpler to
+         use :func:`recsql.sqlarray.SQLarray_fromfile`.
     """
 
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
@@ -121,6 +128,7 @@ class SQLarray(object):
             self.columns = tuple([x[0] for x in c.description])
             self.ncol = len(self.columns)
         else:   # got records
+            # TODO: this should be cleaned up; see also SQLarray_fromfile()
             if records is None and not filename is None:
                 records = ''.join(open(filename,'r').readlines())  # read file into records
                 
@@ -153,10 +161,13 @@ class SQLarray(object):
             try:
                 # The next can fail with 'InterfaceError: Error binding parameter 0 - probably unsupported type.'
                 # This means that the numpy array should be set up so that there are no data types
-                # such as numpy.int64 which are not compatible with sqlite (no idea why).
+                # such as numpy.int64/32(?) which are not compatible with sqlite (no idea why).
                 self.cursor.executemany(SQL,records)
             except:
-                
+                import sys
+                sys.stderr.write("ERROR: You are probably feeding a recarray; sqlite does not know how to \n"
+                                 "       deal with special numpy types such as int32 or int64. Try using the \n"
+                                 "       recsql.SQLarray_fromfile() function or feed simple records (see docs).")
                 raise
 
         # initialize query cache
@@ -561,13 +572,15 @@ def SQLarray_fromfile(filename, **kwargs):
                    }
     _kwnames = ('active', 'mode', 'autoconvert', 'automapping', 'sep')
     kwargsT2a = dict((k,kwargs.pop(k))  for k in _kwnames if k in kwargs)
-    kwargsT2a.setdefault('mode', 'unicode')
+    kwargsT2a.setdefault('mode', 'singlet')
 
     root, ext = os.path.splitext(filename)
     if ext.startswith('.'):
         ext = ext[1:]
     ext = ext.lower()
-    t = Table2array[ext](filename, **kwargsT2a)
-    kwargs.setdefault('name', t.name)
-    kwargs['records'] = t.recarray()
+    kwargsT2a['filename'] = filename
+    t = Table2array[ext](**kwargsT2a)
+    kwargs.setdefault('name', t.tablename)
+    kwargs['columns'] = t.names
+    kwargs['records'] = t.records    # use records to have sqlite do type conversion
     return SQLarray(**kwargs)

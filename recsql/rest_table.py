@@ -77,7 +77,7 @@ The only class that the user really needs to know anything about is
 
 import re
 import numpy
-from convert import Autoconverter
+import convert
 
 # search expressions
 # ------------------
@@ -136,12 +136,14 @@ class Table2array(object):
               interpreted as integers (1 in this case).
     """
     
-    def __init__(self, string, **kwargs):
+    def __init__(self, string=None, **kwargs):
         """Table2array(string) --> parser
 
         :Arguments:
            *string*
               string to be parsed
+           *filename*
+              read from *filename* instead of string
            *autoconvert*
               EXPERIMENTAL. ``True``: replace certain values
               with special python values (see :class:`convert.Autoconverter`) and possibly 
@@ -155,6 +157,10 @@ class Table2array(object):
               separator (using :func:`split`) before possible autoconversion.
               (NOT WORKING PROPERLY YET)
         """
+        self.filename = kwargs.pop('filename', None)
+        if self.filename:
+            with open(self.filename, 'rb') as f:
+                string = "".join(f.readlines())  # encoding ??
         self.string = string
         m = TABLE.search(string)  # extract table from string with regular expression
         if m is None:
@@ -166,8 +172,10 @@ class Table2array(object):
         self.caption = self.t['title']
         #: parsed table as records (populate with :meth:`Table2array.parse`)
         self.records = None
+        self.names = None
+        self.autoconvert = convert.Autoconverter(**kwargs).convert
 
-        self.autoconvert = Autoconverter(**kwargs).convert
+        self.parse()
 
     def parse(self):
         """Parse the table data string into records."""
@@ -207,7 +215,7 @@ class Table2array(object):
             retval = numpy.array(self.records, dtype=dtype)
             res = retval.view(numpy.recarray)
             ## res.dtype = numpy.dtype((numpy.rec.record, res.dtype))  # fails -- ARGH, this makes it a recarray
-            return res
+            return convert.to_int64(res)
 
     def parse_fields(self):
         """Determine the start and end columns and names of the fields."""
