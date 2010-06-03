@@ -71,26 +71,13 @@ The only class that the user really needs to know anything about is
 .. autoclass:: Table2array
    :members: __init__, recarray
 
-.. autoclass:: Autoconverter
-   :members: __init__
-.. function:: Autoconverter.convert(x)
- 
-              Convert *x* (if in the active state)
-.. attribute:: Autoconverter.active
-
-               If set  to ``True`` then conversion takes place; ``False`` 
-               just returns :func:`besttype` applid to the value.
-
-.. autofunction:: besttype
-
 .. autoexception:: ParseError
 
 """
 
-
-
 import re
 import numpy
+from convert import Autoconverter
 
 # search expressions
 # ------------------
@@ -149,7 +136,7 @@ class Table2array(object):
               interpreted as integers (1 in this case).
     """
     
-    def __init__(self, string, autoconvert=False, automapping=None, sep=False):
+    def __init__(self, string, **kwargs):
         """Table2array(string) --> parser
 
         :Arguments:
@@ -157,10 +144,12 @@ class Table2array(object):
               string to be parsed
            *autoconvert*
               EXPERIMENTAL. ``True``: replace certain values
-              with special python values (see :class:`Autoconvert`) and possibly 
+              with special python values (see :class:`convert.Autoconverter`) and possibly 
               split values into lists (see *sep*).
               ``False``: leave everything as it is (numbers as numbers and strings 
               as strings).
+           *mode*
+              mode of the :class:`~convert.Autoconverter`
            *sep*
               If set and *autoconvert* = ``True`` then split field values on the
               separator (using :func:`split`) before possible autoconversion.
@@ -178,7 +167,7 @@ class Table2array(object):
         #: parsed table as records (populate with :meth:`Table2array.parse`)
         self.records = None
 
-        self.autoconvert = Autoconverter(active=autoconvert, mapping=automapping, sep=sep).convert
+        self.autoconvert = Autoconverter(**kwargs).convert
 
     def parse(self):
         """Parse the table data string into records."""
@@ -250,119 +239,3 @@ class Table2array(object):
         self.names = names
         self.fields = fields
 
-class Autoconverter(object):
-    """Automatically convert an input value to a special python object.
-
-    The :meth:`Autoconverter.convert` method turns the value into a special
-    python value and casts strings to the "best" type (see :func:`besttype`). 
-
-    The defaults for the conversion of a input field value to a
-    special python value are:
-
-      ===========  ===============
-      value        python
-      ===========  ===============
-        '---'       ``None``
-        'none'
-        'None'
-        ''
-
-        'True'      ``True``
-        'x'
-        'X'
-        'yes'
-
-        'False'     ``False``
-        '-'
-        'no'
-      ===========  ===============
-
-    If the *sep* keyword is set to a string instead of ``False`` then
-    values are split into tuples. Probably the most convenient way to
-    use this is to set *sep* = ``True`` (or ``None``) because this
-    splits on all white space whereas *sep* = ' ' would split multiple
-    spaces.
-
-    **Example**
-       - With *sep* = ``True``: 'foo bar 22  boing ---' --> ('foo', 'boing', 22, None)
-       - With *sep* = ',':       1,2,3,4 --> (1,2,3,4) 
-   
-    """
-
-    def __init__(self, mapping=None, active=True, sep=False):
-        """Initialize the converter.
-
-        :Arguments:
-        - *mapping*: any dict-like mapping that supports lookup. If
-          ``None`` then the hard-coded defaults are used.
-        - *active* = True. initial state of the
-          :attr:`Autoconverter.active` toggle.
-        - *sep*: character to split on (produces lists);
-                 use ``True`` or ``None`` (!) to split on all white space.
-        """
-        if mapping is None:
-            mapping = {'---': None, 'None':None, 'none':None, '':None,
-                       'True':True, 'x': True, 'X':True, 'yes':True,
-                       'False':False, 'no': False, '-':False}
-        self.mapping = mapping
-        self.__active = None
-        self.active = active
-        if sep is True:
-            sep = None   # split on *all* white space, sep=' ' splits spaces!
-        self.sep = sep
-
-    def active():
-        doc = """Toggle the state of the Autoconverter."""
-        def fget(self):
-            return self.__active
-        def fset(self, x):
-            self.__active = x
-            if self.__active:
-                self.convert = self._convert   # py types + bools + lists 
-            else:
-                self.convert = besttype        # always convert to int/float/str
-        return locals()
-    active = property(**active())
-
-    def _convert(self, field):
-        """Convert to a list (sep != None) and convert list elements."""
-        if self.sep is False:
-            return self._convert_singlet(field)
-        else:
-             x = tuple([self._convert_singlet(s) for s in field.split(self.sep)])
-             if len(x) == 0:
-                 x = ''
-             elif len(x) == 1:
-                 x = x[0]
-             return x
-
-    def _convert_singlet(self, s):
-        x = besttype(s)
-        try:
-             return self.mapping[x]
-        except KeyError:
-             return x
-
-def besttype(x):
-    """Convert string x to the most useful type, i.e. int, float or   str.
-
-    If x is a quoted string (single or double quotes) then the quotes
-    are stripped and the enclosed string returned.
-    """
-    try:
-        x = x.strip()
-    except AttributeError:
-        pass
-    m = re.match(r"""['"](?P<value>.*)["']$""", str(x))
-    if m is None:
-        # not a quoted string, try different types
-        for converter in int, float, str:   # try them in increasing order of lenience
-            try:
-                return converter(x)
-            except ValueError:
-                pass
-    else:
-        # quoted string
-        x = str(m.group('value'))
-    return x
-    

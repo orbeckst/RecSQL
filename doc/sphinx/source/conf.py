@@ -38,14 +38,16 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'RecSQL'
-copyright = u'2009, Oliver Beckstein'
+copyright = u'2009-2010, Oliver Beckstein'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '0.7.1'
+
+# Dynamically calculate the version based on VERSION.
+version = __import__('recsql').get_version()
 # The full version, including alpha/beta/rc tags.
 release = version
 

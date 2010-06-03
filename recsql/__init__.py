@@ -1,13 +1,13 @@
-# $Id$
-# Copyright (C) 2009 Oliver Beckstein <orbeckst@gmail.com>
+# RecSQL -- a simple mash-up of sqlite and numpy.recsql
+# Copyright (C) 2007-2010 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License, version 3 or higher (your choice)
 """
 ================
  RecSQL package
 ================
 
-RecSQL is a simple module that provides a numpy.record array
-frontend to an underlying SQLite table. 
+RecSQL is a simple module that provides a numpy.record array frontend
+to an underlying SQLite table.
 
 The :class:`SQLarray` object populates a SQL table from a numpy record array, a
 iterable that supplies table records, or a string that contains an
@@ -29,16 +29,43 @@ parse a restructured text table from a string (such as a doc string)
 and returns a nicely structured table. This allows for use of
 parameters that are documented in the doc strings.
 
+.. SeeAlso:: PyTables_ is a high-performance interface to table
+             data. In most cases you will probably better off in the
+             long run using PyTables than recSQL.
+
+.. _PyTables: http://www.pytables.org
+
+
+Important functions and classes
+===============================
+
+A :class:`SQLarray` can be constructed by either reading data from a
+CSV file or reST table with the :func:`SQLarray_fromfile` function or
+constructed directly from a :class:`numpy.recarray` via the
+:class:`SQLarray` constructor.
+
+.. autofunction:: SQLarray_fromfile
+.. autoclass:: SQLarray
+   :members:
+
+Example
+=======
+(to be written)
+
 
 Additional SQL functions
 ========================
 
-Note that this SQL database has a few additional functions defined in
-addition to the SQL standard. These can be used in ``SELECT`` statements and
-often avoid post-processing of record arrays in python. It is relatively
-straightforward to add new functions (see the source code and in particular
-the ``_init_sql_functions()``; the functions themselves are defined in the
-module :mod:`sqlfunctions`).
+Note that the SQL database that is used as the backend for
+:class:`SQLarray` has a few additional functions defined in addition
+to the `standard SQL available in sqlite`_. These can be used in
+``SELECT`` statements and often avoid post-processing of record arrays
+in python. It is relatively straightforward to add new functions (see
+the source code and in particular the
+:meth:`recsql.sqlarray.SQLarray._init_sql_functions` method; the
+functions themselves are defined in the module :mod:`recsql.sqlfunctions`).
+
+.. _standard SQL available in sqlite: http://www.sqlite.org/lang.html
 
 
 Simple SQL functions
@@ -169,16 +196,17 @@ although one can also do ::
 but when using a PyAggregate the type *must* be declared::
 
    a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
-
-
-Classes
-=======
-
-.. autoclass:: SQLarray
-   :members:
-
 """
+VERSION = 0,7,3
 
 __all__ = ['sqlarray']
 
-from sqlarray import SQLarray
+from sqlarray import SQLarray, SQLarray_fromfile
+
+def get_version():
+    """Return current package version as a string."""
+    return ".".join(map(str,VERSION))
+
+def get_version_tuple():
+    """Return current package version as a (MAJOR,MINOR,PATCHLEVEL)."""
+    return tuple(VERSION)

@@ -15,8 +15,11 @@ major, minor, patch = sys.version_info[:3]
 if major <= 2 and minor <= 5:
     requirements.append("pysqlite")
 
+# Dynamically calculate the version based on VERSION.
+version = __import__('recsql').get_version()
+
 setup(name="RecSQL",
-      version="0.7.2",
+      version=version,
       description="Treat SQLlite tables as recarrays",
       long_description="""\
 A simple implementation of numpy.recarray-like tables that can
@@ -27,7 +30,7 @@ that are built from a numpy.recarray or a general iterator.
       author_email="orbeckst@gmail.com",
       license="GPLv3",
       url="http://sbcb.bioch.ox.ac.uk/oliver/download/Python/RecSQL",
-      keywords="utilities numpy SQLite SQL",
+      keywords="utilities numpy SQLite SQL CSV",
       packages=find_packages(exclude=['tests','extras','doc/examples']),
       install_requires=requirements,
       zip_safe = True,
