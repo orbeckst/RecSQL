@@ -74,6 +74,7 @@ The only class that the user really needs to know anything about is
 .. autoexception:: ParseError
 
 """
+from __future__ import with_statement
 
 import re
 import numpy
