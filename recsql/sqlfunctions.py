@@ -16,6 +16,7 @@ Example:
 
      from sqlfunctions import *
      self.connection.create_function("sqrt", 1, _sqrt)
+     self.connection.create_function("pow", 2, _pow)
      self.connection.create_function("fformat",2,_fformat)
      self.connection.create_aggregate("std",1,_Stdev)
      self.connection.create_aggregate("median",1,_Median)
@@ -69,6 +70,14 @@ def _sqrt(x):
     except TypeError:
         return None
     return numpy.sqrt(x)        
+
+def _pow(x,y):
+    try:
+        x = float(x)
+        y = float(y)
+    except TypeError:
+        return None
+    return numpy.power(x,y)        
 
 def _fformat(format,x):
     return format % x

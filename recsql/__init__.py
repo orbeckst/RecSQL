@@ -107,6 +107,7 @@ Two additional simple functions have been defined:
 Simple SQL f()           description
 =====================   =============================================
 sqrt(x)                  square root math.sqrt(x)
+pow(x,y)                 power x**y
 fformat(format,x)        string formatting of a single value format % x
 =====================   =============================================
 
@@ -219,9 +220,9 @@ but when using a PyAggregate the type *must* be declared::
 
    a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
 """
-VERSION = 0,7,3
+VERSION = 0,7,4
 
-__all__ = ['sqlarray']
+__all__ = ['SQLarray', 'SQLarray_fromfile']
 
 from sqlarray import SQLarray, SQLarray_fromfile
 
