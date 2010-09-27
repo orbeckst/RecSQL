@@ -1,3 +1,6 @@
 RecSQL.egg-info
 build
 *.pyc
+dist
+doc/epydoc
+install_develop.sh

@@ -1,0 +1,21 @@
+.. developer notes
+
+======================
+ Notes for developers
+======================
+
+.. automodule:: recsql.sqlarray
+   :members:
+.. automodule:: recsql.rest_table
+.. automodule:: recsql.csv_table
+.. automodule:: recsql.convert
+
+SQL support
+===========
+ 
+.. automodule:: recsql.sqlfunctions
+   :members:
+   :exclude-members: histogram1d
+
+.. automodule:: recsql.sqlutil
+   :members:

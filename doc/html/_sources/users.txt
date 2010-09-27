@@ -1,0 +1,10 @@
+.. user docs
+
+====================
+ User documentation
+====================
+
+.. automodule:: recsql
+   :members:
+
+
