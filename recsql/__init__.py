@@ -101,13 +101,15 @@ Expression              SQL equivalent
   y = f(x)               SELECT f(x) AS y
 =====================   =============================================
 
-Two additional simple functions have been defined:
+Additional simple functions have been defined:
 
 =====================   =============================================
 Simple SQL f()           description
 =====================   =============================================
 sqrt(x)                  square root math.sqrt(x)
 pow(x,y)                 power x**y
+regexp(pattern,string)   string REGEXP pattern
+match(pattern,string)    string MATCH pattern   (anchored REGEXP)
 fformat(format,x)        string formatting of a single value format % x
 =====================   =============================================
 
@@ -220,7 +222,7 @@ but when using a PyAggregate the type *must* be declared::
 
    a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
 """
-VERSION = 0,7,4
+VERSION = 0,7,5
 
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 

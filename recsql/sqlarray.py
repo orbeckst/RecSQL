@@ -425,6 +425,8 @@ class SQLarray(object):
                 
         self.connection.create_function("sqrt", 1,sqlfunctions._sqrt)
         self.connection.create_function("pow", 2,sqlfunctions._pow)
+        self.connection.create_function("match",2,sqlfunctions._match)
+        self.connection.create_function("regexp",2,sqlfunctions._regexp)
         self.connection.create_function("fformat",2,sqlfunctions._fformat)
         self.connection.create_aggregate("std",1,sqlfunctions._Stdev)
         self.connection.create_aggregate("median",1,sqlfunctions._Median)
