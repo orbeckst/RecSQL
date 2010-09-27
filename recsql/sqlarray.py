@@ -571,7 +571,9 @@ def SQLarray_fromfile(filename, **kwargs):
                    'txt': rest_table.Table2array,
                    'csv': csv_table.Table2array,
                    }
-    _kwnames = ('active', 'mode', 'autoconvert', 'automapping', 'sep')
+    # see convert.Autoconverter for the kwargs; *active*/*autoconvert* 
+    # is for the Table2array class
+    _kwnames = ('active', 'autoconvert', 'mode', 'mapping', 'sep')
     kwargsT2a = dict((k,kwargs.pop(k))  for k in _kwnames if k in kwargs)
     kwargsT2a.setdefault('mode', 'singlet')
 
