@@ -102,7 +102,7 @@ class Autoconverter(object):
                             'singlet': self._convert_singlet,
                             'fancy': self._convert_fancy,
                             }
-
+        self.convert = None  # convertor function; set when self.active <-- True.
         if mapping is None:
             mapping = {'---': None, 'None':None, 'none':None, '':None,
                        'True':True, 'x': True, 'X':True, 'yes':True,
@@ -111,7 +111,7 @@ class Autoconverter(object):
         self.encoding = kwargs.pop('encoding', "utf-8")
         self.mode = mode
         self.__active = None
-        self.active = kwargs.pop('autoconvert', active)   # 'autoconvert' is a "strong" alias or 'active'
+        self.active = kwargs.pop('autoconvert', active)   # 'autoconvert' is a "strong" alias of 'active'
         if sep is True:
             sep = None   # split on *all* white space, sep=' ' splits single spaces!
         self.sep = sep        
@@ -132,21 +132,22 @@ class Autoconverter(object):
     def _convert_singlet(self, s):
         x = besttype(s, self.encoding)
         try:
-             return self.mapping[x]
+            return self.mapping[x]
         except KeyError:
-             return x
+            return x
 
     def _convert_fancy(self, field):
         """Convert to a list (sep != None) and convert list elements."""
         if self.sep is False:
-            return self._convert_singlet(field)
+            x = self._convert_singlet(field)
         else:
-             x = tuple([self._convert_singlet(s) for s in field.split(self.sep)])
-             if len(x) == 0:
-                 x = ''
-             elif len(x) == 1:
-                 x = x[0]
-             return x
+            x = tuple([self._convert_singlet(s) for s in field.split(self.sep)])
+            if len(x) == 0:
+                x = ''
+            elif len(x) == 1:
+                x = x[0]
+        #print "%r --> %r" % (field, x)
+        return x
 
 def besttype(x, encoding="utf-8"):
     """Convert string x to the most useful type, i.e. int, float or unicode string.

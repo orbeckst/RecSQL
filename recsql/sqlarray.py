@@ -576,6 +576,9 @@ def SQLarray_fromfile(filename, **kwargs):
     _kwnames = ('active', 'autoconvert', 'mode', 'mapping', 'sep')
     kwargsT2a = dict((k,kwargs.pop(k))  for k in _kwnames if k in kwargs)
     kwargsT2a.setdefault('mode', 'singlet')
+    # Note: sep=False is the only sane choice because we cannot deal  yet 
+    #       with numpy list structures for import into the db
+    kwargsT2a['sep'] = False
 
     root, ext = os.path.splitext(filename)
     if ext.startswith('.'):

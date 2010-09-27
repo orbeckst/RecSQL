@@ -28,6 +28,9 @@ the following additional restriction apply:
 * Column spans are not supported.
 * Headings must be single legal SQL and python words as they are used
   as column names.
+* _Do not use TABs_ to format the table but use spaces. (Tabs do not
+  have a well-defined width in number of spaces and will thus lead to
+  wrongly parsed tables.)
 * The delimiters are used to extract the fields. Only data within the
   range of the '=====' markers is used. Thus, each column marker
   *must* span the whole range of input. Otherwise, data will be lost.  
@@ -197,14 +200,14 @@ class Table2array(object):
         if self.records is None:
             self.parse()
         try:
-            # simple
+            # simple (should this also be subjected to convert.to_int64() ?)
             return numpy.rec.fromrecords(self.records, names=self.names)
         except ValueError:
             # complicated because fromrecords cannot deal with records of lists
             # Quick hack: use objects for lists etc (instead of building the proper
             # data types (see docs for numpy.dtype , eg dtype('coord', (float, 3)) )
 
-            D = numpy.empty(len(self.records[0]), dtype=object)    # number of fileds from first record
+            D = numpy.empty(len(self.records[0]), dtype=object)    # number of fields from first record
             types = numpy.array([map(type, r) for r in self.records])  # types of all fields
             for icol, isSame in enumerate([numpy.all(col) for col in types.T]):
                 if isSame:
@@ -212,7 +215,10 @@ class Table2array(object):
                 else:
                     D[icol] = object
             dtype = numpy.dtype(zip(self.names, D))
-            # from numpy.rec.records (for debugging...)
+            # from numpy.rec.records 
+            # TODO: this is not working properly yet; for instance, text fields
+            # are reduced to length 0 (<U0) and the final convert.to_int64 dies
+            # with '<U0'*** TypeError: TypeError('data type not understood',)
             retval = numpy.array(self.records, dtype=dtype)
             res = retval.view(numpy.recarray)
             ## res.dtype = numpy.dtype((numpy.rec.record, res.dtype))  # fails -- ARGH, this makes it a recarray
