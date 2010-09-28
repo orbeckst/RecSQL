@@ -103,15 +103,15 @@ Expression              SQL equivalent
 
 Additional simple functions have been defined:
 
-=====================   =============================================
+======================   ===============================================
 Simple SQL f()           description
-=====================   =============================================
-sqrt(x)                  square root math.sqrt(x)
+======================   ===============================================
+sqrt(x)                  square root :func:`math.sqrt`
 pow(x,y)                 power x**y
 regexp(pattern,string)   string REGEXP pattern
 match(pattern,string)    string MATCH pattern   (anchored REGEXP)
 fformat(format,x)        string formatting of a single value format % x
-=====================   =============================================
+======================   ===============================================
 
 
 Aggregate SQL functions
@@ -129,15 +129,15 @@ Expression              SQL equivalent
 For completeness, the tablke also lists sqlite built-in aggregate
 functions:
 
-=====================   =============================================
+=====================   ===============================================
 Simple aggregate f()     description
-=====================   =============================================
+=====================   ===============================================
 avg(x)                   mean [sqlite builtin]
 std(x)                   standard deviation (using N-1 variance)
-median(x)                median of the data (see ``numpy.median``)
+median(x)                median of the data (see :func:`numpy.median`)
 min(x)                   minimum [sqlite builtin]
 max(x)                   maximum [sqlite builtin]
-=====================   =============================================
+=====================   ===============================================
 
 
 PyAggregate SQL functions
@@ -167,7 +167,7 @@ functions that have been defined:
 PyAggregate      type            signature; description
 ===============  ==============  ==============================================================
 array             NumpyArray     array(x);
-                                 a standard numpy array
+                                 a standard :func:`numpy.array`
 
 histogram         Object         histogram(x,nbins,xmin,xmax); 
                                  histogram x in nbins evenly spaced bins between xmin and xmax
@@ -206,7 +206,8 @@ Declare types as 'NumpyArray'::
 
    a.sql("CREATE TABLE __self__(a NumpyArray)")
 
-Then you can simply insert python objects (type(my_array) == numpy.ndarray)::
+Then you can simply insert python objects (``type(my_array) ==
+numpy.ndarray``)::
 
    a.sql("INSERT INTO __self__(a) values (?)", (my_array,))
 
@@ -235,3 +236,4 @@ def get_version():
 def get_version_tuple():
     """Return current package version as a (MAJOR,MINOR,PATCHLEVEL)."""
     return tuple(VERSION)
+
