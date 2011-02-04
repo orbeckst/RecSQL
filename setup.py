@@ -12,7 +12,7 @@ import sys
 requirements = ['numpy>=1.0',]
 
 major, minor, patch = sys.version_info[:3]
-if major <= 2 and minor <= 5:
+if major == 1 or (major == 2 and minor < 5):
     requirements.append("pysqlite")
 
 # Dynamically calculate the version based on VERSION.
