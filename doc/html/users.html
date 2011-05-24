@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>User documentation &mdash; RecSQL v0.7.5 documentation</title>
+    <title>User documentation &mdash; RecSQL v0.7.6 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.7.5',
+        VERSION:     '0.7.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="RecSQL v0.7.5 documentation" href="index.html" />
+    <link rel="top" title="RecSQL v0.7.6 documentation" href="index.html" />
     <link rel="next" title="Notes for developers" href="programmers.html" />
     <link rel="prev" title="INSTALL" href="INSTALL.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="INSTALL.html" title="INSTALL"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">RecSQL v0.7.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL v0.7.6 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -83,7 +83,7 @@ long run using PyTables than recSQL.</p>
 <h3>Important functions and classes<a class="headerlink" href="#important-functions-and-classes" title="Permalink to this headline">¶</a></h3>
 <p>A <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> can be constructed by either reading data from a
 CSV file or reST table with the <a class="reference internal" href="#recsql.SQLarray_fromfile" title="recsql.SQLarray_fromfile"><tt class="xref py py-func docutils literal"><span class="pre">SQLarray_fromfile()</span></tt></a> function or
-constructed directly from a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev8716)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a> via the
+constructed directly from a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-3071eab)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a> via the
 <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> constructor.</p>
 <dl class="function">
 <dt id="recsql.SQLarray_fromfile">
@@ -454,6 +454,34 @@ functions themselves are defined in the module <a class="reference internal" hre
 </tbody>
 </table>
 <p>Additional simple functions have been defined:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="68%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Simple SQL f()</th>
+<th class="head">description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>sqrt(x)</td>
+<td>square root <a class="reference external" href="http://docs.python.org/library/math.html#math.sqrt" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">math.sqrt()</span></tt></a></td>
+</tr>
+<tr><td>pow(x,y)</td>
+<td>power x**y</td>
+</tr>
+<tr><td>regexp(pattern,string)</td>
+<td>string REGEXP pattern</td>
+</tr>
+<tr><td>match(pattern,string)</td>
+<td>string MATCH pattern   (anchored REGEXP)</td>
+</tr>
+<tr><td>fformat(format,x)</td>
+<td>string formatting of a single value format % x</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="aggregate-sql-functions">
 <h4>Aggregate SQL functions<a class="headerlink" href="#aggregate-sql-functions" title="Permalink to this headline">¶</a></h4>
@@ -479,8 +507,8 @@ a &#8216;GROUP BY col&#8217; clause. They can be thought of as numpy ufuncs:</p>
 functions:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="32%" />
-<col width="68%" />
+<col width="31%" />
+<col width="69%" />
 </colgroup>
 <thead valign="bottom">
 <tr><th class="head">Simple aggregate f()</th>
@@ -495,7 +523,7 @@ functions:</p>
 <td>standard deviation (using N-1 variance)</td>
 </tr>
 <tr><td>median(x)</td>
-<td>median of the data (see <tt class="docutils literal"><span class="pre">numpy.median</span></tt>)</td>
+<td>median of the data (see <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.median.html#numpy.median" title="(in NumPy v2.0.dev-3071eab)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.median()</span></tt></a>)</td>
 </tr>
 <tr><td>min(x)</td>
 <td>minimum [sqlite builtin]</td>
@@ -538,7 +566,7 @@ functions that have been defined:</p>
 <tr><td>array</td>
 <td>NumpyArray</td>
 <td>array(x);
-a standard numpy array</td>
+a standard <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.0.dev-3071eab)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.array()</span></tt></a></td>
 </tr>
 <tr><td>histogram</td>
 <td>Object</td>
@@ -592,7 +620,8 @@ max(y)</td>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">a</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;CREATE TABLE __self__(a NumpyArray)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then you can simply insert python objects (type(my_array) == numpy.ndarray):</p>
+<p>Then you can simply insert python objects (<tt class="docutils literal"><span class="pre">type(my_array)</span> <span class="pre">==</span>
+<span class="pre">numpy.ndarray</span></tt>):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">a</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;INSERT INTO __self__(a) values (?)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">my_array</span><span class="p">,))</span>
 </pre></div>
 </div>
@@ -992,7 +1021,7 @@ file extension</p>
         <li class="right" >
           <a href="INSTALL.html" title="INSTALL"
              >previous</a> |</li>
-        <li><a href="index.html">RecSQL v0.7.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL v0.7.6 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
