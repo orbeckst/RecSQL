@@ -32,6 +32,10 @@ Module content
 
 import os.path
 import re
+try: 
+    from hashlib import md5
+except ImportError:
+    from md5 import md5
 try:
     from pysqlite2 import dbapi2 as sqlite     # ... all development was with pysqlite2
 except ImportError:
@@ -390,7 +394,6 @@ class SQLarray(object):
         # - could use VIEW
         # - might be a good idea to use cache=False
 
-        import md5
         # pretty unsafe... I hope the user knows what they are doing
         # - only read data to first semicolon
         # - here should be input scrubbing...
@@ -404,7 +407,7 @@ class SQLarray(object):
         # (note: MUST replace __self__  before md5!)
         _sql = _sql.replace('__self__', self.name)        
         # unique name for table (unless user supplied... which could be 'x;DROP TABLE...')
-        newname = kwargs.pop('name', 'selection_'+md5.new(_sql).hexdigest())
+        newname = kwargs.pop('name', 'selection_'+md5(_sql).hexdigest())
 
         # create table directly
         # SECURITY: unsafe tablename !!!! (but cannot interpolate?)
