@@ -1,5 +1,5 @@
 # setuptools installation of RecSQL
-# Copyright (c) 2007-2010 Oliver Beckstein <orbeckst@gmail.com>
+# Copyright (c) 2007-2011 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License 3 (or higher, your choice)
 
 
@@ -29,7 +29,18 @@ that are built from a numpy.recarray or a general iterator.
       author="Oliver Beckstein",
       author_email="orbeckst@gmail.com",
       license="GPLv3",
-      url="http://sbcb.bioch.ox.ac.uk/oliver/download/Python/RecSQL",
+      classifiers=['Development Status :: 4 - Beta',
+                   'Environment :: Console',
+                   'Intended Audience :: Developers',
+                   'Intended Audience :: Science/Research',
+                   'License :: OSI Approved :: GNU General Public License (GPL)',
+                   'Operating System :: OS Independent',
+                   'Programming Language :: Python',
+                   'Topic :: Software Development :: Libraries',
+                   'Topic :: Text Processing',
+                   'Topic :: Database',
+                   ],
+      url="https://github.com/orbeckst/RecSQL",
       keywords="utilities numpy SQLite SQL CSV",
       packages=find_packages(exclude=['tests','extras','doc/examples']),
       install_requires=requirements,
