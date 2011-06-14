@@ -145,6 +145,8 @@ class SQLarray(object):
                 self.name = P.tablename    # name provided as 'Table[<tablename>]: ...'
             try:
                 self.columns = records.dtype.names
+                if records.dtype.names is None:
+                    raise AttributeError   # hack to use normal numpy arrays...
             except AttributeError:
                 if columns is None:
                     raise TypeError('records must be a recarray or columns should be supplied')

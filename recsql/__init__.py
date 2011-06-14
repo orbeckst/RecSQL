@@ -223,7 +223,7 @@ but when using a PyAggregate the type *must* be declared::
 
    a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
 """
-VERSION = 0,7,6
+VERSION = 0,7,7
 
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 
