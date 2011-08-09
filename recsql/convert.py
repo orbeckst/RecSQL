@@ -5,11 +5,11 @@
 .. autoclass:: Autoconverter
    :members: __init__
 .. function:: Autoconverter.convert(x)
- 
+
               Convert *x* (if in the active state)
 .. attribute:: Autoconverter.active
 
-               If set  to ``True`` then conversion takes place; ``False`` 
+               If set  to ``True`` then conversion takes place; ``False``
                just returns :func:`besttype` applid to the value.
 
 .. autofunction:: besttype
@@ -31,7 +31,7 @@ class Autoconverter(object):
     """Automatically convert an input value to a special python object.
 
     The :meth:`Autoconverter.convert` method turns the value into a special
-    python value and casts strings to the "best" type (see :func:`besttype`). 
+    python value and casts strings to the "best" type (see :func:`besttype`).
 
     The defaults for the conversion of a input field value to a
     special python value are:
@@ -62,8 +62,8 @@ class Autoconverter(object):
 
     **Example**
        - With *sep* = ``True``: 'foo bar 22  boing ---' --> ('foo', 'boing', 22, None)
-       - With *sep* = ',':       1,2,3,4 --> (1,2,3,4) 
-   
+       - With *sep* = ',':       1,2,3,4 --> (1,2,3,4)
+
     """
 
     def __init__(self, mode="fancy",  mapping=None, active=True, sep=False, **kwargs):
@@ -82,7 +82,7 @@ class Autoconverter(object):
                     first splits fields into lists, tries mappings,
                     and does the stuff that "singlet" does
                 "unicode"
-                    convert all entries with :func:`to_unicode`             
+                    convert all entries with :func:`to_unicode`
 
           *mapping*
               any dict-like mapping that supports lookup. If``None`` then the
@@ -114,7 +114,7 @@ class Autoconverter(object):
         self.active = kwargs.pop('autoconvert', active)   # 'autoconvert' is a "strong" alias of 'active'
         if sep is True:
             sep = None   # split on *all* white space, sep=' ' splits single spaces!
-        self.sep = sep        
+        self.sep = sep
 
     def active():
         doc = """Toggle the state of the Autoconverter. ``True`` uses the mode, ``False`` does nothing"""
@@ -178,7 +178,7 @@ def besttype(x, encoding="utf-8"):
         # quoted string
         x = unicodify(m.group('value'))
     return x
-    
+
 
 def to_int64(a):
     """Return view of the recarray with all int32 cast to int64."""
@@ -187,6 +187,31 @@ def to_int64(a):
         if typestr[1:] == 'i4':
             typestr = typestr[0]+'i8'
         return typestr
-    
+
     dtype = [(name, promote_i4(typestr)) for name,typestr in a.dtype.descr]
     return a.astype(dtype)
+
+def pyify(typestr):
+    if typestr[1] == 'i':
+        return int
+    elif typestr[1] == 'f':
+        return float
+    elif typestr[1] == 'S':
+        return str
+    return lambda x: x
+
+def to_pytypes(a):
+    dtype = [(name, pyify(typestr)) for name,typestr in a.dtype.descr]
+    return a.astype(dtype)
+
+def irecarray_to_py(a):
+    """Slow conversion of a recarray into a list of records with python types.
+
+    Get the field names from :attr:`a.dtype.names`.
+
+    :Returns: iterator so that one can handle big input arrays
+    """
+    pytypes = [pyify(typestr) for name,typestr in a.dtype.descr]
+    def convert_record(r):
+        return tuple([converter(value) for converter, value in zip(pytypes,r)])
+    return (convert_record(r) for r in a)

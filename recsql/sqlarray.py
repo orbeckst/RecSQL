@@ -8,7 +8,7 @@
 
 :class:`SQLarray` is a thin wrapper around pysqlite SQL tables. The main
 features ares that ``SELECT`` queries can return ``numpy.recarrays`` and the
-:meth:`SQLarray.selection` method returns a new :class:`SQLarray` instance.  
+:meth:`SQLarray.selection` method returns a new :class:`SQLarray` instance.
 
 numpy arrays can be stored in sql fields which allows advanced table
 aggregate functions such as ``histogram``.
@@ -18,9 +18,9 @@ A number of additional SQL functions are defined.
 :TODO:
    * Make object saveable (i.e. store the database on disk instead of
      memory or dump the memory db and provide a load() method
-   * Use hooks for the pickling protocol to make this transparent. 
+   * Use hooks for the pickling protocol to make this transparent.
 
-.. SeeAlso:: PyTables_ is a high-performance interface to table data. 
+.. SeeAlso:: PyTables_ is a high-performance interface to table data.
 
 .. _PyTables: http://www.pytables.org
 
@@ -32,7 +32,7 @@ Module content
 
 import os.path
 import re
-try: 
+try:
     from hashlib import md5
 except ImportError:
     from md5 import md5
@@ -44,6 +44,7 @@ import numpy
 from sqlutil import adapt_numpyarray, convert_numpyarray,\
     adapt_object, convert_object
 from rest_table import Table2array
+from convert import irecarray_to_py
 
 sqlite.register_adapter(numpy.ndarray,adapt_numpyarray)
 sqlite.register_adapter(numpy.recarray,adapt_numpyarray)
@@ -60,9 +61,9 @@ class SQLarray(object):
     .. method:: SQLarray([name[,records[,columns[,cachesize=5,connection=None]]]])
 
     :Arguments:
-       name        
+       name
           table name (can be referred to as '__self__' in SQL queries)
-       records    
+       records
           numpy record array that describes the layout and initializes the
           table OR any iterable (and then columns must be set, too) OR a string
           that contains a single, *simple reStructured text table* (and the table name is
@@ -71,22 +72,22 @@ class SQLarray(object):
        filename
           Alternatively to *records*, read a reStructured table from *filename*.
        columns
-          sequence of column names (only used if records does not have 
+          sequence of column names (only used if records does not have
           attribute dtype.names) [``None``]
-       cachesize   
+       cachesize
           number of (query, result) pairs that are cached [5]
-       connection  
-          If not ``None``, reuse this connection; this adds a new table to the same 
-          database, which allows more complicated queries with cross-joins. The 
+       connection
+          If not ``None``, reuse this connection; this adds a new table to the same
+          database, which allows more complicated queries with cross-joins. The
           table's connection is available as the attribute T.connection. [``None``]
        is_tmp
-          ``True``: create a tmp table; ``False``: regular table in db [``False``] 
+          ``True``: create a tmp table; ``False``: regular table in db [``False``]
 
-    :Bugs:        
+    :Bugs:
        * :exc:`InterfaceError`: *Error binding parameter 0 - probably unsupported type*
 
          In this case the recarray contained types such as ``numpy.int64`` that are not
-         understood by sqlite. Either convert the data manually (by setting the numpy 
+         understood by sqlite. Either convert the data manually (by setting the numpy
          dtypes yourself on the recarray, or better: feed a simple list of tuples ("records")
          to this class in *records*. Make sure that these tuples only contain standard python types.
          Together with *records* you will also have to supply the names of the data columns
@@ -135,12 +136,12 @@ class SQLarray(object):
             # TODO: this should be cleaned up; see also SQLarray_fromfile()
             if records is None and not filename is None:
                 records = ''.join(open(filename,'r').readlines())  # read file into records
-                
+
             if type(records) is str:
                 # maybe this is a reST table
                 P = Table2array(records, **kwargs)
                 P.parse()
-                records = P.records        # get the records and colnames instead of the numpy.recarray 
+                records = P.records        # get the records and colnames instead of the numpy.recarray
                 columns = P.names          # ... in order to avoid the dreaded 'InterfaceError'
                 self.name = P.tablename    # name provided as 'Table[<tablename>]: ...'
             try:
@@ -169,12 +170,17 @@ class SQLarray(object):
                 # This means that the numpy array should be set up so that there are no data types
                 # such as numpy.int64/32(?) which are not compatible with sqlite (no idea why).
                 self.cursor.executemany(SQL,records)
-            except:
-                import sys
-                sys.stderr.write("ERROR: You are probably feeding a recarray; sqlite does not know how to \n"
+            except Exception,err:
+                try:
+                    # fall back: convert each record to pytypes
+                    self.cursor.executemany(SQL,irecarray_to_py(records))
+                except Exception,err2:
+                    import sys
+                    sys.stderr.write(str(err2))
+                    sys.stderr.write("ERROR: You are probably feeding a recarray; sqlite does not know how to \n"
                                  "       deal with special numpy types such as int32 or int64. Try using the \n"
                                  "       recsql.SQLarray_fromfile() function or feed simple records (see docs).")
-                raise
+                    raise err
 
         # initialize query cache
         self.__cache = KRingbuffer(cachesize)
@@ -188,15 +194,15 @@ class SQLarray(object):
 
     def merge(self,recarray,columns=None):
         """Merge another recarray with the same columns into this table.
-        
+
         :Arguments:
-           recarray    
+           recarray
               numpy record array that describes the layout and initializes the
               table
 
         :Returns:
            n           number of inserted rows
-           
+
         :Raises:
            Raises an exception if duplicate and incompatible data exist
            in the main table and the new one.
@@ -223,7 +229,7 @@ class SQLarray(object):
 
         :Arguments:
            name         name of the table in the database (must be compatible with __self__)
-        
+
         :Returns:
            n            number of inserted rows
         """
@@ -295,7 +301,7 @@ class SQLarray(object):
     SELECT = sql_select
 
     def sql(self,SQL,parameters=None,asrecarray=True,cache=True):
-        """Execute sql statement. 
+        """Execute sql statement.
 
         :Arguments:
            SQL : string
@@ -311,9 +317,9 @@ class SQLarray(object):
               Should the results be cached? Set to ``False`` for large queries to
               avoid memory issues. Queries with ``?`` place holders are never cached.
               [``True``]
-              
+
         .. warning::
-           There are **no sanity checks** applied to the SQL. 
+           There are **no sanity checks** applied to the SQL.
 
         If  possible, the  returned list  of tuples  is turned  into a
         numpy record  array, otherwise the original list  of tuples is
@@ -338,7 +344,7 @@ class SQLarray(object):
         # (cache=True) and if query in dict (AND cache
         # valid, ie it hasn't been emptied (??)) just return cache result.
         #
-        # Never use the cache if place holders are used because then we 
+        # Never use the cache if place holders are used because then we
         # would return the same result for differing input!
         if not '?' in SQL and cache and SQL in self.__cache:
             return self.__cache[SQL]
@@ -352,7 +358,7 @@ class SQLarray(object):
 
         if c.rowcount > 0 or SQL.upper().find('DELETE') > -1:
             # table was (potentially) modified
-            # rowcount does not change for DELETE, see 
+            # rowcount does not change for DELETE, see
             # http://oss.itsystementwicklung.de/download/pysqlite/doc/sqlite3.html#cursor-objects
             # so we catch this case manually and invalidate the whole cache
             self.__cache.clear()
@@ -364,7 +370,7 @@ class SQLarray(object):
                 names = [x[0] for x in c.description]   # first elements are column names
                 result = numpy.rec.fromrecords(result,names=names)
             except:
-                # XXX: potential BUG: if there are memory issues then it can happen that 
+                # XXX: potential BUG: if there are memory issues then it can happen that
                 # XXX: we just silently fall back to a tuple but calling code expects a
                 # XXX: recarray; because we swallowed ANY exception the caller will never know
                 # XXX: ... should probably change this and not have the try ... except in the first place
@@ -404,17 +410,17 @@ class SQLarray(object):
         if re.match(r'\s*SELECT.*FROM',safe_sql,flags=re.IGNORECASE):
             _sql = safe_sql
         else:
-            # WHERE clause only        
+            # WHERE clause only
             _sql = """SELECT * FROM __self__ WHERE """+str(safe_sql)
         # (note: MUST replace __self__  before md5!)
-        _sql = _sql.replace('__self__', self.name)        
+        _sql = _sql.replace('__self__', self.name)
         # unique name for table (unless user supplied... which could be 'x;DROP TABLE...')
         newname = kwargs.pop('name', 'selection_'+md5(_sql).hexdigest())
 
         # create table directly
         # SECURITY: unsafe tablename !!!! (but cannot interpolate?)
         _sql = "CREATE TABLE %(newname)s AS " % vars() + _sql
-        
+
         c = self.cursor
         if parameters is None:
             c.execute(_sql)              # no sanity checks!
@@ -423,11 +429,11 @@ class SQLarray(object):
 
         # associate with new table in db
         return SQLarray(newname, None, connection=self.connection)
-        
+
     def _init_sqlite_functions(self):
         """additional SQL functions to the database"""
         import sqlfunctions
-                
+
         self.connection.create_function("sqrt", 1,sqlfunctions._sqrt)
         self.connection.create_function("pow", 2,sqlfunctions._pow)
         self.connection.create_function("match",2,sqlfunctions._match)
@@ -451,7 +457,7 @@ class SQLarray(object):
 
     def __del__(self):
         """Delete the underlying SQL table from the database."""
-        SQL = """DROP TABLE IF EXISTS __self__""" 
+        SQL = """DROP TABLE IF EXISTS __self__"""
         self.sql(SQL, asrecarray=False, cache=False)
 
 # Ring buffer (from hop.utilities)
@@ -479,7 +485,7 @@ try:
             return "Ringbuffer(capacity="+str(self.capacity)+", "+str(list(self))+")"
 except ImportError:
     class Ringbuffer(list):
-        """Ringbuffer that can be treated as a list. 
+        """Ringbuffer that can be treated as a list.
 
         Note that the real queuing order is only obtained with the
         :meth:`tolist` method.
@@ -552,7 +558,7 @@ class KRingbuffer(dict):
         raise NotImplementedError('Only pop() is supported.')
     def update(self,*args,**kwargs):
         raise NotImplementedError('Only append() is supported.')
-        
+
 def SQLarray_fromfile(filename, **kwargs):
     """Create a :class:`SQLarray` from *filename*.
 
@@ -573,17 +579,17 @@ def SQLarray_fromfile(filename, **kwargs):
             *autoncovert*.
     """
     import rest_table, csv_table
-    
+
     Table2array = {'rst': rest_table.Table2array,
                    'txt': rest_table.Table2array,
                    'csv': csv_table.Table2array,
                    }
-    # see convert.Autoconverter for the kwargs; *active*/*autoconvert* 
+    # see convert.Autoconverter for the kwargs; *active*/*autoconvert*
     # is for the Table2array class
     _kwnames = ('active', 'autoconvert', 'mode', 'mapping', 'sep')
     kwargsT2a = dict((k,kwargs.pop(k))  for k in _kwnames if k in kwargs)
     kwargsT2a.setdefault('mode', 'singlet')
-    # Note: sep=False is the only sane choice because we cannot deal  yet 
+    # Note: sep=False is the only sane choice because we cannot deal  yet
     #       with numpy list structures for import into the db
     kwargsT2a['sep'] = False
 

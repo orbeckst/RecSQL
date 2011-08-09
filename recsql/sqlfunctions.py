@@ -53,7 +53,7 @@ if _numpyversion[1] < 1:
         h,e = numpy.histogramdd(*args,**kwargs)
         return h,e[0]
     histogram1d.__doc__ = "1D histogram, based on numpy histogramdd; returns edges as in numpy 1.1.x\n"+\
-                        numpy.histogram.__doc__    
+                        numpy.histogram.__doc__
 else:
     # once deprecation for new=True sets in we can catch this here
     def histogram1d(*args,**kwargs):
@@ -61,7 +61,7 @@ else:
         h,e = numpy.histogram(*args,**kwargs)
         return h,e
     histogram1d.__doc__ = numpy.histogram.__doc__
-  
+
 
 from sqlutil import adapt_numpyarray, convert_numpyarray,\
     adapt_object, convert_object
@@ -72,7 +72,7 @@ def _sqrt(x):
         x = float(x)
     except TypeError:
         return None
-    return numpy.sqrt(x)        
+    return numpy.sqrt(x)
 
 def _pow(x,y):
     try:
@@ -80,7 +80,7 @@ def _pow(x,y):
         y = float(y)
     except TypeError:
         return None
-    return numpy.power(x,y)        
+    return numpy.power(x,y)
 
 def _regexp(pattern, string):
     """string REGEXP pattern == re.search(pattern, string)"""
@@ -111,7 +111,7 @@ class _Stdev(object):
             x = float(x)
             self.x2 += x*x
             self.x  += x
-            self.n  += 1                    
+            self.n  += 1
         except TypeError:
             pass        # don't contribute to average
     def finalize(self):
@@ -176,21 +176,21 @@ class _FunctionHistogram(_NumpyHistogram):
         # return adapt_object( (...,...,...) )
 
 class _MeanHistogram(_FunctionHistogram):
-    """Mean of the weights in each bin. 
+    """Mean of the weights in each bin.
     Takes TWO column arguments: value and weight"""
     def finalize(self):
         return adapt_object(regularized_function(\
                 self.data,self.y,numpy.mean,bins=self.bins,range=self.range))
 
 class _StdHistogram(_FunctionHistogram):
-    """Standard deviation of the weights in each bin. 
+    """Standard deviation of the weights in each bin.
     Takes TWO column arguments: value and weight"""
     def finalize(self):
         return adapt_object(regularized_function(\
                 self.data,self.y,numpy.std,bins=self.bins,range=self.range))
 
 class _MinHistogram(_FunctionHistogram):
-    """Min value of the weights in each bin. 
+    """Min value of the weights in each bin.
     Takes TWO column arguments: value and weight"""
     def _min(self,v):
         try:
@@ -203,7 +203,7 @@ class _MinHistogram(_FunctionHistogram):
                 self.data,self.y,self._min,bins=self.bins,range=self.range))
 
 class _MaxHistogram(_FunctionHistogram):
-    """Max value of the weights in each bin. 
+    """Max value of the weights in each bin.
     Takes TWO column arguments: value and weight"""
     def _max(self,v):
         try:
@@ -216,14 +216,14 @@ class _MaxHistogram(_FunctionHistogram):
                 self.data,self.y,self._max,bins=self.bins,range=self.range))
 
 class _MedianHistogram(_FunctionHistogram):
-    """Median value of the weights in each bin. 
+    """Median value of the weights in each bin.
     Takes TWO column arguments: value and weight"""
     def finalize(self):
         return adapt_object(regularized_function(\
                 self.data,self.y,numpy.median,bins=self.bins,range=self.range))
 
 class _ZscoreHistogram(_FunctionHistogram):
-    """Z-score of the weights in each bin abs(Y - <Y>)/std(Y). 
+    """Z-score of the weights in each bin abs(Y - <Y>)/std(Y).
     Takes TWO column arguments: value and weight"""
     def Zscore(self,v):
         m = v.mean()
@@ -246,7 +246,7 @@ def regularized_function(x,y,func,bins=None,range=None):
     all data points Y' that have been collected in the bin.
 
     :Arguments:
-       x  
+       x
           abscissa values (for binning)
        y
           ordinate values (func is applied)
@@ -258,7 +258,7 @@ def regularized_function(x,y,func,bins=None,range=None):
           limits (used with number of bins)
 
     :Returns:
-       F,edges        
+       F,edges
           function and edges (midpoints = 0.5*(edges[:-1]+edges[1:]))
     """
     _x = numpy.asarray(x)

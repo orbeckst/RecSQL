@@ -160,7 +160,7 @@ under `adapters and converters`_.) The following table lists all *PyAggregate*
 functions that have been defined:
 
 .. _sqlite documentation: http://docs.python.org/library/sqlite3.html
-.. _adapters and converters: 
+.. _adapters and converters:
    http://docs.python.org/library/sqlite3.html#using-adapters-to-store-additional-python-types-in-sqlite-databases
 
 ===============  ==============  ==============================================================
@@ -169,16 +169,16 @@ PyAggregate      type            signature; description
 array             NumpyArray     array(x);
                                  a standard :func:`numpy.array`
 
-histogram         Object         histogram(x,nbins,xmin,xmax); 
+histogram         Object         histogram(x,nbins,xmin,xmax);
                                  histogram x in nbins evenly spaced bins between xmin and xmax
 
 distribution      Object         distribution(x,nbins,xmin,xmax);
                                  normalized histogram whose integral gives 1
 
-meanhistogram     Object         meanhistogram(x,y,nbins,xmin,xmax); 
+meanhistogram     Object         meanhistogram(x,y,nbins,xmin,xmax);
                                  histogram data points y along x and average all y in each bin
 
-stdhistogram      Object         stdhistogram(x,y,nbins,xmin,xmax); 
+stdhistogram      Object         stdhistogram(x,y,nbins,xmin,xmax);
                                  give the standard deviation (from N-1 variance)
                                  std(y) = sqrt(Var(y)) with Var(y) = <(y-<y>)^2>
 
@@ -223,7 +223,7 @@ but when using a PyAggregate the type *must* be declared::
 
    a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
 """
-VERSION = 0,7,7
+VERSION = 0,7,'7-dev'
 
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 
