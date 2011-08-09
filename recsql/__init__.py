@@ -225,6 +225,13 @@ although one can also do ::
 but when using a PyAggregate the type *must* be declared::
 
    a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
+
+.. SeeAlso:: Other approaches to solving the same problem: `esutil.sqlite`_ and `hydroclimpy.io.sqlite`_
+
+.. _`esutil.sqlite`:
+   http://code.google.com/p/esutil/
+.. _`hydroclimpy.io.sqlite`:
+   http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py
 """
 VERSION = 0,7,'8-dev'
 

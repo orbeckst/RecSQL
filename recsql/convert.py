@@ -192,7 +192,7 @@ def to_int64(a):
     return a.astype(dtype)
 
 def pyify(typestr):
-    if typestr[1] == 'i':
+    if typestr[1] in 'iu':
         return int
     elif typestr[1] == 'f':
         return float
