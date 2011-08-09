@@ -435,6 +435,8 @@ class SQLarray(object):
         import sqlfunctions
 
         self.connection.create_function("sqrt", 1,sqlfunctions._sqrt)
+        self.connection.create_function("sqr", 1,sqlfunctions._sqr)
+        self.connection.create_function("periodic", 1,sqlfunctions._periodic)
         self.connection.create_function("pow", 2,sqlfunctions._pow)
         self.connection.create_function("match",2,sqlfunctions._match)
         self.connection.create_function("regexp",2,sqlfunctions._regexp)

@@ -16,6 +16,8 @@ Example:
 
      from sqlfunctions import *
      self.connection.create_function("sqrt", 1, _sqrt)
+     self.connection.create_function("sqr", 1, _sqr)
+     self.connection.create_function("periodic", 1, _periodic)
      self.connection.create_function("pow", 2, _pow)
      self.connection.create_function("match", 2, _match)   # implements MATCH
      self.connection.create_function("regexp", 2, _regexp) # implements REGEXP
@@ -73,6 +75,18 @@ def _sqrt(x):
     except TypeError:
         return None
     return numpy.sqrt(x)
+
+def _sqr(x):
+    return x*x
+
+def _periodic(x):
+    """Wrap angle in degree between -180 and +180"""
+    x = x % 360
+    if x <= -180:
+        return 360 + x
+    elif x > 180:
+        return -360 + x
+    return x
 
 def _pow(x,y):
     try:

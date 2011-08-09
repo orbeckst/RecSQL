@@ -1,5 +1,6 @@
+# -*- encoding: utf-8 -*-
 # RecSQL -- a simple mash-up of sqlite and numpy.recsql
-# Copyright (C) 2007-2010 Oliver Beckstein <orbeckst@gmail.com>
+# Copyright (C) 2007-2011 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License, version 3 or higher (your choice)
 """
 ================
@@ -106,8 +107,10 @@ Additional simple functions have been defined:
 ======================   ===============================================
 Simple SQL f()           description
 ======================   ===============================================
-sqrt(x)                  square root :func:`math.sqrt`
+sqr(x)                   square x*x
+sqrt(x)                  square root :func:`numpy.sqrt`
 pow(x,y)                 power x**y
+periodic(x)              wrap angle in degree between -180º and +180º
 regexp(pattern,string)   string REGEXP pattern
 match(pattern,string)    string MATCH pattern   (anchored REGEXP)
 fformat(format,x)        string formatting of a single value format % x
@@ -223,7 +226,7 @@ but when using a PyAggregate the type *must* be declared::
 
    a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
 """
-VERSION = 0,7,'7-dev'
+VERSION = 0,7,'8-dev'
 
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 
