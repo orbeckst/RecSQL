@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>User documentation &mdash; RecSQL v0.7.6 documentation</title>
+    <title>User documentation &mdash; RecSQL v0.7.8-dev documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.7.6',
+        VERSION:     '0.7.8-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="RecSQL v0.7.6 documentation" href="index.html" />
+    <link rel="top" title="RecSQL v0.7.8-dev documentation" href="index.html" />
     <link rel="next" title="Notes for developers" href="programmers.html" />
     <link rel="prev" title="INSTALL" href="INSTALL.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="INSTALL.html" title="INSTALL"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">RecSQL v0.7.6 documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL v0.7.8-dev documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -83,7 +83,7 @@ long run using PyTables than recSQL.</p>
 <h3>Important functions and classes<a class="headerlink" href="#important-functions-and-classes" title="Permalink to this headline">¶</a></h3>
 <p>A <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> can be constructed by either reading data from a
 CSV file or reST table with the <a class="reference internal" href="#recsql.SQLarray_fromfile" title="recsql.SQLarray_fromfile"><tt class="xref py py-func docutils literal"><span class="pre">SQLarray_fromfile()</span></tt></a> function or
-constructed directly from a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-3071eab)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a> via the
+constructed directly from a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-26aa3cf)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a> via the
 <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> constructor.</p>
 <dl class="function">
 <dt id="recsql.SQLarray_fromfile">
@@ -137,10 +137,10 @@ file extension</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>name        </dt>
+<dt>name</dt>
 <dd><p class="first last">table name (can be referred to as &#8216;__self__&#8217; in SQL queries)</p>
 </dd>
-<dt>records    </dt>
+<dt>records</dt>
 <dd><p class="first last">numpy record array that describes the layout and initializes the
 table OR any iterable (and then columns must be set, too) OR a string
 that contains a single, <em>simple reStructured text table</em> (and the table name is
@@ -151,15 +151,15 @@ If <tt class="xref docutils literal"><span class="pre">None</span></tt> then sim
 <dd><p class="first last">Alternatively to <em>records</em>, read a reStructured table from <em>filename</em>.</p>
 </dd>
 <dt>columns</dt>
-<dd><p class="first last">sequence of column names (only used if records does not have 
+<dd><p class="first last">sequence of column names (only used if records does not have
 attribute dtype.names) [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
 </dd>
-<dt>cachesize   </dt>
+<dt>cachesize</dt>
 <dd><p class="first last">number of (query, result) pairs that are cached [5]</p>
 </dd>
-<dt>connection  </dt>
-<dd><p class="first last">If not <tt class="xref docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same 
-database, which allows more complicated queries with cross-joins. The 
+<dt>connection</dt>
+<dd><p class="first last">If not <tt class="xref docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same
+database, which allows more complicated queries with cross-joins. The
 table&#8217;s connection is available as the attribute T.connection. [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
 </dd>
 <dt>is_tmp</dt>
@@ -171,7 +171,7 @@ table&#8217;s connection is available as the attribute T.connection. [<tt class=
 <tr class="field"><th class="field-name">Bugs :</th><td class="field-body"><ul class="first last">
 <li><p class="first"><tt class="xref py py-exc docutils literal"><span class="pre">InterfaceError</span></tt>: <em>Error binding parameter 0 - probably unsupported type</em></p>
 <p>In this case the recarray contained types such as <tt class="docutils literal"><span class="pre">numpy.int64</span></tt> that are not
-understood by sqlite. Either convert the data manually (by setting the numpy 
+understood by sqlite. Either convert the data manually (by setting the numpy
 dtypes yourself on the recarray, or better: feed a simple list of tuples (&#8220;records&#8221;)
 to this class in <em>records</em>. Make sure that these tuples only contain standard python types.
 Together with <em>records</em> you will also have to supply the names of the data columns
@@ -239,7 +239,7 @@ interpolation.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>recarray    </dt>
+<dt>recarray</dt>
 <dd><p class="first last">numpy record array that describes the layout and initializes the
 table</p>
 </dd>
@@ -465,11 +465,17 @@ functions themselves are defined in the module <a class="reference internal" hre
 </tr>
 </thead>
 <tbody valign="top">
+<tr><td>sqr(x)</td>
+<td>square x*x</td>
+</tr>
 <tr><td>sqrt(x)</td>
-<td>square root <a class="reference external" href="http://docs.python.org/library/math.html#math.sqrt" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">math.sqrt()</span></tt></a></td>
+<td>square root <tt class="xref py py-func docutils literal"><span class="pre">numpy.sqrt()</span></tt></td>
 </tr>
 <tr><td>pow(x,y)</td>
 <td>power x**y</td>
+</tr>
+<tr><td>periodic(x)</td>
+<td>wrap angle in degree between -180º and +180º</td>
 </tr>
 <tr><td>regexp(pattern,string)</td>
 <td>string REGEXP pattern</td>
@@ -523,7 +529,7 @@ functions:</p>
 <td>standard deviation (using N-1 variance)</td>
 </tr>
 <tr><td>median(x)</td>
-<td>median of the data (see <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.median.html#numpy.median" title="(in NumPy v2.0.dev-3071eab)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.median()</span></tt></a>)</td>
+<td>median of the data (see <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.median.html#numpy.median" title="(in NumPy v2.0.dev-26aa3cf)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.median()</span></tt></a>)</td>
 </tr>
 <tr><td>min(x)</td>
 <td>minimum [sqlite builtin]</td>
@@ -566,7 +572,7 @@ functions that have been defined:</p>
 <tr><td>array</td>
 <td>NumpyArray</td>
 <td>array(x);
-a standard <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.0.dev-3071eab)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.array()</span></tt></a></td>
+a standard <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.0.dev-26aa3cf)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.array()</span></tt></a></td>
 </tr>
 <tr><td>histogram</td>
 <td>Object</td>
@@ -637,6 +643,10 @@ max(y)</td>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">a</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&#39;SELECT histogram(x,10,0.0,1.5) as &quot;hist [Object]&quot; FROM __self__&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Other approaches to solving the same problem: <a class="reference external" href="http://code.google.com/p/esutil/">esutil.sqlite</a> and <a class="reference external" href="http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py">hydroclimpy.io.sqlite</a></p>
+</div>
 <dl class="class">
 <dt>
 <em class="property">class </em><tt class="descclassname">recsql.</tt><tt class="descname">SQLarray</tt><big>(</big><em>name=None</em>, <em>records=None</em>, <em>filename=None</em>, <em>columns=None</em>, <em>cachesize=5</em>, <em>connection=None</em>, <em>is_tmp=False</em>, <em>**kwargs</em><big>)</big></dt>
@@ -651,10 +661,10 @@ max(y)</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>name        </dt>
+<dt>name</dt>
 <dd><p class="first last">table name (can be referred to as &#8216;__self__&#8217; in SQL queries)</p>
 </dd>
-<dt>records    </dt>
+<dt>records</dt>
 <dd><p class="first last">numpy record array that describes the layout and initializes the
 table OR any iterable (and then columns must be set, too) OR a string
 that contains a single, <em>simple reStructured text table</em> (and the table name is
@@ -665,15 +675,15 @@ If <tt class="xref docutils literal"><span class="pre">None</span></tt> then sim
 <dd><p class="first last">Alternatively to <em>records</em>, read a reStructured table from <em>filename</em>.</p>
 </dd>
 <dt>columns</dt>
-<dd><p class="first last">sequence of column names (only used if records does not have 
+<dd><p class="first last">sequence of column names (only used if records does not have
 attribute dtype.names) [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
 </dd>
-<dt>cachesize   </dt>
+<dt>cachesize</dt>
 <dd><p class="first last">number of (query, result) pairs that are cached [5]</p>
 </dd>
-<dt>connection  </dt>
-<dd><p class="first last">If not <tt class="xref docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same 
-database, which allows more complicated queries with cross-joins. The 
+<dt>connection</dt>
+<dd><p class="first last">If not <tt class="xref docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same
+database, which allows more complicated queries with cross-joins. The
 table&#8217;s connection is available as the attribute T.connection. [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
 </dd>
 <dt>is_tmp</dt>
@@ -685,7 +695,7 @@ table&#8217;s connection is available as the attribute T.connection. [<tt class=
 <tr class="field"><th class="field-name">Bugs :</th><td class="field-body"><ul class="first last">
 <li><p class="first"><tt class="xref py py-exc docutils literal"><span class="pre">InterfaceError</span></tt>: <em>Error binding parameter 0 - probably unsupported type</em></p>
 <p>In this case the recarray contained types such as <tt class="docutils literal"><span class="pre">numpy.int64</span></tt> that are not
-understood by sqlite. Either convert the data manually (by setting the numpy 
+understood by sqlite. Either convert the data manually (by setting the numpy
 dtypes yourself on the recarray, or better: feed a simple list of tuples (&#8220;records&#8221;)
 to this class in <em>records</em>. Make sure that these tuples only contain standard python types.
 Together with <em>records</em> you will also have to supply the names of the data columns
@@ -753,7 +763,7 @@ interpolation.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>recarray    </dt>
+<dt>recarray</dt>
 <dd><p class="first last">numpy record array that describes the layout and initializes the
 table</p>
 </dd>
@@ -1021,12 +1031,12 @@ file extension</p>
         <li class="right" >
           <a href="INSTALL.html" title="INSTALL"
              >previous</a> |</li>
-        <li><a href="index.html">RecSQL v0.7.6 documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL v0.7.8-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2007-2010, Oliver Beckstein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
 </html>

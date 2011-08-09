@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Notes for developers &mdash; RecSQL v0.7.6 documentation</title>
+    <title>Notes for developers &mdash; RecSQL v0.7.8-dev documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.7.6',
+        VERSION:     '0.7.8-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="RecSQL v0.7.6 documentation" href="index.html" />
+    <link rel="top" title="RecSQL v0.7.8-dev documentation" href="index.html" />
     <link rel="prev" title="User documentation" href="users.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="users.html" title="User documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">RecSQL v0.7.6 documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL v0.7.8-dev documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -72,7 +72,7 @@ memory or dump the memory db and provide a load() method</li>
 </table>
 <div class="admonition-see-also admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference external" href="http://www.pytables.org">PyTables</a> is a high-performance interface to table data. </p>
+<p class="last"><a class="reference external" href="http://www.pytables.org">PyTables</a> is a high-performance interface to table data.</p>
 </div>
 <div class="section" id="module-content">
 <h3>Module content<a class="headerlink" href="#module-content" title="Permalink to this headline">¶</a></h3>
@@ -116,10 +116,10 @@ cleaned up to reflect the keys in the Ringbuffer.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>name        </dt>
+<dt>name</dt>
 <dd><p class="first last">table name (can be referred to as &#8216;__self__&#8217; in SQL queries)</p>
 </dd>
-<dt>records    </dt>
+<dt>records</dt>
 <dd><p class="first last">numpy record array that describes the layout and initializes the
 table OR any iterable (and then columns must be set, too) OR a string
 that contains a single, <em>simple reStructured text table</em> (and the table name is
@@ -130,15 +130,15 @@ If <tt class="xref docutils literal"><span class="pre">None</span></tt> then sim
 <dd><p class="first last">Alternatively to <em>records</em>, read a reStructured table from <em>filename</em>.</p>
 </dd>
 <dt>columns</dt>
-<dd><p class="first last">sequence of column names (only used if records does not have 
+<dd><p class="first last">sequence of column names (only used if records does not have
 attribute dtype.names) [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
 </dd>
-<dt>cachesize   </dt>
+<dt>cachesize</dt>
 <dd><p class="first last">number of (query, result) pairs that are cached [5]</p>
 </dd>
-<dt>connection  </dt>
-<dd><p class="first last">If not <tt class="xref docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same 
-database, which allows more complicated queries with cross-joins. The 
+<dt>connection</dt>
+<dd><p class="first last">If not <tt class="xref docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same
+database, which allows more complicated queries with cross-joins. The
 table&#8217;s connection is available as the attribute T.connection. [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
 </dd>
 <dt>is_tmp</dt>
@@ -150,7 +150,7 @@ table&#8217;s connection is available as the attribute T.connection. [<tt class=
 <tr class="field"><th class="field-name">Bugs :</th><td class="field-body"><ul class="first last">
 <li><p class="first"><tt class="xref py py-exc docutils literal"><span class="pre">InterfaceError</span></tt>: <em>Error binding parameter 0 - probably unsupported type</em></p>
 <p>In this case the recarray contained types such as <tt class="docutils literal"><span class="pre">numpy.int64</span></tt> that are not
-understood by sqlite. Either convert the data manually (by setting the numpy 
+understood by sqlite. Either convert the data manually (by setting the numpy
 dtypes yourself on the recarray, or better: feed a simple list of tuples (&#8220;records&#8221;)
 to this class in <em>records</em>. Make sure that these tuples only contain standard python types.
 Together with <em>records</em> you will also have to supply the names of the data columns
@@ -218,7 +218,7 @@ interpolation.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>recarray    </dt>
+<dt>recarray</dt>
 <dd><p class="first last">numpy record array that describes the layout and initializes the
 table</p>
 </dd>
@@ -561,7 +561,7 @@ separator (using <tt class="xref py py-func docutils literal"><span class="pre">
 <dl class="class">
 <dt id="recsql.csv_table.Table2array">
 <em class="property">class </em><tt class="descclassname">recsql.csv_table.</tt><tt class="descname">Table2array</tt><big>(</big><em>filename=None</em>, <em>tablename='CSV'</em>, <em>encoding='utf-8'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#recsql.csv_table.Table2array" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read a csv file and provide conversion to a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-3071eab)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</p>
+<dd><p>Read a csv file and provide conversion to a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-26aa3cf)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</p>
 <ul class="simple">
 <li>Depending on the arguments, autoconversion of values can take
 place. See <a class="reference internal" href="#recsql.convert.Autoconverter" title="recsql.convert.Autoconverter"><tt class="xref py py-class docutils literal"><span class="pre">recsql.convert.Autoconverter</span></tt></a> for details.</li>
@@ -602,7 +602,7 @@ as strings).</p>
 <dl class="method">
 <dt id="recsql.csv_table.Table2array.recarray">
 <tt class="descname">recarray</tt><big>(</big><big>)</big><a class="headerlink" href="#recsql.csv_table.Table2array.recarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns data as <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-3071eab)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</p>
+<dd><p>Returns data as <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-26aa3cf)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -644,7 +644,7 @@ python value and casts strings to the &#8220;best&#8221; type (see <a class="ref
 <p>The defaults for the conversion of a input field value to a
 special python value are:</p>
 <blockquote>
-<table border="1" class="docutils">
+<div><table border="1" class="docutils">
 <colgroup>
 <col width="42%" />
 <col width="58%" />
@@ -690,7 +690,7 @@ special python value are:</p>
 </tr>
 </tbody>
 </table>
-</blockquote>
+</div></blockquote>
 <p>If the <em>sep</em> keyword is set to a string instead of <tt class="xref docutils literal"><span class="pre">False</span></tt> then
 values are split into tuples. Probably the most convenient way to
 use this is to set <em>sep</em> = <tt class="xref docutils literal"><span class="pre">True</span></tt> (or <tt class="xref docutils literal"><span class="pre">None</span></tt>) because this
@@ -716,7 +716,7 @@ spaces.</p>
 <dt><em>mode</em></dt>
 <dd><p class="first">defines what the converter does</p>
 <blockquote class="last">
-<dl class="docutils">
+<div><dl class="docutils">
 <dt>&#8220;simple&#8221;</dt>
 <dd><p class="first last">convert entries with <a class="reference internal" href="#recsql.convert.besttype" title="recsql.convert.besttype"><tt class="xref py py-func docutils literal"><span class="pre">besttype()</span></tt></a></p>
 </dd>
@@ -732,7 +732,7 @@ and does the stuff that &#8220;singlet&#8221; does</p>
 <dd><p class="first last">convert all entries with <a class="reference internal" href="#recsql.convert.to_unicode" title="recsql.convert.to_unicode"><tt class="xref py py-func docutils literal"><span class="pre">to_unicode()</span></tt></a></p>
 </dd>
 </dl>
-</blockquote>
+</div></blockquote>
 </dd>
 <dt><em>mapping</em></dt>
 <dd><p class="first last">any dict-like mapping that supports lookup. If``None`` then the
@@ -740,9 +740,9 @@ hard-coded defaults are used</p>
 </dd>
 <dt><em>active</em> or <em>autoconvert</em></dt>
 <dd><blockquote class="first">
-<p>initial state of the <a class="reference internal" href="#recsql.convert.Autoconverter.active" title="recsql.convert.Autoconverter.active"><tt class="xref py py-attr docutils literal"><span class="pre">Autoconverter.active</span></tt></a> toggle.
+<div><p>initial state of the <a class="reference internal" href="#recsql.convert.Autoconverter.active" title="recsql.convert.Autoconverter.active"><tt class="xref py py-attr docutils literal"><span class="pre">Autoconverter.active</span></tt></a> toggle.
 <tt class="xref docutils literal"><span class="pre">False</span></tt> deactivates any conversion. [<tt class="xref docutils literal"><span class="pre">True</span></tt>]</p>
-</blockquote>
+</div></blockquote>
 <dl class="last docutils">
 <dt><em>sep</em></dt>
 <dd><p class="first last">character to split on (produces lists); use <tt class="xref docutils literal"><span class="pre">True</span></tt> or <tt class="xref docutils literal"><span class="pre">None</span></tt>
@@ -771,7 +771,7 @@ hard-coded defaults are used</p>
 <dl class="attribute">
 <dt id="recsql.convert.Autoconverter.active">
 <tt class="descclassname">Autoconverter.</tt><tt class="descname">active</tt><a class="headerlink" href="#recsql.convert.Autoconverter.active" title="Permalink to this definition">¶</a></dt>
-<dd><p>If set  to <tt class="xref docutils literal"><span class="pre">True</span></tt> then conversion takes place; <tt class="xref docutils literal"><span class="pre">False</span></tt> 
+<dd><p>If set  to <tt class="xref docutils literal"><span class="pre">True</span></tt> then conversion takes place; <tt class="xref docutils literal"><span class="pre">False</span></tt>
 just returns <a class="reference internal" href="#recsql.convert.besttype" title="recsql.convert.besttype"><tt class="xref py py-func docutils literal"><span class="pre">besttype()</span></tt></a> applid to the value.</p>
 </dd></dl>
 
@@ -805,10 +805,12 @@ utf-8 by default.</p>
 can be used in the same way as the builtin functions.</p>
 <p>Example:</p>
 <blockquote>
-<p>Add the functions to an existing connection in the following way (assuming
+<div><p>Add the functions to an existing connection in the following way (assuming
 that the db connection is available in <tt class="docutils literal"><span class="pre">self.connection</span></tt>):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sqlfunctions</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span><span class="s">&quot;sqrt&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">_sqrt</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span><span class="s">&quot;sqr&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">_sqr</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span><span class="s">&quot;periodic&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">_periodic</span><span class="p">)</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span><span class="s">&quot;pow&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">_pow</span><span class="p">)</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span><span class="s">&quot;match&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">_match</span><span class="p">)</span>   <span class="c"># implements MATCH</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span><span class="s">&quot;regexp&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">_regexp</span><span class="p">)</span> <span class="c"># implements REGEXP</span>
@@ -826,7 +828,7 @@ that the db connection is available in <tt class="docutils literal"><span class=
 <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_aggregate</span><span class="p">(</span><span class="s">&quot;zscorehistogram&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">_ZscoreHistogram</span><span class="p">)</span>
 </pre></div>
 </div>
-</blockquote>
+</div></blockquote>
 <div class="section" id="id2">
 <h4>Module content<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <dl class="function">
@@ -841,7 +843,7 @@ all data points Y&#8217; that have been collected in the bin.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>x  </dt>
+<dt>x</dt>
 <dd><p class="first last">abscissa values (for binning)</p>
 </dd>
 <dt>y</dt>
@@ -860,7 +862,7 @@ all data points Y&#8217; that have been collected in the bin.</p>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns :</th><td class="field-body"><dl class="first last docutils">
-<dt>F,edges        </dt>
+<dt>F,edges</dt>
 <dd><p class="first last">function and edges (midpoints = 0.5*(edges[:-1]+edges[1:]))</p>
 </dd>
 </dl>
@@ -896,8 +898,8 @@ all data points Y&#8217; that have been collected in the bin.</p>
 <dd><p>Pseudo recarray that is used to feed SQLarray:</p>
 <p>Must only implement:</p>
 <blockquote>
-recarray.dtype.names         sequence of column names
-iteration                    yield records</blockquote>
+<div>recarray.dtype.names         sequence of column names
+iteration                    yield records</div></blockquote>
 </dd></dl>
 
 <dl class="function">
@@ -1002,12 +1004,12 @@ iteration                    yield records</blockquote>
         <li class="right" >
           <a href="users.html" title="User documentation"
              >previous</a> |</li>
-        <li><a href="index.html">RecSQL v0.7.6 documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL v0.7.8-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2007-2010, Oliver Beckstein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
 </html>
