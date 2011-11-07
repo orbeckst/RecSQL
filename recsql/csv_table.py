@@ -2,19 +2,21 @@
 :mod:`recsql.csv_table` --- Parse a simple CSV table
 ====================================================
 
-Turn a CSV table into a numpy array. 
+Turn a CSV table into a numpy array.
 
 Uses :mod:`csv` (requires python 2.6 or better).
 
 .. autoclass:: Table2array
    :members: __init__, recarray
 .. autofunction:: make_python_name
+
 """
+from __future__ import with_statement
 
 # notes on csv (from http://farmdev.com/talks/unicode/)
-# encode temp. to utf-8 
+# encode temp. to utf-8
 #   s_bytes = s_uni.encode('utf-8')
-#   do stuff 
+#   do stuff
 #   s_bytes.decode('utf-8')
 
 try:
@@ -81,7 +83,7 @@ def make_python_name(s, default=None, number_prefix='N',encoding="utf-8"):
     if not re.match('\d', s) is None:
         s = number_prefix+s
     return unicode(s, encoding)
-    
+
 class Table2array(object):
     """Read a csv file and provide conversion to a :class:`numpy.recarray`.
 
@@ -90,7 +92,7 @@ class Table2array(object):
 
     * Table column headers are always read from the first row of the file.
 
-    * Empty rows are discarded.     
+    * Empty rows are discarded.
     """
     def __init__(self, filename=None, tablename="CSV", encoding="utf-8", **kwargs):
         """
@@ -101,9 +103,9 @@ class Table2array(object):
               name of the table
            *autoconvert*
               EXPERIMENTAL. ``True``: replace certain values
-              with special python values (see :class:`convert.Autoconverter`) and possibly 
+              with special python values (see :class:`convert.Autoconverter`) and possibly
               split values into lists (see *sep*).
-              ``False``: leave everything as it is (numbers as numbers and strings 
+              ``False``: leave everything as it is (numbers as numbers and strings
               as strings).
            *mode*
               mode of the :class:`~convert.Autoconverter`
@@ -121,3 +123,4 @@ class Table2array(object):
     def recarray(self):
         """Returns data as :class:`numpy.recarray`."""
         return numpy.rec.fromrecords(self.records, names=self.names)
+

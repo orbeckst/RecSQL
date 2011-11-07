@@ -57,9 +57,10 @@ if _numpyversion[1] < 1:
     histogram1d.__doc__ = "1D histogram, based on numpy histogramdd; returns edges as in numpy 1.1.x\n"+\
                         numpy.histogram.__doc__
 else:
-    # once deprecation for new=True sets in we can catch this here
     def histogram1d(*args,**kwargs):
-        kwargs['new'] = True
+        if _numpyversion[1] < 5:
+            # new=True only for older versions 1.0.x .. 1.4.x
+            kwargs['new'] = True
         h,e = numpy.histogram(*args,**kwargs)
         return h,e
     histogram1d.__doc__ = numpy.histogram.__doc__
