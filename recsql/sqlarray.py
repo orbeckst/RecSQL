@@ -31,6 +31,7 @@ Module content
 """
 
 import os.path
+import warnings
 import re
 try:
     from hashlib import md5
@@ -99,7 +100,7 @@ class SQLarray(object):
 
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
 
-    def __init__(self,name=None ,records=None, filename=None, columns=None,
+    def __init__(self,name=None, records=None, filename=None, columns=None,
                  cachesize=5, connection=None, is_tmp=False, **kwargs):
         """Build the SQL table from a numpy record array.
         """
@@ -188,7 +189,7 @@ class SQLarray(object):
     def recarray():
         doc = """Return underlying SQL table as a read-only record array."""
         def fget(self):
-            return self.SELECT('*')
+            return self.SELECT('*', asrecarray=True)
         return locals()
     recarray = property(**recarray())
 
@@ -319,6 +320,7 @@ class SQLarray(object):
               [``True``]
 
         .. warning::
+
            There are **no sanity checks** applied to the SQL.
 
         If  possible, the  returned list  of tuples  is turned  into a
@@ -326,6 +328,7 @@ class SQLarray(object):
         returned.
 
         .. warning::
+
            Potential BUG: if there are memory issues then it can
            happen that we just silently fall back to a tuple even
            though calling code expects a recarray; because we
@@ -375,6 +378,7 @@ class SQLarray(object):
                 # XXX: recarray; because we swallowed ANY exception the caller will never know
                 # XXX: ... should probably change this and not have the try ... except in the first place
                 pass  # keep as tuples if we cannot convert
+                warnings.warn("SQLArray.sql(): failed to return recarray, returning tuples instead")
         else:
             pass      # keep as tuples/data structure as requested
         if cache:
