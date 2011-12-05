@@ -561,7 +561,7 @@ separator (using <tt class="xref py py-func docutils literal"><span class="pre">
 <dl class="class">
 <dt id="recsql.csv_table.Table2array">
 <em class="property">class </em><tt class="descclassname">recsql.csv_table.</tt><tt class="descname">Table2array</tt><big>(</big><em>filename=None</em>, <em>tablename='CSV'</em>, <em>encoding='utf-8'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#recsql.csv_table.Table2array" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read a csv file and provide conversion to a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-26aa3cf)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</p>
+<dd><p>Read a csv file and provide conversion to a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-059334c)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</p>
 <ul class="simple">
 <li>Depending on the arguments, autoconversion of values can take
 place. See <a class="reference internal" href="#recsql.convert.Autoconverter" title="recsql.convert.Autoconverter"><tt class="xref py py-class docutils literal"><span class="pre">recsql.convert.Autoconverter</span></tt></a> for details.</li>
@@ -584,9 +584,9 @@ place. See <a class="reference internal" href="#recsql.convert.Autoconverter" ti
 </dd>
 <dt><em>autoconvert</em></dt>
 <dd><p class="first last">EXPERIMENTAL. <tt class="xref docutils literal"><span class="pre">True</span></tt>: replace certain values
-with special python values (see <tt class="xref py py-class docutils literal"><span class="pre">convert.Autoconverter</span></tt>) and possibly 
+with special python values (see <tt class="xref py py-class docutils literal"><span class="pre">convert.Autoconverter</span></tt>) and possibly
 split values into lists (see <em>sep</em>).
-<tt class="xref docutils literal"><span class="pre">False</span></tt>: leave everything as it is (numbers as numbers and strings 
+<tt class="xref docutils literal"><span class="pre">False</span></tt>: leave everything as it is (numbers as numbers and strings
 as strings).</p>
 </dd>
 <dt><em>mode</em></dt>
@@ -602,7 +602,7 @@ as strings).</p>
 <dl class="method">
 <dt id="recsql.csv_table.Table2array.recarray">
 <tt class="descname">recarray</tt><big>(</big><big>)</big><a class="headerlink" href="#recsql.csv_table.Table2array.recarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns data as <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-26aa3cf)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</p>
+<dd><p>Returns data as <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-059334c)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -781,12 +781,6 @@ just returns <a class="reference internal" href="#recsql.convert.besttype" title
 <dd><p>Convert string x to the most useful type, i.e. int, float or unicode string.</p>
 <p>If x is a quoted string (single or double quotes) then the quotes
 are stripped and the enclosed string returned.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Strings will be returned as Unicode strings (using
-<a class="reference external" href="http://docs.python.org/library/functions.html#unicode" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">unicode()</span></tt></a>), based on the <em>encoding</em> argument, which is
-utf-8 by default.</p>
-</div>
 </dd></dl>
 
 <dl class="function">

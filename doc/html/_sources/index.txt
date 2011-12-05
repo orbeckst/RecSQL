@@ -26,7 +26,7 @@ package :doc:`README` for contact details.
 
 
 .. _Documentation: 
-    http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/html/index.html
+    http://orbeckst.github.com/RecSQL/index.html
 .. _online source code documentation:
     http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/epydoc/index.html
 .. _sqlite: 
