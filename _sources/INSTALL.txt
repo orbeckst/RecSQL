@@ -1,0 +1,33 @@
+=========
+ INSTALL
+=========
+
+RecSQL uses python's setuptools, and specifically, `easy_install`_
+
+You can install to the latest version directly from the internet with
+::
+
+    easy_install -f http://sbcb.bioch.ox.ac.uk/oliver/download/Python RecSQL
+
+You can also download the source manually from
+http://sbcb.bioch.ox.ac.uk/oliver/download/Python and unpack
+it. Install from the unpacked source with ::
+
+    cd RecSQL-0.4
+    python setup.py install
+
+See the `easy_install`_ documentation for details, in particular if
+you are interested in installing into non-standard locations.
+
+
+Additional requirements are numpy_ and pysqlite_. `easy_install`_ will
+automatically attempt to download appropriate versions if none are
+currently installed.
+
+.. URLs:
+.. _easy_install: 
+    http://peak.telecommunity.com/DevCenter/EasyInstall
+.. _numpy:
+    http://numpy.scipy.org
+.. _pysqlite:
+    http://pysqlite.org/
