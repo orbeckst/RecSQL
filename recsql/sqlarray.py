@@ -59,29 +59,34 @@ sqlite.register_converter("Object", convert_object)
 class SQLarray(object):
     """A SQL table that returns (mostly) rec arrays.
 
-    .. method:: SQLarray([name[,records[,columns[,cachesize=5,connection=None]]]])
+    .. method:: SQLarray([name[,records[,columns[,cachesize=5,connection=None,dbfile=":memory:"]]]])
 
     :Arguments:
-       name
+       *name*
           table name (can be referred to as '__self__' in SQL queries)
-       records
+       *records*
           numpy record array that describes the layout and initializes the
           table OR any iterable (and then columns must be set, too) OR a string
           that contains a single, *simple reStructured text table* (and the table name is
           set from the table name in the reST table.)
           If ``None`` then simply associate with existing table name.
-       filename
+       *filename*
           Alternatively to *records*, read a reStructured table from *filename*.
-       columns
+       *columns*
           sequence of column names (only used if records does not have
           attribute dtype.names) [``None``]
-       cachesize
+       *cachesize*
           number of (query, result) pairs that are cached [5]
-       connection
+       *connection*
           If not ``None``, reuse this connection; this adds a new table to the same
           database, which allows more complicated queries with cross-joins. The
           table's connection is available as the attribute T.connection. [``None``]
-       is_tmp
+       *dbfile*
+          Normally the db is held in memory (":memory:") but if a filename is
+          provided then the underlying SQLite db is held on disk and can be
+          accessed and restored (see :meth:`SQLarray.save`). Only works with
+          *connection* = ``None`` [":memory:"]
+       *is_tmp*
           ``True``: create a tmp table; ``False``: regular table in db [``False``]
 
     :Bugs:
@@ -100,15 +105,18 @@ class SQLarray(object):
 
     tmp_table_name = '__tmp_merge_table'  # reserved name (see merge())
 
-    def __init__(self,name=None, records=None, filename=None, columns=None,
+    def __init__(self, name=None, records=None, filename=None, columns=None,
                  cachesize=5, connection=None, is_tmp=False, **kwargs):
         """Build the SQL table from a numpy record array.
         """
+        # initialize query cache
+        self.__cache = KRingbuffer(cachesize)
+        self.dbfile = kwargs.pop('dbfile', ':memory:')
         self.name = str(name)
         if self.name == self.tmp_table_name and not is_tmp:
             raise ValueError('name = %s is reserved, choose another one' % name)
         if connection is None:
-            self.connection = sqlite.connect(':memory:',
+            self.connection = sqlite.connect(self.dbfile,
                                              detect_types=sqlite.PARSE_DECLTYPES | sqlite.PARSE_COLNAMES)
             self._init_sqlite_functions()   # add additional functions to database
         else:
@@ -127,8 +135,12 @@ class SQLarray(object):
             except sqlite.OperationalError,err:
                 if str(err).find('no such table') > -1 or \
                        str(err).find('syntax error') > -1:
-                    raise ValueError("Provide existing legal 'name' of an existing table not %r"
-                                     % self.name)
+                    # maybe we already have a db
+                    # database_list = self.sql("PRAGMA database_list")
+                    # http://sqlite.org/faq.html#q7
+                    table_names = self.sql("SELECT name FROM SQLITE_MASTER", asrecarray=False, cache=False)
+                    raise ValueError("Provide existing legal 'name' of an existing table not %r. This database "
+                                     "contains tables %r" % (self.name, table_names))
                 else:
                     raise
             self.columns = tuple([x[0] for x in c.description])
@@ -183,9 +195,6 @@ class SQLarray(object):
                                  "       recsql.SQLarray_fromfile() function or feed simple records (see docs).")
                     raise err
 
-        # initialize query cache
-        self.__cache = KRingbuffer(cachesize)
-
     def recarray():
         doc = """Return underlying SQL table as a read-only record array."""
         def fget(self):
@@ -221,6 +230,20 @@ class SQLarray(object):
         assert len_tmp == n_inserted
         del tmparray          # also drops the tmp table (keep it at end for debugging)
         return n_inserted
+
+    def save(self):
+        """Commit changes to file.
+
+        Only works if the SQLarray was created with they *dbfile* =
+        ``FILENAME`` keyword. There is currently no way to save a
+        in-memory db.
+
+        .. SeeAlso:: :meth:`aoft.DB.clone`
+        """
+        if self.dbname == ":memory:":
+            warnings.warn("In order to save the database to disk you MUST open it with "
+                          "the dbfile=FILENAME keyword argument.")
+        self.connection.commit()
 
     def merge_table(self,name):
         """Merge an existing table in the database with the __self__ table.
@@ -462,9 +485,20 @@ class SQLarray(object):
         return self.SELECT('COUNT() AS length').length[0]
 
     def __del__(self):
-        """Delete the underlying SQL table from the database."""
-        SQL = """DROP TABLE IF EXISTS __self__"""
-        self.sql(SQL, asrecarray=False, cache=False)
+        """Clean up.
+
+        * For in-memory: Delete the underlying SQL table from the
+          in-memory database.
+
+        * For on-disk: save and close connection
+        """
+
+        if self.dbfile == ":memory:":
+            SQL = """DROP TABLE IF EXISTS __self__"""
+            self.sql(SQL, asrecarray=False, cache=False)
+        else:
+            self.connection.commit()
+            self.connection.close()
 
 # Ring buffer (from hop.utilities)
 try:
