@@ -284,7 +284,7 @@ def regularized_function(x,y,func,bins=None,range=None):
     if (range is not None):
         mn, mx = range
         if (mn > mx):
-            raise AttributeError('max must be larger than min in range parameter.')
+            raise ValueError('max must be larger than min in range parameter.')
 
     if not numpy.iterable(bins):
         if range is None:
@@ -297,7 +297,7 @@ def regularized_function(x,y,func,bins=None,range=None):
     else:
         bins = numpy.asarray(bins)
         if (numpy.diff(bins) < 0).any():
-            raise AttributeError('bins must increase monotonically.')
+            raise ValueError('bins must increase monotonically.')
 
     sorting_index = numpy.argsort(_x)
     sx = _x[sorting_index]
