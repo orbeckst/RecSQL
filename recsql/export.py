@@ -2,7 +2,14 @@
 :mod:`recsql.export` --- Export to other file formats
 =====================================================
 
+Simple functions to export a :class:`numpy.rec.array` to another
+format.
+
 .. autofunction:: rec2csv
+
+.. autofunction:: rec2latex
+
+.. autofunction:: s_rec2latex
 
 """
 from __future__ import with_statement
