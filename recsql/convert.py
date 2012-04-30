@@ -95,6 +95,8 @@ class Autoconverter(object):
               (!) to split on all white space.
            *encoding*
               encoding of the input data [utf-8]
+           *percentify*
+              convert "34.4%" into 0.344 [``True``]
 
         """
         self._convertors = {'unicode': unicode,
@@ -109,6 +111,7 @@ class Autoconverter(object):
                        'False':False, 'no': False, '-':False}
         self.mapping = mapping
         self.encoding = kwargs.pop('encoding', "utf-8")
+        self.percentify = kwargs.pop('percentify', True)
         self.mode = mode
         self.__active = None
         self.active = kwargs.pop('autoconvert', active)   # 'autoconvert' is a "strong" alias of 'active'
@@ -130,7 +133,7 @@ class Autoconverter(object):
     active = property(**active())
 
     def _convert_singlet(self, s):
-        x = besttype(s, self.encoding)
+        x = besttype(s, encoding=self.encoding, percentify=self.percentify)
         try:
             return self.mapping[x]
         except KeyError:
@@ -149,11 +152,15 @@ class Autoconverter(object):
         #print "%r --> %r" % (field, x)
         return x
 
-def besttype(x, encoding="utf-8"):
+def besttype(x, encoding="utf-8", percentify=True):
     """Convert string x to the most useful type, i.e. int, float or unicode string.
 
-    If x is a quoted string (single or double quotes) then the quotes
-    are stripped and the enclosed string returned.
+    If x is a quoted string (single or double quotes) then the quotes are
+    stripped and the enclosed string returned. The string can contain any
+    number of quotes, it is only important that it begins and ends with either
+    single or double quotes.
+
+    *percentify* = ``True`` turns "34.4%" into the float 0.344.
 
     .. Note:: Strings will be returned as Unicode strings (using
               :func:`unicode`), based on the *encoding* argument, which is
@@ -161,15 +168,25 @@ def besttype(x, encoding="utf-8"):
     """
     def unicodify(x):
         return to_unicode(x, encoding)
+    def percent(x):
+        try:
+            if x.endswith("%"):
+                x = float(x[:-1]) / 100.
+            else:
+                raise ValueError
+        except AttributeError, ValueError:
+            raise ValueError
+        return x
+
     x = unicodify(x)  # make unicode as soon as possible
     try:
         x = x.strip()
     except AttributeError:
         pass
-    m = re.match(r"""['"](?P<value>.*)["']$""", x)
+    m = re.match(r"""(?P<quote>['"])(?P<value>.*)(?P=quote)$""", x)  # matches "<value>" or '<value>' where <value> COULD contain " or '!
     if m is None:
         # not a quoted string, try different types
-        for converter in int, float, unicodify:   # try them in increasing order of lenience
+        for converter in int, float, percent, unicodify:   # try them in increasing order of lenience
             try:
                 return converter(x)
             except ValueError:
