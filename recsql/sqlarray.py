@@ -240,9 +240,9 @@ class SQLarray(object):
 
         .. SeeAlso:: :meth:`aoft.DB.clone`
         """
-        if self.dbname == ":memory:":
+        if self.dbfile == ":memory:":
             warnings.warn("In order to save the database to disk you MUST open it with "
-                          "the dbfile=FILENAME keyword argument.")
+                          "the additional dbfile=FILENAME keyword argument.")
         self.connection.commit()
 
     def merge_table(self,name):
