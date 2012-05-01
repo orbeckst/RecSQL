@@ -138,7 +138,7 @@ class SQLarray(object):
                     # maybe we already have a db
                     # database_list = self.sql("PRAGMA database_list")
                     # http://sqlite.org/faq.html#q7
-                    table_names = self.sql("SELECT name FROM SQLITE_MASTER", asrecarray=False, cache=False)
+                    table_names = self.sql("SELECT name FROM sqlite_master WHERE type='table'", asrecarray=False, cache=False)
                     raise ValueError("Provide existing legal 'name' of an existing table not %r. This database "
                                      "contains tables %r" % (self.name, table_names))
                 else:
@@ -413,21 +413,66 @@ class SQLarray(object):
         (vmin,vmax), = self.SELECT('min(%(variable)s), max(%(variable)s)' % vars())
         return vmin,vmax
 
-    def selection(self,SQL,parameters=None,**kwargs):
+    def selection(self, SQL, parameters=None, **kwargs):
         """Return a new SQLarray from a SELECT selection.
 
-        This is a very useful method because it allows one to build complicated
-        selections and essentially new tables from existing data.
+        This method is useful to build complicated selections and
+        essentially new tables from existing data. The result of the
+        SQL query is stored as a new table in the database. By
+        default, a unique name is created but this can be overridden
+        with the *name* keyword.
+
+        :Arguments:
+           *SQL*
+               SQL ``SELECT`` query string. A leading ``SELECT * FROM __self__ WHERE``
+               can be omitted (see examples below). The SQL is scrubbed and only data
+               up to the first semicolon is used (note that this means that there
+               cannot even be a semicolon in quotes; if this is a problem, file a bug
+               report and it might be changed).
+        :Keywords:
+           *name*
+               name of the table, ``None`` autogenerates a name unique
+               to this query. *name* may not refer to the parent table itself.
+               [``None``]
+           *parameters*
+               tuple of values that are safely  interpolated into subsequent ``?``
+               characters in the SQL string
+           *force*
+               If ``True`` then an existing table of the same *name* is ``DROP``ped
+               first. If ``False`` and the table already exists then *SQL* is ignored
+               and a :class:`SQLarray` of the existing table *name* is returned.
+               [``False``]
+
+         :Returns: a :class:`SQLarray` referring to the table *name*
+                   in the database; it also inherits the :attr:`SQLarray.dbfile`
 
         Examples::
 
                 s = selection('a > 3')
                 s = selection('a > ?', (3,))
                 s = selection('SELECT * FROM __self__ WHERE a > ? AND b < ?', (3, 10))
+
+        .. Note::
+
+           Because the new :class:`SQLarray` (``s`` in the examples) refers to
+           the same database as the parent, strange effects can occur when
+           *this* :class:`SQLarray` is deleted::
+
+             del s
+
+           or ::
+
+             s = "something else"
+
+           will automatically call the :meth:`SQLarray.__del__` method, which
+           in turn runs :meth:`SQLarray.close`. Once the db has been closed,
+           any further communication with the db will result in a
+           :exc:`sqlite3.OperationalError`.
         """
         # TODO: under development
         # - could use VIEW
-        # - might be a good idea to use cache=False
+
+        force = kwargs.pop('force', False)
 
         # pretty unsafe... I hope the user knows what they are doing
         # - only read data to first semicolon
@@ -444,18 +489,32 @@ class SQLarray(object):
         # unique name for table (unless user supplied... which could be 'x;DROP TABLE...')
         newname = kwargs.pop('name', 'selection_'+md5(_sql).hexdigest())
 
-        # create table directly
-        # SECURITY: unsafe tablename !!!! (but cannot interpolate?)
-        _sql = "CREATE TABLE %(newname)s AS " % vars() + _sql
+        if newname in ("__self__", self.name):
+            raise ValueError("Table name %(newname)r cannot refer to the parent table itself." % vars())
+        has_newname = self.has_table(newname)
 
         c = self.cursor
-        if parameters is None:
-            c.execute(_sql)              # no sanity checks!
-        else:
-            c.execute(_sql, parameters)  # no sanity checks; params should be tuple
+
+        if has_newname and force:
+            c.execute("DROP TABLE %(newname)s" % vars())
+            has_newname = False
+
+        if not has_newname:
+            # create table directly
+            # SECURITY: unsafe tablename !!!! (but cannot interpolate?)
+            _sql = "CREATE TABLE %(newname)s AS " % vars() + _sql
+            if parameters is None:
+                c.execute(_sql)              # no sanity checks!
+            else:
+                c.execute(_sql, parameters)  # no sanity checks; params should be tuple
 
         # associate with new table in db
-        return SQLarray(newname, None, connection=self.connection)
+        return SQLarray(newname, None, dbfile=self.dbfile, connection=self.connection)
+
+    def has_table(self, name):
+        """Return ``True`` if the table *name* exists in the database."""
+        return len(self.sql("SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+                            parameters=(name,), asrecarray=False, cache=False)) > 0
 
     def _init_sqlite_functions(self):
         """additional SQL functions to the database"""
