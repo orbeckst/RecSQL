@@ -113,7 +113,8 @@ class SQLarray(object):
         self.__cache = KRingbuffer(cachesize)
         self.dbfile = kwargs.pop('dbfile', ':memory:')
         self.name = str(name)
-        if self.name == self.tmp_table_name and not is_tmp:
+        self.master = "sqlarray_master"
+        if self.name == self.tmp_table_name and not is_tmp or self.name == self.master:
             raise ValueError('name = %s is reserved, choose another one' % name)
         if connection is None:
             self.connection = sqlite.connect(self.dbfile,
@@ -122,6 +123,11 @@ class SQLarray(object):
         else:
             self.connection = connection    # use existing connection
         self.cursor = self.connection.cursor()
+        # our own book-keeping table
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS %(master)s (name PRIMARY KEY, value)" % vars(self))
+        self.cursor.execute("INSERT OR IGNORE INTO %(master)s (name, value) VALUES ('connection_counter', 0)" % vars(self))
+        # keep track of the number of connections (see close())
+        self.__increment_connection_counter()
 
         if records is None and filename is None:
             if name is None:
@@ -194,6 +200,27 @@ class SQLarray(object):
                                  "       deal with special numpy types such as int32 or int64. Try using the \n"
                                  "       recsql.SQLarray_fromfile() function or feed simple records (see docs).")
                     raise err
+
+    @property
+    def connection_count(self):
+        """Number of currently open connections to the database.
+
+        (Stored in table sqlarray_master.)
+        """
+        return self.sql("SELECT value FROM %(master)s WHERE name = 'connection_counter'" % vars(self),
+                        cache=False, asrecarray=False)[0][0]
+
+    def __add_connection_counter(self, increment):
+        return self.cursor.execute("""UPDATE %(master)s SET value =
+                                          (SELECT value + ? FROM %(master)s WHERE name = 'connection_counter')
+                                      WHERE name = 'connection_counter'""" % vars(self), (increment,))
+
+    def __increment_connection_counter(self):
+        return self.__add_connection_counter(1)
+
+    def __decrement_connection_counter(self):
+        return self.__add_connection_counter(-1)
+
 
     def recarray():
         doc = """Return underlying SQL table as a read-only record array."""
@@ -452,22 +479,6 @@ class SQLarray(object):
                 s = selection('a > ?', (3,))
                 s = selection('SELECT * FROM __self__ WHERE a > ? AND b < ?', (3, 10))
 
-        .. Note::
-
-           Because the new :class:`SQLarray` (``s`` in the examples) refers to
-           the same database as the parent, strange effects can occur when
-           *this* :class:`SQLarray` is deleted::
-
-             del s
-
-           or ::
-
-             s = "something else"
-
-           will automatically call the :meth:`SQLarray.__del__` method, which
-           in turn runs :meth:`SQLarray.close`. Once the db has been closed,
-           any further communication with the db will result in a
-           :exc:`sqlite3.OperationalError`.
         """
         # TODO: under development
         # - could use VIEW
@@ -511,11 +522,6 @@ class SQLarray(object):
         # associate with new table in db
         return SQLarray(newname, None, dbfile=self.dbfile, connection=self.connection)
 
-    def has_table(self, name):
-        """Return ``True`` if the table *name* exists in the database."""
-        return len(self.sql("SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-                            parameters=(name,), asrecarray=False, cache=False)) > 0
-
     def _init_sqlite_functions(self):
         """additional SQL functions to the database"""
         import sqlfunctions
@@ -539,12 +545,17 @@ class SQLarray(object):
         self.connection.create_aggregate("medianhistogram",5,sqlfunctions._MedianHistogram)
         self.connection.create_aggregate("zscorehistogram",5,sqlfunctions._ZscoreHistogram)
 
+    def has_table(self, name):
+        """Return ``True`` if the table *name* exists in the database."""
+        return len(self.sql("SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+                            parameters=(name,), asrecarray=False, cache=False)) > 0
+
     def __len__(self):
         """Number of rows in the table."""
         return self.SELECT('COUNT() AS length').length[0]
 
-    def __del__(self):
-        """Clean up.
+    def close(self):
+        """Clean up (if no more connections to the db exist).
 
         * For in-memory: Delete the underlying SQL table from the
           in-memory database.
@@ -552,12 +563,16 @@ class SQLarray(object):
         * For on-disk: save and close connection
         """
 
-        if self.dbfile == ":memory:":
-            SQL = """DROP TABLE IF EXISTS __self__"""
-            self.sql(SQL, asrecarray=False, cache=False)
-        else:
-            self.connection.commit()
-            self.connection.close()
+        self.__decrement_connection_counter()
+        if self.connection_count == 0:
+            if self.dbfile == ":memory:":
+                SQL = """DROP TABLE IF EXISTS __self__"""
+                self.sql(SQL, asrecarray=False, cache=False)
+            else:
+                self.connection.commit()
+                self.connection.close()
+
+    __del__ = close
 
 # Ring buffer (from hop.utilities)
 try:
