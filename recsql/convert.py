@@ -174,7 +174,7 @@ def besttype(x, encoding="utf-8", percentify=True):
                 x = float(x[:-1]) / 100.
             else:
                 raise ValueError
-        except AttributeError, ValueError:
+        except (AttributeError, ValueError):
             raise ValueError
         return x
 
