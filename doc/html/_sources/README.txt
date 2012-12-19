@@ -42,12 +42,19 @@ Availability
 ------------
 
 The latest version of the package is being made available via the
-internet-thingy at
-http://sbcb.bioch.ox.ac.uk/oliver/software/RecSQL/ or from
-the direct download URI (for ``easy_install``)
-http://sbcb.bioch.ox.ac.uk/oliver/download/Python/ . 
+internet at https://github.com/orbeckst/RecSQL or from the direct
+download URI (for ``easy_install``) https://github.com/orbeckst/RecSQL/tags
 
-See :doc:`INSTALL` for installation instructions.
+RecSQL is also listed on PyPi http://pypi.python.org/pypi/RecSQL and
+can thus be installed with ::
+
+  easy_install RecSQL
+
+or ::
+
+  pip install RecSQL
+
+See :doc:`INSTALL` for further installation instructions.
 
 A git repository of the package is hosted at
 http://github.com/orbeckst/RecSQL .

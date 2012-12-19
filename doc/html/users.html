@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>User documentation &mdash; RecSQL v0.7.8-dev documentation</title>
+    <title>User documentation &mdash; RecSQL 0.7.8-dev documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="RecSQL v0.7.8-dev documentation" href="index.html" />
+    <link rel="top" title="RecSQL 0.7.8-dev documentation" href="index.html" />
     <link rel="next" title="Notes for developers" href="programmers.html" />
     <link rel="prev" title="INSTALL" href="INSTALL.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="INSTALL.html" title="INSTALL"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">RecSQL v0.7.8-dev documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL 0.7.8-dev documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -83,7 +86,7 @@ long run using PyTables than recSQL.</p>
 <h3>Important functions and classes<a class="headerlink" href="#important-functions-and-classes" title="Permalink to this headline">¶</a></h3>
 <p>A <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> can be constructed by either reading data from a
 CSV file or reST table with the <a class="reference internal" href="#recsql.SQLarray_fromfile" title="recsql.SQLarray_fromfile"><tt class="xref py py-func docutils literal"><span class="pre">SQLarray_fromfile()</span></tt></a> function or
-constructed directly from a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v2.0.dev-059334c)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a> via the
+constructed directly from a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v1.6)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a> via the
 <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> constructor.</p>
 <dl class="function">
 <dt id="recsql.SQLarray_fromfile">
@@ -103,7 +106,7 @@ constructed directly from a <a class="reference external" href="http://docs.scip
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first last docutils">
+<tr class="field-odd field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first last docutils">
 <dt><em>filename</em></dt>
 <dd><p class="first last">name of the file that contains the data with the appropriate
 file extension</p>
@@ -129,46 +132,52 @@ file extension</p>
 <dd><p>A SQL table that returns (mostly) rec arrays.</p>
 <dl class="method">
 <dt id="recsql.SQLarray.SQLarray">
-<tt class="descname">SQLarray</tt><big>(</big><span class="optional">[</span><em>name</em><span class="optional">[</span>, <em>records</em><span class="optional">[</span>, <em>columns</em><span class="optional">[</span>, <em>cachesize=5</em>, <em>connection=None</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#recsql.SQLarray.SQLarray" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">SQLarray</tt><big>(</big><span class="optional">[</span><em>name</em><span class="optional">[</span>, <em>records</em><span class="optional">[</span>, <em>columns</em><span class="optional">[</span>, <em>cachesize=5</em>, <em>connection=None</em>, <em>dbfile=&quot;:memory:&quot;</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#recsql.SQLarray.SQLarray" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>name</dt>
+<tr class="field-odd field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
+<dt><em>name</em></dt>
 <dd><p class="first last">table name (can be referred to as &#8216;__self__&#8217; in SQL queries)</p>
 </dd>
-<dt>records</dt>
+<dt><em>records</em></dt>
 <dd><p class="first last">numpy record array that describes the layout and initializes the
 table OR any iterable (and then columns must be set, too) OR a string
 that contains a single, <em>simple reStructured text table</em> (and the table name is
 set from the table name in the reST table.)
-If <tt class="xref docutils literal"><span class="pre">None</span></tt> then simply associate with existing table name.</p>
+If <tt class="docutils literal"><span class="pre">None</span></tt> then simply associate with existing table name.</p>
 </dd>
-<dt>filename</dt>
+<dt><em>filename</em></dt>
 <dd><p class="first last">Alternatively to <em>records</em>, read a reStructured table from <em>filename</em>.</p>
 </dd>
-<dt>columns</dt>
+<dt><em>columns</em></dt>
 <dd><p class="first last">sequence of column names (only used if records does not have
-attribute dtype.names) [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
+attribute dtype.names) [<tt class="docutils literal"><span class="pre">None</span></tt>]</p>
 </dd>
-<dt>cachesize</dt>
+<dt><em>cachesize</em></dt>
 <dd><p class="first last">number of (query, result) pairs that are cached [5]</p>
 </dd>
-<dt>connection</dt>
-<dd><p class="first last">If not <tt class="xref docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same
+<dt><em>connection</em></dt>
+<dd><p class="first last">If not <tt class="docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same
 database, which allows more complicated queries with cross-joins. The
-table&#8217;s connection is available as the attribute T.connection. [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
+table&#8217;s connection is available as the attribute T.connection. [<tt class="docutils literal"><span class="pre">None</span></tt>]</p>
 </dd>
-<dt>is_tmp</dt>
-<dd><p class="first last"><tt class="xref docutils literal"><span class="pre">True</span></tt>: create a tmp table; <tt class="xref docutils literal"><span class="pre">False</span></tt>: regular table in db [<tt class="xref docutils literal"><span class="pre">False</span></tt>]</p>
+<dt><em>dbfile</em></dt>
+<dd><p class="first last">Normally the db is held in memory (&#8221;:memory:&#8221;) but if a filename is
+provided then the underlying SQLite db is held on disk and can be
+accessed and restored (see <a class="reference internal" href="#recsql.SQLarray.save" title="recsql.SQLarray.save"><tt class="xref py py-meth docutils literal"><span class="pre">SQLarray.save()</span></tt></a>). Only works with
+<em>connection</em> = <tt class="docutils literal"><span class="pre">None</span></tt> [&#8221;:memory:&#8221;]</p>
+</dd>
+<dt><em>is_tmp</em></dt>
+<dd><p class="first last"><tt class="docutils literal"><span class="pre">True</span></tt>: create a tmp table; <tt class="docutils literal"><span class="pre">False</span></tt>: regular table in db [<tt class="docutils literal"><span class="pre">False</span></tt>]</p>
 </dd>
 </dl>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Bugs :</th><td class="field-body"><ul class="first last">
+<tr class="field-even field"><th class="field-name">Bugs :</th><td class="field-body"><ul class="first last">
 <li><p class="first"><tt class="xref py py-exc docutils literal"><span class="pre">InterfaceError</span></tt>: <em>Error binding parameter 0 - probably unsupported type</em></p>
 <p>In this case the recarray contained types such as <tt class="docutils literal"><span class="pre">numpy.int64</span></tt> that are not
 understood by sqlite. Either convert the data manually (by setting the numpy
@@ -225,6 +234,30 @@ interpolation.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="recsql.SQLarray.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="headerlink" href="#recsql.SQLarray.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean up (if no more connections to the db exist).</p>
+<ul class="simple">
+<li>For in-memory: Delete the underlying SQL table from the
+in-memory database.</li>
+<li>For on-disk: save and close connection</li>
+</ul>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="recsql.SQLarray.connection_count">
+<tt class="descname">connection_count</tt><a class="headerlink" href="#recsql.SQLarray.connection_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of currently open connections to the database.</p>
+<p>(Stored in table sqlarray_master.)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="recsql.SQLarray.has_table">
+<tt class="descname">has_table</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#recsql.SQLarray.has_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <tt class="docutils literal"><span class="pre">True</span></tt> if the table <em>name</em> exists in the database.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="recsql.SQLarray.limits">
 <tt class="descname">limits</tt><big>(</big><em>variable</em><big>)</big><a class="headerlink" href="#recsql.SQLarray.limits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return minimum and maximum of variable across all rows of data.</p>
@@ -238,7 +271,7 @@ interpolation.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
+<tr class="field-odd field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
 <dt>recarray</dt>
 <dd><p class="first last">numpy record array that describes the layout and initializes the
 table</p>
@@ -246,10 +279,10 @@ table</p>
 </dl>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><p class="first">n           number of inserted rows</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first">n           number of inserted rows</p>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Raises an exception if duplicate and incompatible data exist
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Raises an exception if duplicate and incompatible data exist
 in the main table and the new one.</p>
 </td>
 </tr>
@@ -267,9 +300,9 @@ However, this method is probably used less often than the simpler <a class="refe
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body">name         name of the table in the database (must be compatible with __self__)</td>
+<tr class="field-odd field"><th class="field-name">Arguments :</th><td class="field-body">name         name of the table in the database (must be compatible with __self__)</td>
 </tr>
-<tr class="field"><th class="field-name">Returns :</th><td class="field-body">n            number of inserted rows</td>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body">n            number of inserted rows</td>
 </tr>
 </tbody>
 </table>
@@ -282,11 +315,74 @@ However, this method is probably used less often than the simpler <a class="refe
 </dd></dl>
 
 <dl class="method">
+<dt id="recsql.SQLarray.save">
+<tt class="descname">save</tt><big>(</big><big>)</big><a class="headerlink" href="#recsql.SQLarray.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commit changes to file.</p>
+<p>Only works if the SQLarray was created with they <em>dbfile</em> =
+<tt class="docutils literal"><span class="pre">FILENAME</span></tt> keyword. There is currently no way to save a
+in-memory db.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><tt class="xref py py-meth docutils literal"><span class="pre">aoft.DB.clone()</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="recsql.SQLarray.selection">
 <tt class="descname">selection</tt><big>(</big><em>SQL</em>, <em>parameters=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#recsql.SQLarray.selection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a new SQLarray from a SELECT selection.</p>
-<p>This is a very useful method because it allows one to build complicated
-selections and essentially new tables from existing data.</p>
+<p>This method is useful to build complicated selections and
+essentially new tables from existing data. The result of the
+SQL query is stored as a new table in the database. By
+default, a unique name is created but this can be overridden
+with the <em>name</em> keyword.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
+<dt><em>SQL</em></dt>
+<dd><p class="first last">SQL <tt class="docutils literal"><span class="pre">SELECT</span></tt> query string. A leading <tt class="docutils literal"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">__self__</span> <span class="pre">WHERE</span></tt>
+can be omitted (see examples below). The SQL is scrubbed and only data
+up to the first semicolon is used (note that this means that there
+cannot even be a semicolon in quotes; if this is a problem, file a bug
+report and it might be changed).</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Keywords :</th><td class="field-body"><blockquote class="first">
+<div><dl class="docutils">
+<dt><em>name</em></dt>
+<dd><p class="first last">name of the table, <tt class="docutils literal"><span class="pre">None</span></tt> autogenerates a name unique
+to this query. <em>name</em> may not refer to the parent table itself.
+[<tt class="docutils literal"><span class="pre">None</span></tt>]</p>
+</dd>
+<dt><em>parameters</em></dt>
+<dd><p class="first last">tuple of values that are safely  interpolated into subsequent <tt class="docutils literal"><span class="pre">?</span></tt>
+characters in the SQL string</p>
+</dd>
+<dt><em>force</em></dt>
+<dd><p class="first last">If <tt class="docutils literal"><span class="pre">True</span></tt> then an existing table of the same <em>name</em> is <tt class="docutils literal"><span class="pre">DROP``ped</span>
+<span class="pre">first.</span> <span class="pre">If</span> <span class="pre">``False</span></tt> and the table already exists then <em>SQL</em> is ignored
+and a <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> of the existing table <em>name</em> is returned.
+[<tt class="docutils literal"><span class="pre">False</span></tt>]</p>
+</dd>
+</dl>
+</div></blockquote>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> referring to the table <em>name</em>
+in the database; it also inherits the <tt class="xref py py-attr docutils literal"><span class="pre">SQLarray.dbfile</span></tt></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Examples:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">s</span> <span class="o">=</span> <span class="n">selection</span><span class="p">(</span><span class="s">&#39;a &gt; 3&#39;</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">selection</span><span class="p">(</span><span class="s">&#39;a &gt; ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,))</span>
@@ -303,7 +399,7 @@ selections and essentially new tables from existing data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first last docutils">
+<tr class="field-odd field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first last docutils">
 <dt>SQL <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd><p class="first last">Full SQL command; can contain the <tt class="docutils literal"><span class="pre">?</span></tt> place holder so that values
 supplied with the <tt class="docutils literal"><span class="pre">parameters</span></tt> keyword can be interpolated using
@@ -313,13 +409,13 @@ the <tt class="docutils literal"><span class="pre">pysqlite</span></tt> interfac
 <dd><p class="first last">Parameters for <tt class="docutils literal"><span class="pre">?</span></tt> interpolation.</p>
 </dd>
 <dt>asrecarray <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
-<dd><p class="first last"><tt class="xref docutils literal"><span class="pre">True</span></tt>: return a <tt class="docutils literal"><span class="pre">numpy.recarray</span></tt> if possible;
-<tt class="xref docutils literal"><span class="pre">False</span></tt>: return records as a list of tuples. [<tt class="xref docutils literal"><span class="pre">True</span></tt>]</p>
+<dd><p class="first last"><tt class="docutils literal"><span class="pre">True</span></tt>: return a <tt class="docutils literal"><span class="pre">numpy.recarray</span></tt> if possible;
+<tt class="docutils literal"><span class="pre">False</span></tt>: return records as a list of tuples. [<tt class="docutils literal"><span class="pre">True</span></tt>]</p>
 </dd>
 <dt>cache <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
-<dd><p class="first last">Should the results be cached? Set to <tt class="xref docutils literal"><span class="pre">False</span></tt> for large queries to
+<dd><p class="first last">Should the results be cached? Set to <tt class="docutils literal"><span class="pre">False</span></tt> for large queries to
 avoid memory issues. Queries with <tt class="docutils literal"><span class="pre">?</span></tt> place holders are never cached.
-[<tt class="xref docutils literal"><span class="pre">True</span></tt>]</p>
+[<tt class="docutils literal"><span class="pre">True</span></tt>]</p>
 </dd>
 </dl>
 </td>
@@ -443,12 +539,12 @@ functions themselves are defined in the module <a class="reference internal" hre
 <col width="68%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Expression</th>
+<tr class="row-odd"><th class="head">Expression</th>
 <th class="head">SQL equivalent</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>y = f(x)</td>
+<tr class="row-even"><td>y = f(x)</td>
 <td>SELECT f(x) AS y</td>
 </tr>
 </tbody>
@@ -460,30 +556,30 @@ functions themselves are defined in the module <a class="reference internal" hre
 <col width="68%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Simple SQL f()</th>
+<tr class="row-odd"><th class="head">Simple SQL f()</th>
 <th class="head">description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>sqr(x)</td>
+<tr class="row-even"><td>sqr(x)</td>
 <td>square x*x</td>
 </tr>
-<tr><td>sqrt(x)</td>
+<tr class="row-odd"><td>sqrt(x)</td>
 <td>square root <tt class="xref py py-func docutils literal"><span class="pre">numpy.sqrt()</span></tt></td>
 </tr>
-<tr><td>pow(x,y)</td>
+<tr class="row-even"><td>pow(x,y)</td>
 <td>power x**y</td>
 </tr>
-<tr><td>periodic(x)</td>
+<tr class="row-odd"><td>periodic(x)</td>
 <td>wrap angle in degree between -180º and +180º</td>
 </tr>
-<tr><td>regexp(pattern,string)</td>
+<tr class="row-even"><td>regexp(pattern,string)</td>
 <td>string REGEXP pattern</td>
 </tr>
-<tr><td>match(pattern,string)</td>
+<tr class="row-odd"><td>match(pattern,string)</td>
 <td>string MATCH pattern   (anchored REGEXP)</td>
 </tr>
-<tr><td>fformat(format,x)</td>
+<tr class="row-even"><td>fformat(format,x)</td>
 <td>string formatting of a single value format % x</td>
 </tr>
 </tbody>
@@ -499,12 +595,12 @@ a &#8216;GROUP BY col&#8217; clause. They can be thought of as numpy ufuncs:</p>
 <col width="68%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Expression</th>
+<tr class="row-odd"><th class="head">Expression</th>
 <th class="head">SQL equivalent</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>y = f(x1,x2,...xN)</td>
+<tr class="row-even"><td>y = f(x1,x2,...xN)</td>
 <td>SELECT f(x) AS y ... GROUP BY x</td>
 </tr>
 </tbody>
@@ -517,24 +613,24 @@ functions:</p>
 <col width="69%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Simple aggregate f()</th>
+<tr class="row-odd"><th class="head">Simple aggregate f()</th>
 <th class="head">description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>avg(x)</td>
+<tr class="row-even"><td>avg(x)</td>
 <td>mean [sqlite builtin]</td>
 </tr>
-<tr><td>std(x)</td>
+<tr class="row-odd"><td>std(x)</td>
 <td>standard deviation (using N-1 variance)</td>
 </tr>
-<tr><td>median(x)</td>
-<td>median of the data (see <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.median.html#numpy.median" title="(in NumPy v2.0.dev-059334c)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.median()</span></tt></a>)</td>
+<tr class="row-even"><td>median(x)</td>
+<td>median of the data (see <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.median.html#numpy.median" title="(in NumPy v1.6)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.median()</span></tt></a>)</td>
 </tr>
-<tr><td>min(x)</td>
+<tr class="row-odd"><td>min(x)</td>
 <td>minimum [sqlite builtin]</td>
 </tr>
-<tr><td>max(x)</td>
+<tr class="row-even"><td>max(x)</td>
 <td>maximum [sqlite builtin]</td>
 </tr>
 </tbody>
@@ -563,54 +659,54 @@ functions that have been defined:</p>
 <col width="68%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">PyAggregate</th>
+<tr class="row-odd"><th class="head">PyAggregate</th>
 <th class="head">type</th>
 <th class="head">signature; description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>array</td>
+<tr class="row-even"><td>array</td>
 <td>NumpyArray</td>
 <td>array(x);
-a standard <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.0.dev-059334c)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.array()</span></tt></a></td>
+a standard <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.6)"><tt class="xref py py-func docutils literal"><span class="pre">numpy.array()</span></tt></a></td>
 </tr>
-<tr><td>histogram</td>
+<tr class="row-odd"><td>histogram</td>
 <td>Object</td>
 <td>histogram(x,nbins,xmin,xmax);
 histogram x in nbins evenly spaced bins between xmin and xmax</td>
 </tr>
-<tr><td>distribution</td>
+<tr class="row-even"><td>distribution</td>
 <td>Object</td>
 <td>distribution(x,nbins,xmin,xmax);
 normalized histogram whose integral gives 1</td>
 </tr>
-<tr><td>meanhistogram</td>
+<tr class="row-odd"><td>meanhistogram</td>
 <td>Object</td>
 <td>meanhistogram(x,y,nbins,xmin,xmax);
 histogram data points y along x and average all y in each bin</td>
 </tr>
-<tr><td>stdhistogram</td>
+<tr class="row-even"><td>stdhistogram</td>
 <td>Object</td>
 <td>stdhistogram(x,y,nbins,xmin,xmax);
 give the standard deviation (from N-1 variance)
 std(y) = sqrt(Var(y)) with Var(y) = &lt;(y-&lt;y&gt;)^2&gt;</td>
 </tr>
-<tr><td>medianhistogram</td>
+<tr class="row-odd"><td>medianhistogram</td>
 <td>Object</td>
 <td>medianhistogram((x,y,nbins,xmin,xmax);
 median(y)</td>
 </tr>
-<tr><td>minhistogram</td>
+<tr class="row-even"><td>minhistogram</td>
 <td>Object</td>
 <td>minhistogram((x,y,nbins,xmin,xmax);
 min(y)</td>
 </tr>
-<tr><td>maxhistogram</td>
+<tr class="row-odd"><td>maxhistogram</td>
 <td>Object</td>
 <td>maxhistogram((x,y,nbins,xmin,xmax);
 max(y)</td>
 </tr>
-<tr><td>zscorehistogram</td>
+<tr class="row-even"><td>zscorehistogram</td>
 <td>Object</td>
 <td>zscorehistogram((x,y,nbins,xmin,xmax);
 &lt;abs(y-&lt;y&gt;)&gt;/std(y)</td>
@@ -647,318 +743,6 @@ max(y)</td>
 <p class="first admonition-title">See also</p>
 <p class="last">Other approaches to solving the same problem: <a class="reference external" href="http://code.google.com/p/esutil/">esutil.sqlite</a> and <a class="reference external" href="http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py">hydroclimpy.io.sqlite</a></p>
 </div>
-<dl class="class">
-<dt>
-<em class="property">class </em><tt class="descclassname">recsql.</tt><tt class="descname">SQLarray</tt><big>(</big><em>name=None</em>, <em>records=None</em>, <em>filename=None</em>, <em>columns=None</em>, <em>cachesize=5</em>, <em>connection=None</em>, <em>is_tmp=False</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>A SQL table that returns (mostly) rec arrays.</p>
-<dl class="method">
-<dt>
-<tt class="descname">SQLarray</tt><big>(</big><span class="optional">[</span><em>name</em><span class="optional">[</span>, <em>records</em><span class="optional">[</span>, <em>columns</em><span class="optional">[</span>, <em>cachesize=5</em>, <em>connection=None</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><big>)</big></dt>
-<dd></dd></dl>
-
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>name</dt>
-<dd><p class="first last">table name (can be referred to as &#8216;__self__&#8217; in SQL queries)</p>
-</dd>
-<dt>records</dt>
-<dd><p class="first last">numpy record array that describes the layout and initializes the
-table OR any iterable (and then columns must be set, too) OR a string
-that contains a single, <em>simple reStructured text table</em> (and the table name is
-set from the table name in the reST table.)
-If <tt class="xref docutils literal"><span class="pre">None</span></tt> then simply associate with existing table name.</p>
-</dd>
-<dt>filename</dt>
-<dd><p class="first last">Alternatively to <em>records</em>, read a reStructured table from <em>filename</em>.</p>
-</dd>
-<dt>columns</dt>
-<dd><p class="first last">sequence of column names (only used if records does not have
-attribute dtype.names) [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
-</dd>
-<dt>cachesize</dt>
-<dd><p class="first last">number of (query, result) pairs that are cached [5]</p>
-</dd>
-<dt>connection</dt>
-<dd><p class="first last">If not <tt class="xref docutils literal"><span class="pre">None</span></tt>, reuse this connection; this adds a new table to the same
-database, which allows more complicated queries with cross-joins. The
-table&#8217;s connection is available as the attribute T.connection. [<tt class="xref docutils literal"><span class="pre">None</span></tt>]</p>
-</dd>
-<dt>is_tmp</dt>
-<dd><p class="first last"><tt class="xref docutils literal"><span class="pre">True</span></tt>: create a tmp table; <tt class="xref docutils literal"><span class="pre">False</span></tt>: regular table in db [<tt class="xref docutils literal"><span class="pre">False</span></tt>]</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Bugs :</th><td class="field-body"><ul class="first last">
-<li><p class="first"><tt class="xref py py-exc docutils literal"><span class="pre">InterfaceError</span></tt>: <em>Error binding parameter 0 - probably unsupported type</em></p>
-<p>In this case the recarray contained types such as <tt class="docutils literal"><span class="pre">numpy.int64</span></tt> that are not
-understood by sqlite. Either convert the data manually (by setting the numpy
-dtypes yourself on the recarray, or better: feed a simple list of tuples (&#8220;records&#8221;)
-to this class in <em>records</em>. Make sure that these tuples only contain standard python types.
-Together with <em>records</em> you will also have to supply the names of the data columns
-in the keyword argument <em>columns</em>.</p>
-<p>If you are reading from a file then it might be simpler to
-use <a class="reference internal" href="programmers.html#recsql.sqlarray.SQLarray_fromfile" title="recsql.sqlarray.SQLarray_fromfile"><tt class="xref py py-func docutils literal"><span class="pre">recsql.sqlarray.SQLarray_fromfile()</span></tt></a>.</p>
-</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt>
-<tt class="descname">SELECT</tt><big>(</big><em>fields</em>, <em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Execute a simple SQL <tt class="docutils literal"><span class="pre">SELECT</span></tt> statement and returns values as new numpy rec array.</p>
-<p>The arguments <em>fields</em> and the additional optional arguments
-are simply concatenated with additional SQL statements
-according to the template:</p>
-<div class="highlight-python"><pre>SELECT &lt;fields&gt; FROM __self__ [args]</pre>
-</div>
-<p>The simplest fields argument is <tt class="docutils literal"><span class="pre">&quot;*&quot;</span></tt>.</p>
-<dl class="docutils">
-<dt>Example:</dt>
-<dd><p class="first">Create a recarray in which students with average grade less than
-3 are listed:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">SELECT</span><span class="p">(</span><span class="s">&quot;surname, subject, year, avg(grade) AS avg_grade&quot;</span><span class="p">,</span>
-               <span class="s">&quot;WHERE avg_grade &lt; 3&quot;</span><span class="p">,</span> <span class="s">&quot;GROUP BY surname,subject&quot;</span><span class="p">,</span>
-               <span class="s">&quot;ORDER BY avg_grade,surname&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The resulting SQL would be:</p>
-<div class="highlight-python"><pre>SELECT surname, subject, year, avg(grade) AS avg_grade FROM __self__
-     WHERE avg_grade &lt; 3
-     GROUP BY surname,subject
-     ORDER BY avg_grade,surname</pre>
-</div>
-<p>Note how one can use aggregate functions such avg().</p>
-<p>The string <em>&#8216;__self__&#8217;</em> is automatically replaced with the table
-name (<tt class="docutils literal"><span class="pre">T.name</span></tt>); this can be used for cartesian products such as</p>
-<div class="last highlight-python"><pre>LEFT JOIN __self__ WHERE ...</pre>
-</div>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">See the documentation for <a class="reference internal" href="#recsql.SQLarray.sql" title="recsql.SQLarray.sql"><tt class="xref py py-meth docutils literal"><span class="pre">sql()</span></tt></a> for more details on
-the available keyword arguments and the use of <tt class="docutils literal"><span class="pre">?</span></tt> parameter
-interpolation.</p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descname">limits</tt><big>(</big><em>variable</em><big>)</big></dt>
-<dd><p>Return minimum and maximum of variable across all rows of data.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descname">merge</tt><big>(</big><em>recarray</em>, <em>columns=None</em><big>)</big></dt>
-<dd><p>Merge another recarray with the same columns into this table.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
-<dt>recarray</dt>
-<dd><p class="first last">numpy record array that describes the layout and initializes the
-table</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><p class="first">n           number of inserted rows</p>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Raises an exception if duplicate and incompatible data exist
-in the main table and the new one.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descname">merge_table</tt><big>(</big><em>name</em><big>)</big></dt>
-<dd><p>Merge an existing table in the database with the __self__ table.</p>
-<p>Executes as <tt class="docutils literal"><span class="pre">'INSERT</span> <span class="pre">INTO</span> <span class="pre">__self__</span> <span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">&lt;name&gt;'</span></tt>.
-However, this method is probably used less often than the simpler <a class="reference internal" href="#recsql.SQLarray.merge" title="recsql.SQLarray.merge"><tt class="xref py py-meth docutils literal"><span class="pre">merge()</span></tt></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body">name         name of the table in the database (must be compatible with __self__)</td>
-</tr>
-<tr class="field"><th class="field-name">Returns :</th><td class="field-body">n            number of inserted rows</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt>
-<tt class="descname">recarray</tt></dt>
-<dd><p>Return underlying SQL table as a read-only record array.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descname">selection</tt><big>(</big><em>SQL</em>, <em>parameters=None</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Return a new SQLarray from a SELECT selection.</p>
-<p>This is a very useful method because it allows one to build complicated
-selections and essentially new tables from existing data.</p>
-<p>Examples:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">s</span> <span class="o">=</span> <span class="n">selection</span><span class="p">(</span><span class="s">&#39;a &gt; 3&#39;</span><span class="p">)</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">selection</span><span class="p">(</span><span class="s">&#39;a &gt; ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,))</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">selection</span><span class="p">(</span><span class="s">&#39;SELECT * FROM __self__ WHERE a &gt; ? AND b &lt; ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descname">sql</tt><big>(</big><em>SQL</em>, <em>parameters=None</em>, <em>asrecarray=True</em>, <em>cache=True</em><big>)</big></dt>
-<dd><p>Execute sql statement.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first last docutils">
-<dt>SQL <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd><p class="first last">Full SQL command; can contain the <tt class="docutils literal"><span class="pre">?</span></tt> place holder so that values
-supplied with the <tt class="docutils literal"><span class="pre">parameters</span></tt> keyword can be interpolated using
-the <tt class="docutils literal"><span class="pre">pysqlite</span></tt> interface.</p>
-</dd>
-<dt>parameters <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span></dt>
-<dd><p class="first last">Parameters for <tt class="docutils literal"><span class="pre">?</span></tt> interpolation.</p>
-</dd>
-<dt>asrecarray <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
-<dd><p class="first last"><tt class="xref docutils literal"><span class="pre">True</span></tt>: return a <tt class="docutils literal"><span class="pre">numpy.recarray</span></tt> if possible;
-<tt class="xref docutils literal"><span class="pre">False</span></tt>: return records as a list of tuples. [<tt class="xref docutils literal"><span class="pre">True</span></tt>]</p>
-</dd>
-<dt>cache <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
-<dd><p class="first last">Should the results be cached? Set to <tt class="xref docutils literal"><span class="pre">False</span></tt> for large queries to
-avoid memory issues. Queries with <tt class="docutils literal"><span class="pre">?</span></tt> place holders are never cached.
-[<tt class="xref docutils literal"><span class="pre">True</span></tt>]</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">There are <strong>no sanity checks</strong> applied to the SQL.</p>
-</div>
-<p>If  possible, the  returned list  of tuples  is turned  into a
-numpy record  array, otherwise the original list  of tuples is
-returned.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Potential BUG: if there are memory issues then it can
-happen that we just silently fall back to a tuple even
-though calling code expects a recarray; because we
-swallowed ANY exception the caller will never know</p>
-</div>
-<p>The last cachesize queries are cached (for cache=True) and are
-returned directly unless the table has been modified.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">&#8216;__self__&#8217; is substituted with the table name. See the doc
-string of the <a class="reference internal" href="#recsql.SQLarray.SELECT" title="recsql.SQLarray.SELECT"><tt class="xref py py-meth docutils literal"><span class="pre">SELECT()</span></tt></a> method for more details.</p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descname">sql_index</tt><big>(</big><em>index_name</em>, <em>column_names</em>, <em>unique=True</em><big>)</big></dt>
-<dd><p>Add a named index on given columns to improve performance.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descname">sql_select</tt><big>(</big><em>fields</em>, <em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Execute a simple SQL <tt class="docutils literal"><span class="pre">SELECT</span></tt> statement and returns values as new numpy rec array.</p>
-<p>The arguments <em>fields</em> and the additional optional arguments
-are simply concatenated with additional SQL statements
-according to the template:</p>
-<div class="highlight-python"><pre>SELECT &lt;fields&gt; FROM __self__ [args]</pre>
-</div>
-<p>The simplest fields argument is <tt class="docutils literal"><span class="pre">&quot;*&quot;</span></tt>.</p>
-<dl class="docutils">
-<dt>Example:</dt>
-<dd><p class="first">Create a recarray in which students with average grade less than
-3 are listed:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">SELECT</span><span class="p">(</span><span class="s">&quot;surname, subject, year, avg(grade) AS avg_grade&quot;</span><span class="p">,</span>
-               <span class="s">&quot;WHERE avg_grade &lt; 3&quot;</span><span class="p">,</span> <span class="s">&quot;GROUP BY surname,subject&quot;</span><span class="p">,</span>
-               <span class="s">&quot;ORDER BY avg_grade,surname&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The resulting SQL would be:</p>
-<div class="highlight-python"><pre>SELECT surname, subject, year, avg(grade) AS avg_grade FROM __self__
-     WHERE avg_grade &lt; 3
-     GROUP BY surname,subject
-     ORDER BY avg_grade,surname</pre>
-</div>
-<p>Note how one can use aggregate functions such avg().</p>
-<p>The string <em>&#8216;__self__&#8217;</em> is automatically replaced with the table
-name (<tt class="docutils literal"><span class="pre">T.name</span></tt>); this can be used for cartesian products such as</p>
-<div class="last highlight-python"><pre>LEFT JOIN __self__ WHERE ...</pre>
-</div>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">See the documentation for <a class="reference internal" href="#recsql.SQLarray.sql" title="recsql.SQLarray.sql"><tt class="xref py py-meth docutils literal"><span class="pre">sql()</span></tt></a> for more details on
-the available keyword arguments and the use of <tt class="docutils literal"><span class="pre">?</span></tt> parameter
-interpolation.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt>
-<tt class="descclassname">recsql.</tt><tt class="descname">SQLarray_fromfile</tt><big>(</big><em>filename</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Create a <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> from <em>filename</em>.</p>
-<dl class="docutils">
-<dt>Uses the filename suffix to detect the contents:</dt>
-<dd><dl class="first last docutils">
-<dt>rst, txt</dt>
-<dd>restructure text (see <a class="reference internal" href="programmers.html#module-recsql.rest_table" title="recsql.rest_table"><tt class="xref py py-mod docutils literal"><span class="pre">recsql.rest_table</span></tt></a></dd>
-<dt>csv</dt>
-<dd>comma-separated (see <a class="reference internal" href="programmers.html#module-recsql.csv_table" title="recsql.csv_table"><tt class="xref py py-mod docutils literal"><span class="pre">recsql.csv_table</span></tt></a>)</dd>
-</dl>
-</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first last docutils">
-<dt><em>filename</em></dt>
-<dd><p class="first last">name of the file that contains the data with the appropriate
-file extension</p>
-</dd>
-<dt><em>kwargs</em></dt>
-<dd><ul class="first last simple">
-<li>additional arguments for <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a></li>
-<li>additional arguments <a class="reference internal" href="programmers.html#recsql.csv_table.Table2array" title="recsql.csv_table.Table2array"><tt class="xref py py-class docutils literal"><span class="pre">recsql.csv_table.Table2array</span></tt></a> or
-<a class="reference internal" href="programmers.html#recsql.rest_table.Table2array" title="recsql.rest_table.Table2array"><tt class="xref py py-class docutils literal"><span class="pre">recsql.rest_table.Table2array</span></tt></a> such as <em>mode</em> or
-<em>autoncovert</em>.</li>
-</ul>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 </div>
 </div>
@@ -1002,7 +786,7 @@ file extension</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -1031,12 +815,12 @@ file extension</p>
         <li class="right" >
           <a href="INSTALL.html" title="INSTALL"
              >previous</a> |</li>
-        <li><a href="index.html">RecSQL v0.7.8-dev documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL 0.7.8-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2007-2010, Oliver Beckstein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
