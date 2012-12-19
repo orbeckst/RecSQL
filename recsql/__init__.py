@@ -49,6 +49,11 @@ constructed directly from a :class:`numpy.recarray` via the
 .. autoclass:: SQLarray
    :members:
 
+For querying the version of the package use 
+
+.. autofunction:: get_version
+.. autofunction:: get_version_tuple
+
 Example
 =======
 
@@ -244,7 +249,7 @@ If you do not have to rely on SQL then also look at PyTables_.
 .. _`hydroclimpy.io.sqlite`:
    http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py
 """
-VERSION = 0,7,'8-dev'
+VERSION = 0,7,8
 
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 
