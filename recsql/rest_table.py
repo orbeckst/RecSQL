@@ -1,4 +1,3 @@
-# $Id$
 """
 :mod:`recsql.rest_table` --- Parse a simple reST table
 ======================================================
@@ -28,7 +27,7 @@ the following additional restriction apply:
 * Column spans are not supported.
 * Headings must be single legal SQL and python words as they are used
   as column names.
-* _Do not use TABs_ to format the table but use spaces. (Tabs do not
+* *Do not use TAB characters* to format the table but use spaces. (TABs do not
   have a well-defined width in number of spaces and will thus lead to
   wrongly parsed tables.)
 * The delimiters are used to extract the fields. Only data within the

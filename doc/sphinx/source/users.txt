@@ -5,6 +5,6 @@
 ====================
 
 .. automodule:: recsql
-   :members:
+
 
 

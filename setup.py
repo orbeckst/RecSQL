@@ -20,7 +20,7 @@ version = __import__('recsql').get_version()
 
 setup(name="RecSQL",
       version=version,
-      description="Treat SQLlite tables as recarrays",
+      description="Treat SQLite tables as recarrays",
       long_description="""\
 A simple implementation of numpy.recarray-like tables that can
 be operated on via SQL. The underlying tables are SQLite tables

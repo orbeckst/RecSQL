@@ -8,7 +8,7 @@ SERVERDIR=/sansom/public_html/html/sbcb/oliver
 PACKAGES=$SERVERDIR/download/Python
 DOCS=$SERVERDIR/software/$PACKAGE
 
-COPY=1
+COPY=0
 
 usage="usage: $0 [OPTIONS] [cmd1 cmd2 ...]
 

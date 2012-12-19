@@ -95,8 +95,10 @@ class Table2array(object):
     * Empty rows are discarded.
     """
     def __init__(self, filename=None, tablename="CSV", encoding="utf-8", **kwargs):
-        """
+        """Initialize the class.
+
         :Arguments:
+
            *filename*
               CSV file (encoded with *encoding*)
            *name*
@@ -109,6 +111,7 @@ class Table2array(object):
               as strings).
            *mode*
               mode of the :class:`~convert.Autoconverter`
+
         """
         if filename is None:
             raise TypeError("filename is actually required")

@@ -36,23 +36,23 @@ class Autoconverter(object):
     The defaults for the conversion of a input field value to a
     special python value are:
 
-      ===========  ===============
-      value        python
-      ===========  ===============
-        '---'       ``None``
-        'none'
-        'None'
-        ''
-
-        'True'      ``True``
-        'x'
-        'X'
-        'yes'
-
-        'False'     ``False``
-        '-'
-        'no'
-      ===========  ===============
+    ===========  ===============
+    value        python
+    ===========  ===============
+      '---'       ``None``
+      'none'
+      'None'
+      ''
+    
+      'True'      ``True``
+      'x'
+      'X'
+      'yes'
+    
+      'False'     ``False``
+      '-'
+      'no'
+    ===========  ===============
 
     If the *sep* keyword is set to a string instead of ``False`` then
     values are split into tuples. Probably the most convenient way to
@@ -60,9 +60,10 @@ class Autoconverter(object):
     splits on all white space whereas *sep* = ' ' would split multiple
     spaces.
 
-    **Example**
-       - With *sep* = ``True``: 'foo bar 22  boing ---' --> ('foo', 'boing', 22, None)
-       - With *sep* = ',':       1,2,3,4 --> (1,2,3,4)
+    .. rubric:: Example
+
+    - With *sep* = ``True``: 'foo bar 22  boing ---' --> ('foo', 'boing', 22, None)
+    - With *sep* = ',':       1,2,3,4 --> (1,2,3,4)
 
     """
 
@@ -70,6 +71,7 @@ class Autoconverter(object):
         """Initialize the converter.
 
         :Arguments:
+
           *mode*
              defines what the converter does
 
@@ -85,7 +87,7 @@ class Autoconverter(object):
                     convert all entries with :func:`to_unicode`
 
           *mapping*
-              any dict-like mapping that supports lookup. If``None`` then the
+              any dict-like mapping that supports lookup. If ``None`` then the
               hard-coded defaults are used
           *active* or *autoconvert*
               initial state of the :attr:`Autoconverter.active` toggle.
@@ -162,9 +164,12 @@ def besttype(x, encoding="utf-8", percentify=True):
 
     *percentify* = ``True`` turns "34.4%" into the float 0.344.
 
-    .. Note:: Strings will be returned as Unicode strings (using
-              :func:`unicode`), based on the *encoding* argument, which is
-              utf-8 by default.
+    .. Note:: 
+
+       Strings will be returned as Unicode strings (using
+       :func:`unicode`), based on the *encoding* argument, which is
+       utf-8 by default.
+
     """
     def unicodify(x):
         return to_unicode(x, encoding)
