@@ -59,6 +59,32 @@ sqlite.register_converter("Object", convert_object)
 class SQLarray(object):
     """A SQL table that returns (mostly) rec arrays.
 
+    The :class:`SQLarray` can be initialized from
+
+    1. an iterable of records (tuples), given in the *records* keyword
+       argument, and the column names (provided in *columns*);
+    2. a string that contains a `simple reStructured Text table`_ (see
+       :mod:`recsql.rest_table` for details);
+    3. a :class:`numpy.recarray`.
+
+    .. Note:: 
+
+       SQLite only understands `standard Python types`_ and hence has
+       problems with many of the `NumPy data types`_ such as
+       ``numpy.int64``. When loading a recarray fails we try to convert
+       all data types automatically to Python types (using
+       :func:`recsql.convert.irecarray_to_py`). This might loose
+       precision and/or even fail. It is also slow for larger arrays.
+
+    .. _`simple reStructured Text table`:
+       http://docutils.sourceforge.net/docs/user/rst/quickref.html#tables
+    .. _`standard Python types`:
+       http://docs.python.org/2/library/stdtypes.html#numeric-types-int-float-long-complex
+    .. _`NumPy data types`:
+       http://docs.scipy.org/doc/numpy/user/basics.types.html
+
+    The class takes the following arguments:
+
     .. method:: SQLarray([name[,records[,columns[,cachesize=5,connection=None,dbfile=":memory:"]]]])
 
     :Arguments:
@@ -92,12 +118,14 @@ class SQLarray(object):
     :Bugs:
        * :exc:`InterfaceError`: *Error binding parameter 0 - probably unsupported type*
 
-         In this case the recarray contained types such as ``numpy.int64`` that are not
-         understood by sqlite. Either convert the data manually (by setting the numpy
-         dtypes yourself on the recarray, or better: feed a simple list of tuples ("records")
-         to this class in *records*. Make sure that these tuples only contain standard python types.
-         Together with *records* you will also have to supply the names of the data columns
-         in the keyword argument *columns*.
+         In this case the recarray contained types such as ``numpy.int64`` that
+         are not understood by sqlite and which we were not able to convert to
+         a Python type (using :func:`recsql.convert.irecarray_to_py`). Either
+         convert the data manually (by setting the numpy dtypes yourself on the
+         recarray, or better: feed a simple list of tuples ("records") to this
+         class in *records*. Make sure that these tuples only contain `standard
+         Python types`_.  Together with *records* you will also have to supply
+         the names of the data columns in the keyword argument *columns*.
 
          If you are reading from a file then it might be simpler to
          use :func:`recsql.sqlarray.SQLarray_fromfile`.

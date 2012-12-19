@@ -226,9 +226,20 @@ but when using a PyAggregate the type *must* be declared::
 
    a.sql('SELECT histogram(x,10,0.0,1.5) as "hist [Object]" FROM __self__')
 
-.. SeeAlso:: Other approaches to solving the same problem: `esutil.sqlite`_ and `hydroclimpy.io.sqlite`_
 
-.. _`esutil.sqlite`:
+Other approaches to interfacing SQLite and NumPy
+================================================
+
+If RecSQL does not what you need it to do then look at these other
+projects. 
+
+.. SeeAlso:: `esutil.sqlite_util`_ (part of esutil_) and `hydroclimpy.io.sqlite`_
+
+If you do not have to rely on SQL then also look at PyTables_.
+
+.. _`esutil.sqlite_util`:
+   http://code.google.com/p/esutil/source/browse/trunk/esutil/sqlite_util.py
+.. _esutil:
    http://code.google.com/p/esutil/
 .. _`hydroclimpy.io.sqlite`:
    http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py

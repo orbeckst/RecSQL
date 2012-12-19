@@ -1,19 +1,24 @@
 """
-:mod:`recsql.convert` --- converting entries of tables
-======================================================
+:mod:`recsql.convert` --- converting entries of tables and arrays
+=================================================================
 
 .. autoclass:: Autoconverter
    :members: __init__
-.. function:: Autoconverter.convert(x)
 
-              Convert *x* (if in the active state)
-.. attribute:: Autoconverter.active
+   .. function:: convert(x)
 
-               If set  to ``True`` then conversion takes place; ``False``
-               just returns :func:`besttype` applid to the value.
+                 Convert *x* (if in the active state)
+
+   .. attribute:: active
+
+                 If set  to ``True`` then conversion takes place; ``False``
+                 just returns :func:`besttype` applid to the value.
 
 .. autofunction:: besttype
 .. autofunction:: to_unicode
+.. autofunction:: irecarray_to_py
+.. autofunction:: pyify
+.. autofunction:: to_pytypes
 """
 
 import re
@@ -214,6 +219,7 @@ def to_int64(a):
     return a.astype(dtype)
 
 def pyify(typestr):
+    """Return a Python :class:`type` that most closely represents the type encoded by *typestr*"""
     if typestr[1] in 'iu':
         return int
     elif typestr[1] == 'f':
@@ -223,6 +229,12 @@ def pyify(typestr):
     return lambda x: x
 
 def to_pytypes(a):
+    """Return array *a* with all types set to basic Python types.
+
+    :func:`pyify` is applied to all ``dtypes`` of the
+    :class:`numpy.ndarray` and then recast with
+    :meth:`numpy.ndarray.astype`. This approach can loose precision.
+    """
     dtype = [(name, pyify(typestr)) for name,typestr in a.dtype.descr]
     return a.astype(dtype)
 
