@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>User documentation &mdash; RecSQL 0.7.8-dev documentation</title>
+    <title>User documentation &mdash; RecSQL 0.7.8 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.7.8-dev',
+        VERSION:     '0.7.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="RecSQL 0.7.8-dev documentation" href="index.html" />
+    <link rel="top" title="RecSQL 0.7.8 documentation" href="index.html" />
     <link rel="next" title="Notes for developers" href="programmers.html" />
     <link rel="prev" title="INSTALL" href="INSTALL.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="INSTALL.html" title="INSTALL"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">RecSQL 0.7.8-dev documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL 0.7.8 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -130,6 +130,24 @@ file extension</p>
 <dt id="recsql.SQLarray">
 <em class="property">class </em><tt class="descclassname">recsql.</tt><tt class="descname">SQLarray</tt><big>(</big><em>name=None</em>, <em>records=None</em>, <em>filename=None</em>, <em>columns=None</em>, <em>cachesize=5</em>, <em>connection=None</em>, <em>is_tmp=False</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#recsql.SQLarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>A SQL table that returns (mostly) rec arrays.</p>
+<p>The <a class="reference internal" href="#recsql.SQLarray" title="recsql.SQLarray"><tt class="xref py py-class docutils literal"><span class="pre">SQLarray</span></tt></a> can be initialized from</p>
+<ol class="arabic simple">
+<li>an iterable of records (tuples), given in the <em>records</em> keyword
+argument, and the column names (provided in <em>columns</em>);</li>
+<li>a string that contains a <a class="reference external" href="http://docutils.sourceforge.net/docs/user/rst/quickref.html#tables">simple reStructured Text table</a> (see
+<a class="reference internal" href="programmers.html#module-recsql.rest_table" title="recsql.rest_table"><tt class="xref py py-mod docutils literal"><span class="pre">recsql.rest_table</span></tt></a> for details);</li>
+<li>a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v1.6)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a>.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">SQLite only understands <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#numeric-types-int-float-long-complex">standard Python types</a> and hence has
+problems with many of the <a class="reference external" href="http://docs.scipy.org/doc/numpy/user/basics.types.html">NumPy data types</a> such as
+<tt class="docutils literal"><span class="pre">numpy.int64</span></tt>. When loading a recarray fails we try to convert
+all data types automatically to Python types (using
+<a class="reference internal" href="programmers.html#recsql.convert.irecarray_to_py" title="recsql.convert.irecarray_to_py"><tt class="xref py py-func docutils literal"><span class="pre">recsql.convert.irecarray_to_py()</span></tt></a>). This might loose
+precision and/or even fail. It is also slow for larger arrays.</p>
+</div>
+<p>The class takes the following arguments:</p>
 <dl class="method">
 <dt id="recsql.SQLarray.SQLarray">
 <tt class="descname">SQLarray</tt><big>(</big><span class="optional">[</span><em>name</em><span class="optional">[</span>, <em>records</em><span class="optional">[</span>, <em>columns</em><span class="optional">[</span>, <em>cachesize=5</em>, <em>connection=None</em>, <em>dbfile=&quot;:memory:&quot;</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#recsql.SQLarray.SQLarray" title="Permalink to this definition">¶</a></dt>
@@ -179,12 +197,14 @@ accessed and restored (see <a class="reference internal" href="#recsql.SQLarray.
 </tr>
 <tr class="field-even field"><th class="field-name">Bugs :</th><td class="field-body"><ul class="first last">
 <li><p class="first"><tt class="xref py py-exc docutils literal"><span class="pre">InterfaceError</span></tt>: <em>Error binding parameter 0 - probably unsupported type</em></p>
-<p>In this case the recarray contained types such as <tt class="docutils literal"><span class="pre">numpy.int64</span></tt> that are not
-understood by sqlite. Either convert the data manually (by setting the numpy
-dtypes yourself on the recarray, or better: feed a simple list of tuples (&#8220;records&#8221;)
-to this class in <em>records</em>. Make sure that these tuples only contain standard python types.
-Together with <em>records</em> you will also have to supply the names of the data columns
-in the keyword argument <em>columns</em>.</p>
+<p>In this case the recarray contained types such as <tt class="docutils literal"><span class="pre">numpy.int64</span></tt> that
+are not understood by sqlite and which we were not able to convert to
+a Python type (using <a class="reference internal" href="programmers.html#recsql.convert.irecarray_to_py" title="recsql.convert.irecarray_to_py"><tt class="xref py py-func docutils literal"><span class="pre">recsql.convert.irecarray_to_py()</span></tt></a>). Either
+convert the data manually (by setting the numpy dtypes yourself on the
+recarray, or better: feed a simple list of tuples (&#8220;records&#8221;) to this
+class in <em>records</em>. Make sure that these tuples only contain <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#numeric-types-int-float-long-complex">standard
+Python types</a>.  Together with <em>records</em> you will also have to supply
+the names of the data columns in the keyword argument <em>columns</em>.</p>
 <p>If you are reading from a file then it might be simpler to
 use <a class="reference internal" href="programmers.html#recsql.sqlarray.SQLarray_fromfile" title="recsql.sqlarray.SQLarray_fromfile"><tt class="xref py py-func docutils literal"><span class="pre">recsql.sqlarray.SQLarray_fromfile()</span></tt></a>.</p>
 </li>
@@ -384,9 +404,9 @@ in the database; it also inherits the <tt class="xref py py-attr docutils litera
 </tbody>
 </table>
 <p>Examples:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">s</span> <span class="o">=</span> <span class="n">selection</span><span class="p">(</span><span class="s">&#39;a &gt; 3&#39;</span><span class="p">)</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">selection</span><span class="p">(</span><span class="s">&#39;a &gt; ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,))</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">selection</span><span class="p">(</span><span class="s">&#39;SELECT * FROM __self__ WHERE a &gt; ? AND b &lt; ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">s</span> <span class="o">=</span> <span class="n">SQLarray</span><span class="o">.</span><span class="n">selection</span><span class="p">(</span><span class="s">&#39;a &gt; 3&#39;</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">SQLarray</span><span class="o">.</span><span class="n">selection</span><span class="p">(</span><span class="s">&#39;a &gt; ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,))</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">SQLarray</span><span class="o">.</span><span class="n">selection</span><span class="p">(</span><span class="s">&#39;SELECT * FROM __self__ WHERE a &gt; ? AND b &lt; ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -399,7 +419,7 @@ in the database; it also inherits the <tt class="xref py py-attr docutils litera
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first last docutils">
+<tr class="field-odd field"><th class="field-name">Arguments :</th><td class="field-body"><dl class="first docutils">
 <dt>SQL <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd><p class="first last">Full SQL command; can contain the <tt class="docutils literal"><span class="pre">?</span></tt> place holder so that values
 supplied with the <tt class="docutils literal"><span class="pre">parameters</span></tt> keyword can be interpolated using
@@ -420,29 +440,24 @@ avoid memory issues. Queries with <tt class="docutils literal"><span class="pre"
 </dl>
 </td>
 </tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first">For <em>asrecarray</em> = <tt class="docutils literal"><span class="pre">True</span></tt> a <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v1.6)"><tt class="xref py py-class docutils literal"><span class="pre">numpy.recarray</span></tt></a> is returned; otherwise
+a simple list of tuples is returned.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last"><tt class="xref py py-exc docutils literal"><span class="pre">TypeError</span></tt> if the conversion to <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v1.6)"><tt class="xref py py-class docutils literal"><span class="pre">recarray</span></tt></a> fails for 
+any reason.</p>
+</td>
+</tr>
 </tbody>
 </table>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">There are <strong>no sanity checks</strong> applied to the SQL.</p>
 </div>
-<p>If  possible, the  returned list  of tuples  is turned  into a
-numpy record  array, otherwise the original list  of tuples is
-returned.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Potential BUG: if there are memory issues then it can
-happen that we just silently fall back to a tuple even
-though calling code expects a recarray; because we
-swallowed ANY exception the caller will never know</p>
-</div>
-<p>The last cachesize queries are cached (for cache=True) and are
-returned directly unless the table has been modified.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">&#8216;__self__&#8217; is substituted with the table name. See the doc
-string of the <a class="reference internal" href="#recsql.SQLarray.SELECT" title="recsql.SQLarray.SELECT"><tt class="xref py py-meth docutils literal"><span class="pre">SELECT()</span></tt></a> method for more details.</p>
-</div>
+<p>The last <em>cachesize</em> queries are cached (for <em>cache</em> = <tt class="docutils literal"><span class="pre">True</span></tt>) and
+are returned directly unless the table has been modified.</p>
+<p>The string &#8220;__self__&#8221; in <em>SQL</em> is substituted with the table name. See
+the <a class="reference internal" href="#recsql.SQLarray.SELECT" title="recsql.SQLarray.SELECT"><tt class="xref py py-meth docutils literal"><span class="pre">SELECT()</span></tt></a> method for more details.</p>
 </dd></dl>
 
 <dl class="method">
@@ -491,6 +506,19 @@ interpolation.</p>
 </div>
 </dd></dl>
 
+</dd></dl>
+
+<p>For querying the version of the package use</p>
+<dl class="function">
+<dt id="recsql.get_version">
+<tt class="descclassname">recsql.</tt><tt class="descname">get_version</tt><big>(</big><big>)</big><a class="headerlink" href="#recsql.get_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return current package version as a string.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="recsql.get_version_tuple">
+<tt class="descclassname">recsql.</tt><tt class="descname">get_version_tuple</tt><big>(</big><big>)</big><a class="headerlink" href="#recsql.get_version_tuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return current package version as a (MAJOR,MINOR,PATCHLEVEL).</p>
 </dd></dl>
 
 </div>
@@ -739,10 +767,16 @@ max(y)</td>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">a</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&#39;SELECT histogram(x,10,0.0,1.5) as &quot;hist [Object]&quot; FROM __self__&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="other-approaches-to-interfacing-sqlite-and-numpy">
+<h3>Other approaches to interfacing SQLite and NumPy<a class="headerlink" href="#other-approaches-to-interfacing-sqlite-and-numpy" title="Permalink to this headline">¶</a></h3>
+<p>If RecSQL does not what you need it to do then look at these other
+projects.</p>
 <div class="admonition-see-also admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last">Other approaches to solving the same problem: <a class="reference external" href="http://code.google.com/p/esutil/">esutil.sqlite</a> and <a class="reference external" href="http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py">hydroclimpy.io.sqlite</a></p>
+<p class="last"><a class="reference external" href="http://code.google.com/p/esutil/source/browse/trunk/esutil/sqlite_util.py">esutil.sqlite_util</a> (part of <a class="reference external" href="http://code.google.com/p/esutil/">esutil</a>) and <a class="reference external" href="http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py">hydroclimpy.io.sqlite</a></p>
 </div>
+<p>If you do not have to rely on SQL then also look at <a class="reference external" href="http://www.pytables.org">PyTables</a>.</p>
 </div>
 </div>
 </div>
@@ -766,6 +800,7 @@ max(y)</td>
 </ul>
 </li>
 <li><a class="reference internal" href="#examples-of-using-types-in-tables">Examples of using types in tables</a></li>
+<li><a class="reference internal" href="#other-approaches-to-interfacing-sqlite-and-numpy">Other approaches to interfacing SQLite and NumPy</a></li>
 </ul>
 </li>
 </ul>
@@ -815,11 +850,11 @@ max(y)</td>
         <li class="right" >
           <a href="INSTALL.html" title="INSTALL"
              >previous</a> |</li>
-        <li><a href="index.html">RecSQL 0.7.8-dev documentation</a> &raquo;</li> 
+        <li><a href="index.html">RecSQL 0.7.8 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2007-2010, Oliver Beckstein.
+        &copy; Copyright 2007-2012, Oliver Beckstein.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
