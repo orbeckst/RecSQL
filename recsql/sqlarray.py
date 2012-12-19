@@ -397,26 +397,23 @@ class SQLarray(object):
               avoid memory issues. Queries with ``?`` place holders are never cached.
               [``True``]
 
+        :Returns: 
+           For *asrecarray* = ``True`` a :class:`numpy.recarray` is returned; otherwise
+           a simple list of tuples is returned.
+
+        :Raises: 
+           :exc:`TypeError` if the conversion to :class:`~numpy.recarray` fails for 
+           any reason.
+
         .. warning::
 
            There are **no sanity checks** applied to the SQL.
 
-        If  possible, the  returned list  of tuples  is turned  into a
-        numpy record  array, otherwise the original list  of tuples is
-        returned.
+        The last *cachesize* queries are cached (for *cache* = ``True``) and
+        are returned directly unless the table has been modified.
 
-        .. warning::
-
-           Potential BUG: if there are memory issues then it can
-           happen that we just silently fall back to a tuple even
-           though calling code expects a recarray; because we
-           swallowed ANY exception the caller will never know
-
-        The last cachesize queries are cached (for cache=True) and are
-        returned directly unless the table has been modified.
-
-        .. Note:: '__self__' is substituted with the table name. See the doc
-                  string of the :meth:`SELECT` method for more details.
+        The string "__self__" in *SQL* is substituted with the table name. See
+        the :meth:`SELECT` method for more details.
         """
         SQL = SQL.replace('__self__',self.name)
 
@@ -451,12 +448,7 @@ class SQLarray(object):
                 names = [x[0] for x in c.description]   # first elements are column names
                 result = numpy.rec.fromrecords(result,names=names)
             except:
-                # XXX: potential BUG: if there are memory issues then it can happen that
-                # XXX: we just silently fall back to a tuple but calling code expects a
-                # XXX: recarray; because we swallowed ANY exception the caller will never know
-                # XXX: ... should probably change this and not have the try ... except in the first place
-                pass  # keep as tuples if we cannot convert
-                warnings.warn("SQLArray.sql(): failed to return recarray, returning tuples instead")
+                raise TypeError("SQLArray.sql(): failed to return recarray, try setting asrecarray=False to return tuples instead")
         else:
             pass      # keep as tuples/data structure as requested
         if cache:
@@ -503,9 +495,9 @@ class SQLarray(object):
 
         Examples::
 
-                s = selection('a > 3')
-                s = selection('a > ?', (3,))
-                s = selection('SELECT * FROM __self__ WHERE a > ? AND b < ?', (3, 10))
+                s = SQLarray.selection('a > 3')
+                s = SQLarray.selection('a > ?', (3,))
+                s = SQLarray.selection('SELECT * FROM __self__ WHERE a > ? AND b < ?', (3, 10))
 
         """
         # TODO: under development
