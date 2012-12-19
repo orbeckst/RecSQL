@@ -71,6 +71,8 @@ make_sphinx () {
       (cd doc/sphinx/build && find html -type f -exec ln -v '{}' '../../{}' \;)
   echo "Created doc/html"
   RSYNC -vrP --delete doc/sphinx/build/html $DOCS
+  (cd doc/html && zip -r ../docs.zip) || die "Failed to zip html docs"
+  echo "Created doc/docs.zip for upload to PyPi"
 }
 
 make_pdf () {

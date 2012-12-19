@@ -4,3 +4,4 @@ build
 dist
 doc/epydoc
 install_develop.sh
+doc/docs.zip
