@@ -33,6 +33,12 @@ html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
+	-rm -r ../html
+	cp -R build/html ..
+	@echo "Copied html to doc/html"
+	(cd ../html && zip -r ../docs.zip *)
+	@echo "Generated doc/docs.zip for doc upload"
+
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) build/dirhtml
