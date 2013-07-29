@@ -49,7 +49,7 @@ constructed directly from a :class:`numpy.recarray` via the
 .. autoclass:: SQLarray
    :members:
 
-For querying the version of the package use 
+For querying the version of the package use
 
 .. autofunction:: get_version
 .. autofunction:: get_version_tuple
@@ -240,7 +240,7 @@ Other approaches to interfacing SQLite and NumPy
 ================================================
 
 If RecSQL does not what you need it to do then look at these other
-projects. 
+projects.
 
 .. SeeAlso:: `esutil.sqlite_util`_ (part of esutil_) and `hydroclimpy.io.sqlite`_
 
@@ -253,7 +253,7 @@ If you do not have to rely on SQL then also look at PyTables_.
 .. _`hydroclimpy.io.sqlite`:
    http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py
 """
-VERSION = 0,7,8
+VERSION = 0,7,9
 
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 
