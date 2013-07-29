@@ -554,6 +554,7 @@ class SQLarray(object):
         self.connection.create_function("regexp",2,sqlfunctions._regexp)
         self.connection.create_function("fformat",2,sqlfunctions._fformat)
         self.connection.create_aggregate("std",1,sqlfunctions._Stdev)
+        self.connection.create_aggregate("stdN",1,sqlfunctions._StdevN)
         self.connection.create_aggregate("median",1,sqlfunctions._Median)
         self.connection.create_aggregate("array",1,sqlfunctions._NumpyArray)
         self.connection.create_aggregate("histogram",4,sqlfunctions._NumpyHistogram)

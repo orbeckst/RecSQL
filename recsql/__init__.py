@@ -134,7 +134,7 @@ Expression              SQL equivalent
   y = f(x1,x2,...xN)     SELECT f(x) AS y ... GROUP BY x
 =====================   =============================================
 
-For completeness, the tablke also lists sqlite built-in aggregate
+For completeness, the table also lists sqlite built-in aggregate
 functions:
 
 =====================   ===============================================
@@ -142,6 +142,10 @@ Simple aggregate f()     description
 =====================   ===============================================
 avg(x)                   mean [sqlite builtin]
 std(x)                   standard deviation (using N-1 variance)
+
+stdN(x)                  standard deviation (using N variance),
+                         sqrt(<(X - <X>)**2>)
+
 median(x)                median of the data (see :func:`numpy.median`)
 min(x)                   minimum [sqlite builtin]
 max(x)                   maximum [sqlite builtin]

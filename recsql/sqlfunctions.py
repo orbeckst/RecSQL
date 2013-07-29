@@ -23,6 +23,7 @@ Example:
      self.connection.create_function("regexp", 2, _regexp) # implements REGEXP
      self.connection.create_function("fformat",2,_fformat)
      self.connection.create_aggregate("std",1,_Stdev)
+     self.connection.create_aggregate("stdN",1,_StdevN)
      self.connection.create_aggregate("median",1,_Median)
      self.connection.create_aggregate("array",1,_NumpyArray)
      self.connection.create_aggregate("histogram",4,_NumpyHistogram)
@@ -114,7 +115,7 @@ class _Stdev(object):
     (Uses N-1 variance.)
     Do it in one pass (see eg
     http://smallcode.weblogs.us/2006/11/27/calculate-standard-deviation-in-one-pass/
-    though we may run in an underflow by calculating N/N-1<X^2-<X>^2>.).
+    though we may run in an underflow by calculating N/N-1<X^2>-<X>^2>.).
 
     Also, we don't check if our arguments are valid as numbers.
     """
@@ -133,6 +134,20 @@ class _Stdev(object):
     def finalize(self):
         if self.n<2: return 0.0
         return numpy.sqrt((self.n*self.x2 - self.x*self.x)/(self.n*(self.n-1)))
+
+class _StdevN(_Stdev):
+    """Implement standard deviation as SQL aggregate function.
+    (Uses N variance.)
+    Do it in one pass (see eg
+    http://smallcode.weblogs.us/2006/11/27/calculate-standard-deviation-in-one-pass/
+    though we may run in an underflow by calculating <X^2>-<X>^2>.).
+
+    Also, we don't check if our arguments are valid as numbers.
+    """
+    def finalize(self):
+        X2 = self.x2/self.n
+        X = self.x/self.n
+        return numpy.sqrt(X2 - X**2)
 
 class _Median(object):
     def __init__(self):
