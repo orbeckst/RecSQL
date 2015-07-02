@@ -32,7 +32,7 @@ the following additional restriction apply:
   wrongly parsed tables.)
 * The delimiters are used to extract the fields. Only data within the
   range of the '=====' markers is used. Thus, each column marker
-  *must* span the whole range of input. Otherwise, data will be lost.  
+  *must* span the whole range of input. Otherwise, data will be lost.
 * The keyword 'Table' must precede the first marker line and the table
   name must be provided in square brackets; the table name should be a
   valid SQL identifier.
@@ -60,7 +60,7 @@ with
   >>> P = T.Table2array(T.__doc__)
   >>> P.recarray()
   rec.array([(u'A. Einstein', 42, 1921), (u'P. Dirac', 31, 1933),
-       (u'R. P. Feynman', 47, 1965)], 
+       (u'R. P. Feynman', 47, 1965)],
       dtype=[('name', '<U52'), ('age', '<i4'), ('year', '<i4')])
 
 
@@ -76,11 +76,12 @@ The only class that the user really needs to know anything about is
 .. autoexception:: ParseError
 
 """
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
 
 import re
 import numpy
-import convert
+
+from . import convert
 
 # search expressions
 # ------------------
@@ -138,7 +139,7 @@ class Table2array(object):
     .. Note:: Values such as 001 must be quoted as '001' or they will be
               interpreted as integers (1 in this case).
     """
-    
+
     def __init__(self, string=None, **kwargs):
         """Table2array(string) --> parser
 
@@ -149,9 +150,9 @@ class Table2array(object):
               read from *filename* instead of string
            *autoconvert*
               EXPERIMENTAL. ``True``: replace certain values
-              with special python values (see :class:`convert.Autoconverter`) and possibly 
+              with special python values (see :class:`convert.Autoconverter`) and possibly
               split values into lists (see *sep*).
-              ``False``: leave everything as it is (numbers as numbers and strings 
+              ``False``: leave everything as it is (numbers as numbers and strings
               as strings).
            *mode*
               mode of the :class:`~convert.Autoconverter`
@@ -214,7 +215,7 @@ class Table2array(object):
                 else:
                     D[icol] = object
             dtype = numpy.dtype(zip(self.names, D))
-            # from numpy.rec.records 
+            # from numpy.rec.records
             # TODO: this is not working properly yet; for instance, text fields
             # are reduced to length 0 (<U0) and the final convert.to_int64 dies
             # with '<U0'*** TypeError: TypeError('data type not understood',)

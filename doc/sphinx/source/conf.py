@@ -18,6 +18,23 @@ import sys, os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.append(os.path.abspath('.'))
 
+# for ReadTheDocs
+# ---------------
+# https://read-the-docs.readthedocs.org/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+try:
+    # Python 3.3
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import Mock as MagicMock
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['numpy']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
 # -- General configuration -----------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
@@ -48,6 +65,7 @@ copyright = u'2007-2012, Oliver Beckstein'
 
 # Dynamically calculate the version based on VERSION.
 version = __import__('recsql').get_version()
+
 # The full version, including alpha/beta/rc tags.
 release = version
 

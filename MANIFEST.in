@@ -1,1 +1,1 @@
-include   ez_setup.py setup.py COPYING INSTALL README
+include   ez_setup.py setup.py COPYING INSTALL README requirements.txt

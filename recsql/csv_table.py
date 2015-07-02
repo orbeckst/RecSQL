@@ -29,7 +29,7 @@ except ImportError:
 import numpy
 import re
 
-from convert import Autoconverter
+from .convert import Autoconverter
 
 # from the csv examples: http://docs.python.org/library/csv.html#csv-examples
 import codecs
