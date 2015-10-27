@@ -11,7 +11,7 @@ Uses :mod:`csv` (requires python 2.6 or better).
 .. autofunction:: make_python_name
 
 """
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
 
 # notes on csv (from http://farmdev.com/talks/unicode/)
 # encode temp. to utf-8

@@ -12,7 +12,7 @@ format.
 .. autofunction:: s_rec2latex
 
 """
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
 
 def rec2csv(r, filename):
     """Export a recarray *r* to a CSV file *filename*"""

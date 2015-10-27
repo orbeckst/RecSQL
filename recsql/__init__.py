@@ -253,11 +253,17 @@ If you do not have to rely on SQL then also look at PyTables_.
 .. _`hydroclimpy.io.sqlite`:
    http://svn.scipy.org/svn/scikits/branches/pierregm/hydroclimpy/scikits/hydroclimpy/io/sqlite.py
 """
-VERSION = 0,7,10
+from __future__ import absolute_import
 
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 
+VERSION = 0,7,11
+RELEASE = False
+
 from .sqlarray import SQLarray, SQLarray_fromfile
+
+if not RELEASE:
+    VERSION = VERSION[:-1] + (str(VERSION[-1]) + "-dev", )
 
 def get_version():
     """Return current package version as a string."""
