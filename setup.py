@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 import sys
 
-requirements = ['numpy>=1.0',]
+requirements = ['numpy>=1.6',]
 
 major, minor, patch = sys.version_info[:3]
 if major == 1 or (major == 2 and minor < 5):
@@ -47,4 +47,4 @@ that are built from a numpy.recarray or a general iterator.
       zip_safe = True,
 )
 
-      
+

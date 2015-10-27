@@ -43,29 +43,6 @@ Module content
 from itertools import izip
 import re
 import numpy
-# compatibility check: we NEED consistent 1d histogram functions: we
-# decided to use numpy 1.x style, which returns edges, NOT lower bin edges
-_numpyversion = map(int, numpy.version.version.split('.'))
-if _numpyversion[0] < 1:
-    raise ImportError('Need at least numpy 1.x, only have %r' % numpy.version.version)
-if _numpyversion[1] < 1:
-    # we want a histogram that returns edges
-    def histogram1d(*args,**kwargs):
-        _range = kwargs.pop('range',None)
-        if not _range is None:
-            kwargs['range'] = (_range,)   # needs to be a sequence
-        h,e = numpy.histogramdd(*args,**kwargs)
-        return h,e[0]
-    histogram1d.__doc__ = "1D histogram, based on numpy histogramdd; returns edges as in numpy 1.1.x\n"+\
-                        numpy.histogram.__doc__
-else:
-    def histogram1d(*args,**kwargs):
-        if _numpyversion[1] < 5:
-            # new=True only for older versions 1.0.x .. 1.4.x
-            kwargs['new'] = True
-        h,e = numpy.histogram(*args,**kwargs)
-        return h,e
-    histogram1d.__doc__ = numpy.histogram.__doc__
 
 
 from sqlutil import adapt_numpyarray, convert_numpyarray,\
@@ -180,14 +157,14 @@ class _NumpyHistogram(object):
             self.is_initialized = True
         self.data.append(x)
     def finalize(self):
-        hist,edges = histogram1d(self.data,bins=self.bins,range=self.range,
-                                 normed=False)
+        hist,edges = numpy.histogram1d(self.data,bins=self.bins,range=self.range,
+                                       normed=False)
         return adapt_object((hist,edges))
 
 class _NormedNumpyHistogram(_NumpyHistogram):
     def finalize(self):
-        hist,edges = histogram1d(self.data,bins=self.bins,range=self.range,
-                                 normed=True)
+        hist,edges = numpy.histogram1d(self.data,bins=self.bins,range=self.range,
+                                       normed=True)
         return adapt_object((hist,edges))
 
 class _FunctionHistogram(_NumpyHistogram):
