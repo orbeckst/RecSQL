@@ -48,6 +48,8 @@ from .sqlutil import adapt_numpyarray, convert_numpyarray, adapt_object, convert
 from .rest_table import Table2array
 from .convert import irecarray_to_py
 
+from . import sqlfunctions
+
 sqlite.register_adapter(numpy.ndarray,adapt_numpyarray)
 sqlite.register_adapter(numpy.recarray,adapt_numpyarray)
 sqlite.register_adapter(numpy.core.records.recarray,adapt_numpyarray)
@@ -545,7 +547,6 @@ class SQLarray(object):
 
     def _init_sqlite_functions(self):
         """additional SQL functions to the database"""
-        import sqlfunctions
 
         self.connection.create_function("sqrt", 1,sqlfunctions._sqrt)
         self.connection.create_function("sqr", 1,sqlfunctions._sqr)
