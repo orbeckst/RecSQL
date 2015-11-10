@@ -31,6 +31,7 @@ Module content
 """
 from __future__ import absolute_import
 
+import sys
 import os.path
 import warnings
 import re
@@ -45,6 +46,8 @@ except ImportError:
 import numpy
 
 from .sqlutil import adapt_numpyarray, convert_numpyarray, adapt_object, convert_object
+from . import csv_table
+from . import rest_table
 from .rest_table import Table2array
 from .convert import irecarray_to_py
 
@@ -224,8 +227,7 @@ class SQLarray(object):
                 try:
                     # fall back: convert each record to pytypes
                     self.cursor.executemany(SQL,irecarray_to_py(records))
-                except Exception,err2:
-                    import sys
+                except Exception, err2:
                     sys.stderr.write(str(err2))
                     sys.stderr.write("ERROR: You are probably feeding a recarray; sqlite does not know how to \n"
                                  "       deal with special numpy types such as int32 or int64. Try using the \n"
@@ -715,7 +717,6 @@ def SQLarray_fromfile(filename, **kwargs):
             :class:`recsql.rest_table.Table2array` such as *mode* or
             *autoncovert*.
     """
-    import rest_table, csv_table
 
     Table2array = {'rst': rest_table.Table2array,
                    'txt': rest_table.Table2array,
