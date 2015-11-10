@@ -8,7 +8,9 @@ tables (using SQLite) and provide convenience functions to return
 recarrays on demand.
 
 This works ok for small tables but less so if you want to access
-gigabytes of data as recarrays.
+gigabytes of data as recarrays. It's a hack.
+
+Documentation can be found at http://recsql.readthedocs.org/
 
 
 Example
@@ -42,15 +44,10 @@ Availability
 ------------
 
 The latest version of the package is being made available via the
-internet at https://github.com/orbeckst/RecSQL or from the direct
-download URI (for ``easy_install``) https://github.com/orbeckst/RecSQL/tags
+internet at https://github.com/orbeckst/RecSQL 
 
 RecSQL is also listed on PyPi http://pypi.python.org/pypi/RecSQL and
 can thus be installed with ::
-
-  easy_install RecSQL
-
-or ::
 
   pip install RecSQL
 
@@ -60,8 +57,10 @@ A git repository of the package is hosted at
 http://github.com/orbeckst/RecSQL .
 
 
-Contact
--------
+Getting Involved
+----------------
 
-Oliver Beckstein <orbeckst@gmail.com>
+Please submit problems, questions and questions through the issue
+tracker https://github.com/orbeckst/RecSQL/issues . Pull requests are
+also very welcome.
 

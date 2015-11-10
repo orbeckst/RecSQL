@@ -1,1 +1,1 @@
-include   ez_setup.py setup.py COPYING INSTALL.rst README.rst requirements.txt
+include   setup.py LICENSE INSTALL.rst README.rst requirements.txt

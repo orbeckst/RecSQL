@@ -258,7 +258,7 @@ from __future__ import absolute_import
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 
 VERSION = 0,7,11
-RELEASE = False
+RELEASE = True
 
 from .sqlarray import SQLarray, SQLarray_fromfile
 
