@@ -2,6 +2,10 @@
  README
 =========
 
+.. image:: http://readthedocs.org/projects/recsql/badge/?version=latest
+   :target: http://recsql.readthedocs.org/en/latest/?badge=latest
+   :alt: Documentation Status
+
 RecSQL's basic idea is to treat numpy record arrays like SQL
 tables. What it does, in fact, is to represent the arrays as real SQL
 tables (using SQLite) and provide convenience functions to return
