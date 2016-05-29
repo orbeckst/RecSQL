@@ -1,3 +1,4 @@
+.. -*- coding: utf-8 -*-
 .. RecSQL documentation master file, created by
    sphinx-quickstart on Fri Jul  3 21:35:08 2009.
    You can adapt this file completely to your liking, but it should at least
@@ -8,7 +9,7 @@
 =================================================
 
 :Release: |version|
-:Date:    |date|
+:Date:    |today|
 
 RecSQL is a hack that allows one to load table-like data records into
 an in-memory sqlite_ database for quick and dirty analysis via
