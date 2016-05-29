@@ -2,9 +2,7 @@
  README
 =========
 
-.. image:: http://readthedocs.org/projects/recsql/badge/?version=latest
-   :target: http://recsql.readthedocs.org/en/latest/?badge=latest
-   :alt: Documentation Status
+|docs| 
 
 RecSQL's basic idea is to treat numpy record arrays like SQL
 tables. What it does, in fact, is to represent the arrays as real SQL
@@ -15,6 +13,13 @@ This works ok for small tables but less so if you want to access
 gigabytes of data as recarrays. It's a hack.
 
 Documentation can be found at http://recsql.readthedocs.org/
+
+Source code is available from https://github.com/orbeckst/RecSQL under
+the `GNU General Public License, version 3`_ (see also the file
+``LICENSE`` in the distribution).
+
+.. _`GNU General Public License, version 3`:
+   http://www.gnu.org/licenses/gpl-3.0.en.html
 
 
 Example
@@ -47,8 +52,8 @@ Example
 Availability
 ------------
 
-The latest version of the package is being made available via the
-internet at https://github.com/orbeckst/RecSQL 
+The latest version of the package is available on GitHub
+https://github.com/orbeckst/RecSQL
 
 RecSQL is also listed on PyPi http://pypi.python.org/pypi/RecSQL and
 can thus be installed with ::
@@ -64,7 +69,12 @@ http://github.com/orbeckst/RecSQL .
 Getting Involved
 ----------------
 
-Please submit problems, questions and questions through the issue
-tracker https://github.com/orbeckst/RecSQL/issues . Pull requests are
-also very welcome.
+Please submit problems, questions and questions through the `issue
+tracker`_. Pull requests are also very welcome.
 
+
+.. _`issue tracker`: https://github.com/orbeckst/RecSQL/issues
+
+.. |docs| image:: http://readthedocs.org/projects/recsql/badge/?version=latest
+   :target: http://recsql.readthedocs.org/en/latest/?badge=latest
+   :alt: Documentation Status

@@ -1,3 +1,10 @@
+# -*- Mode: python; tab-width: 4; indent-tabs-mode:nil; coding:utf-8 -*-
+# vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4
+#
+# RecSQL -- a simple mash-up of sqlite and numpy.recsql
+# Copyright (C) 2007-2016 Oliver Beckstein <orbeckst@gmail.com>
+# Released under the GNU Public License, version 3 or higher (your choice)
+
 """
 :mod:`recsql.convert` --- converting entries of tables and arrays
 =================================================================
@@ -48,12 +55,12 @@ class Autoconverter(object):
       'none'
       'None'
       ''
-    
+
       'True'      ``True``
       'x'
       'X'
       'yes'
-    
+
       'False'     ``False``
       '-'
       'no'
@@ -169,7 +176,7 @@ def besttype(x, encoding="utf-8", percentify=True):
 
     *percentify* = ``True`` turns "34.4%" into the float 0.344.
 
-    .. Note:: 
+    .. Note::
 
        Strings will be returned as Unicode strings (using
        :func:`unicode`), based on the *encoding* argument, which is

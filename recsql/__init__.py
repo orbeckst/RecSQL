@@ -1,8 +1,11 @@
-# -*- encoding: utf-8 -*-
+# -*- Mode: python; tab-width: 4; indent-tabs-mode:nil; coding:utf-8 -*-
+# vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4
+#
 # RecSQL -- a simple mash-up of sqlite and numpy.recsql
-# Copyright (C) 2007-2011 Oliver Beckstein <orbeckst@gmail.com>
+# Copyright (C) 2007-2016 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License, version 3 or higher (your choice)
-"""
+
+"""\
 ================
  RecSQL package
 ================
@@ -257,8 +260,8 @@ from __future__ import absolute_import
 
 __all__ = ['SQLarray', 'SQLarray_fromfile']
 
-VERSION = 0,7,11
-RELEASE = True
+VERSION = 0,7,12
+RELEASE = False
 
 from .sqlarray import SQLarray, SQLarray_fromfile
 

@@ -10,8 +10,8 @@ http://pypi.python.org/pypi/RecSQL) with ::
 
 
 You can also download the source manually from
-https://github.com/orbeckst/RecSQL/tags and unpack
-it. Install from the unpacked source with ::
+https://github.com/orbeckst/RecSQL/releases and unpack it. Install
+from the unpacked source with ::
 
     cd RecSQL-0.7.11
     python setup.py install
@@ -23,9 +23,9 @@ repository`_ ::
 
 and installing from the source as above.
 
-Additional requirements are numpy_ and pysqlite_. `pip`_ will
-automatically attempt to download appropriate versions if none are
-currently installed.
+Additional requirements are numpy_ (and pysqlite_ for older versions
+of Python). `pip`_ will automatically attempt to download appropriate
+versions if none are currently installed.
 
 .. URLs:
 .. _numpy:

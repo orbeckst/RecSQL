@@ -1,5 +1,8 @@
-# $Id: sqlutil.py 2346 2008-10-06 19:36:21Z oliver $
-# Copyright (C) 2009 Oliver Beckstein <orbeckst@gmail.com>
+# -*- Mode: python; tab-width: 4; indent-tabs-mode:nil; coding:utf-8 -*-
+# vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4
+#
+# RecSQL -- a simple mash-up of sqlite and numpy.recsql
+# Copyright (C) 2007-2016 Oliver Beckstein <orbeckst@gmail.com>
 # Released under the GNU Public License, version 3 or higher (your choice)
 
 """
