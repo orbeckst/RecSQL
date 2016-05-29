@@ -7,6 +7,9 @@
  RecSQL -- simple SQL analysis of python records
 =================================================
 
+:Release: |version|
+:Date:    |date|
+
 RecSQL is a hack that allows one to load table-like data records into
 an in-memory sqlite_ database for quick and dirty analysis via
 SQL_. The :class:`~recsql.SQLarray` class has additional SQL functions
@@ -40,13 +43,13 @@ package :doc:`README` for contact details.
 License
 -------
 
-This package is Copyright 2007--2012, Oliver Beckstein.
+This package is Copyright 2007--2016, Oliver Beckstein.
 
 The **RecSQL** package is made available under the terms of the
-`GNU Public License v3`_ (or any higher version at your choice). See
-the file COPYING.
+`GNU General Public License v3`_ (or any higher version at your choice). See
+the file ``LICENSE``.
 
-.. _GNU Public License v3: http://www.gnu.org/licenses/gpl.html
+.. _GNU General Public License v3: http://www.gnu.org/licenses/gpl.html
 
 
 Contents

@@ -55,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'RecSQL'
-copyright = u'2007-2012, Oliver Beckstein'
+copyright = u'2007-2016, Oliver Beckstein'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
