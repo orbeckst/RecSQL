@@ -3,5 +3,6 @@ build
 *.pyc
 dist
 doc/epydoc
-install_develop.sh
+doc/html
 doc/docs.zip
+install_develop.sh
